@@ -23,8 +23,18 @@ export default class Bananas extends Component {
     };
   }
 
-  signUpClick() {
-    Alert.alert('Signing up!')
+  signUpClick = () =>{
+    if (this.state.status) {
+      Alert.alert('Signing up with creds:',
+        'Full Name: ' + this.state.fullNameText + '\n' +
+        'Username: ' + this.state.usernameText + '\n' +
+        'Password: ' + this.state.passwordText + '\n' +
+        'Retype Password: ' + this.state.retypePasswordText);
+    } else {
+      Alert.alert('Logging in with creds:',
+      'Username: ' + this.state.usernameText + '\n' +
+      'Password: ' + this.state.passwordText);
+    }
   }
 
   ShowHideTextComponentView = () =>{
@@ -43,30 +53,38 @@ export default class Bananas extends Component {
           source={require('./assets/logo.png')} 
           style={{width: 200, height: 200}} 
         />
-        <TextInput 
-          style={{height: 40, width: 200}} 
-          placeholder= 'Full Name'
-        />
+        { this.state.status &&
+          <TextInput 
+            style={{height: 40, width: 200}} 
+            placeholder= 'Full Name'
+            onChangeText={(text) => this.setState({fullNameText: text})}
+          />
+        }
         <TextInput
           style={{height: 40, width: 200}}
           placeholder="Username"
+          onChangeText={(text) => this.setState({usernameText: text})}
         />
         <TextInput
           style={{height: 40, width: 200}}
           placeholder="Password"
+          onChangeText={(text) => this.setState({passwordText: text})}
         />
-        <TextInput
-          style={{height: 40, width: 200}}
-          placeholder="Retype Password"
-        />
+        { this.state.status &&
+          <TextInput
+            style={{height: 40, width: 200}}
+            placeholder="Retype Password"
+            onChangeText={(text) => this.setState({retypePasswordText: text})}
+          />
+        }
         <Button
           onPress={this.signUpClick}
-          title="Sign Up"
+          title={this.state.status ? "Sign Up" : "Login"}
           color="#ffb028"
         />
         <Button
           onPress={this.ShowHideTextComponentView}
-          title="I Already Have an Account"
+          title={this.state.status ? "I Already Have an Account" : "I Don\'t Have an Account"}
           color="#ffb028"
         />
       </View>

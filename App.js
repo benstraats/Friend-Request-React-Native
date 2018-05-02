@@ -39,8 +39,14 @@ export default class Bananas extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/logo.png')} style={{width: 200, height: 200}} />
-        <TextInput style={{height: 40, width: 200}} placeholder= 'Full Name'/>
+        <Image 
+          source={require('./assets/logo.png')} 
+          style={{width: 200, height: 200}} 
+        />
+        <TextInput 
+          style={{height: 40, width: 200}} 
+          placeholder= 'Full Name'
+        />
         <TextInput
           style={{height: 40, width: 200}}
           placeholder="Username"
@@ -54,7 +60,7 @@ export default class Bananas extends Component {
           placeholder="Retype Password"
         />
         <Button
-          onPress={this.signUp}
+          onPress={this.signUpClick}
           title="Sign Up"
           color="#ffb028"
         />

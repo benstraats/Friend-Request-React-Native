@@ -19,22 +19,84 @@ export default class Bananas extends Component {
       usernameText: '', 
       passwordText: '', 
       retypePasswordText: '', 
-      status: true
+      status: true,
+      accessToken: '',
+      userID: ''
     };
   }
 
   signUpClick = () =>{
     if (this.state.status) {
-      Alert.alert('Signing up with creds:',
-        'Full Name: ' + this.state.fullNameText + '\n' +
-        'Username: ' + this.state.usernameText + '\n' +
-        'Password: ' + this.state.passwordText + '\n' +
-        'Retype Password: ' + this.state.retypePasswordText);
+      this.createUser(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
     } else {
-      Alert.alert('Logging in with creds:',
-      'Username: ' + this.state.usernameText + '\n' +
-      'Password: ' + this.state.passwordText);
+      this.getAccessToken(this.state.usernameText, this.state.passwordText);
     }
+  }
+
+  createUser(name, username, password) {
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/users', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "name": name,
+        "email": username,
+        "password": password
+      })
+    })
+    .then(function(response) {
+      self.getAccessToken(username, password) 
+    })
+  }
+
+  getAccessToken(username, password) {
+    let self = this
+
+    fetch('http://192.168.2.25:3030/authentication', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "strategy": "local",
+        "email": username,
+        "password": password
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      self.state.accessToken = responseJson.accessToken
+      self.getUserInfo(username)
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  getUserInfo(username) {
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/users?email=' + username, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      }
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      self.state.userID = responseJson.data[0]._id
+      Alert.alert('ID:', self.state.userID)
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   ShowHideTextComponentView = () =>{

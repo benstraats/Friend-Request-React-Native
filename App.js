@@ -119,23 +119,38 @@ export default class Login extends Component {
           <TextInput 
             style={{height: 40, width: 200}} 
             placeholder= 'Full Name'
+            autoCapitalize='words'
+            autoCorrect={false}
+            returnKeyType='next'
+            underlineColorAndroid={'#ffb028'}
             onChangeText={(text) => this.setState({fullNameText: text})}
           />
         }
         <TextInput
           style={{height: 40, width: 200}}
           placeholder="Username"
+          autoCapitalize='none'
+          returnKeyType='next'
+          underlineColorAndroid={'#ffb028'}
           onChangeText={(text) => this.setState({usernameText: text})}
         />
         <TextInput
           style={{height: 40, width: 200}}
           placeholder="Password"
+          autoCapitalize='none'
+          returnKeyType='next'
+          secureTextEntry={true}
+          underlineColorAndroid={'#ffb028'}
           onChangeText={(text) => this.setState({passwordText: text})}
         />
         { this.state.status &&
           <TextInput
             style={{height: 40, width: 200}}
             placeholder="Retype Password"
+            autoCapitalize='none'
+            returnKeyType='go'
+            secureTextEntry={true}
+            underlineColorAndroid={'#ffb028'}
             onChangeText={(text) => this.setState({retypePasswordText: text})}
           />
         }

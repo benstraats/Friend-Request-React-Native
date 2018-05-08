@@ -15,15 +15,6 @@ const styles = StyleSheet.create({
 export default class Search extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      fullNameText: '', 
-      usernameText: '', 
-      passwordText: '', 
-      retypePasswordText: '', 
-      status: true,
-      accessToken: '',
-      userID: ''
-    };
   }
 
   render() {

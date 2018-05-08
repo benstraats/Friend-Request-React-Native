@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text } from 'react-native';
+import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, ListView } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -18,12 +18,15 @@ const styles = StyleSheet.create({
 class Landing extends Component {
   constructor(props) {
     super(props);
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       userID: this.props.navigation.state.params.userID,
       fullNameText: this.props.navigation.state.params.name, 
       usernameText: this.props.navigation.state.params.username, 
       accessToken: this.props.navigation.state.params.accessToken,
+      dataSource: ds.cloneWithRows(['row 1', 'row 2']),
     };
+    this.getFriends()
   }
 
   showUserInfo = () =>{
@@ -34,16 +37,56 @@ class Landing extends Component {
       "\nAccess Token: " + this.state.accessToken);
   }
 
+  getFriends = () =>{
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/myfriends?$limit=50', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      }
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      let friends = [];
+
+      responseJson.friends.data.forEach(function(obj) { 
+        let friendID = obj.user1
+
+        if (friendID == self.state.userID) {
+          friendID = obj.user2
+        }
+
+        let friendName
+        let friendUsername
+
+        responseJson.users.data.forEach(function(obj) {
+          if (obj._id == friendID) {
+            friendName = obj.name
+            friendUsername = obj.email
+          }
+        })
+
+        friends.push(friendName + " - " + friendUsername)
+      });
+
+      self.setState({
+        dataSource: this.state.dataSource.cloneWithRows(friends)
+      })
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={{fontWeight: 'bold'}}>
-            This page will hold all your info on your current and pending friends.
-        </Text>
-        <Button
-          onPress={this.showUserInfo}
-          title={"Show User Info"}
-          color="#ffb028"
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={(rowData) => <Text>{rowData}</Text>}
         />
       </View>
     );
@@ -52,7 +95,7 @@ class Landing extends Component {
 
 export default createBottomTabNavigator(
   {
-    Landing: { screen: Landing },
+    Home: { screen: Landing },
     Search: { screen: Search },
     Profile: { screen: Profile },
   },

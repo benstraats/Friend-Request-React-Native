@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, AppRegistry, Button, StyleSheet, View, Image, TextInput } from 'react-native';
+import Landing from './src/Landing'
+import {createStackNavigator,} from 'react-navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -11,7 +13,7 @@ const styles = StyleSheet.create({
   }
 })
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -92,7 +94,13 @@ export default class Login extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       self.state.userID = responseJson.data[0]._id
-      Alert.alert('ID:', self.state.userID)
+      self.state.fullNameText = responseJson.data[0].name
+      this.props.navigation.navigate('landing', {
+        userID: self.state.userID, 
+        username: this.state.usernameText,
+        name: this.state.fullNameText,
+        accessToken: this.state.accessToken
+      });
     })
     .catch((error) => {
       console.error(error);
@@ -168,3 +176,14 @@ export default class Login extends Component {
     );
   }
 }
+
+export default Project = createStackNavigator({
+   login: { screen: Login },
+   landing: { screen: Landing }
+  },
+  {
+    navigationOptions:{ 
+      header: null 
+    }
+  }
+);

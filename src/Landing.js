@@ -12,6 +12,23 @@ const styles = StyleSheet.create({
    alignItems: 'center',
    margin: 20,
    padding: 10
+  },
+  list: {
+    paddingTop: 30,
+    maxWidth: '100%',
+  },
+  nestedList: {
+    paddingLeft: 10,
+    alignItems: 'flex-start'
+  },
+  rowViewContainer: 
+  {
+ 
+    fontSize: 18,
+    paddingRight: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+ 
   }
 })
 
@@ -59,17 +76,17 @@ class Landing extends Component {
           friendID = obj.user2
         }
 
-        let friendName
-        let friendUsername
+        friendInfo = []
+        friendInfo.push(friendID)
 
         responseJson.users.data.forEach(function(obj) {
           if (obj._id == friendID) {
-            friendName = obj.name
-            friendUsername = obj.email
+            friendInfo.push(obj.name)
+            friendInfo.push(obj.email)
           }
         })
 
-        friends.push(friendName + " - " + friendUsername)
+        friends.push(friendInfo)
       });
 
       self.setState({
@@ -81,12 +98,63 @@ class Landing extends Component {
     });
   }
 
+  ListViewItemSeparatorLine = () => {
+    return (
+      <View
+        style={{
+          height: .5,
+          width: "100%",
+          backgroundColor: "#000",
+        }}
+      />
+    );
+  }
+
+  onPressFn = (rowData) =>{
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/profile?userID=' + rowData[0], {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      }
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      let profile = ''
+
+      let x = responseJson.data;
+      let y = x[0]
+
+      if (y !== undefined) {
+        let z = y.profile
+
+        z.forEach(function(obj) { 
+          profile += obj.key + ": " + obj.value + "\n"
+        });
+
+        Alert.alert(rowData[1], profile)
+      }
+      else {
+        Alert.alert(rowData[1], "User has no profile")
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.list}>
         <ListView
+          contentContainerStyle={styles.nestedList}
           dataSource={this.state.dataSource}
-          renderRow={(rowData) => <Text>{rowData}</Text>}
+          renderRow={
+            (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2]}</Text>
+          }
         />
       </View>
     );

@@ -126,19 +126,21 @@ class Landing extends Component {
         friendInfo = []
         friendInfo.push(requesterID)
 
-        responseJson.users.data.forEach(function(obj) {
-          if (obj._id == requesterID) {
-            friendInfo.push("Request From: " + obj.name)
-            friendInfo.push(obj.email)
+        responseJson.users.data.forEach(function(userObj) {
+          if (userObj._id == requesterID) {
+            friendInfo.push('Request from: ' + userObj.name)
+            friendInfo.push(userObj.email)
             friendInfo.push("request")
           }
         })
+
+        friendInfo.push(obj._id)
 
         friends.push(friendInfo)
       });
 
       self.setState({
-        listDataSource: this.state.listDataSource.concat(friends)
+        listDataSource: friends.concat(this.state.listDataSource)
       })
 
       self.setState({
@@ -200,8 +202,58 @@ class Landing extends Component {
       });
     }
     else {
-      Alert.alert("Accept " + rowData[2] + "?", "Are you sure you want to add " + rowData[2] + "?")
+      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[2] + '?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {text: 'Reject', onPress: () => this.rejectRequest(rowData[4])},
+        {text: 'Accept', onPress: () => this.acceptRequest(rowData[4])},
+      ],);
     }
+  }
+
+  acceptRequest = (requestID) =>{
+
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/friends', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      },
+      body: JSON.stringify({
+        "requestID": requestID
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      Alert.alert('Accepted request')
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  rejectRequest = (requestID) =>{
+
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/requests/' + requestID, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      },
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      Alert.alert('Rejected request')
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   render() {

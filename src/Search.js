@@ -35,7 +35,7 @@ export default class Search extends Component {
       userID: this.props.navigation.state.params.userID,
       accessToken: this.props.navigation.state.params.accessToken,
       listDataSource: [],
-      dataSource: ds.cloneWithRows(['', '']),
+      dataSource: ds.cloneWithRows([['','','','',''], ['','','','','']]),
     };
   }
 

@@ -50,9 +50,21 @@ class Login extends Component {
         "password": password
       })
     })
-    .then(function(response) {
-      self.getAccessToken(username, password) 
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
+    .then((responseJson) => {
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          self.getAccessToken(username, password) 
+        }
+        else {
+          Alert.alert('Failed to signup', '' + JSON.stringify(responseJson))
+        }
+      }
     })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   getAccessToken(username, password) {
@@ -70,10 +82,18 @@ class Login extends Component {
         "password": password
       })
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      self.state.accessToken = responseJson.accessToken
-      self.getUserInfo(username)
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          self.state.accessToken = responseJson.accessToken
+          self.getUserInfo(username)
+        }
+        else {
+          Alert.alert('Failed to login', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -91,16 +111,24 @@ class Login extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      self.state.userID = responseJson.data[0]._id
-      self.state.fullNameText = responseJson.data[0].name
-      this.props.navigation.navigate('landing', {
-        userID: self.state.userID, 
-        username: this.state.usernameText,
-        name: this.state.fullNameText,
-        accessToken: this.state.accessToken
-      });
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          self.state.userID = responseJson.data[0]._id
+          self.state.fullNameText = responseJson.data[0].name
+          this.props.navigation.navigate('landing', {
+            userID: self.state.userID, 
+            username: this.state.usernameText,
+            name: this.state.fullNameText,
+            accessToken: this.state.accessToken
+          });
+        }
+        else {
+          Alert.alert('Failed to get user details', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);

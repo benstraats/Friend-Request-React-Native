@@ -41,7 +41,7 @@ class Landing extends Component {
       fullNameText: this.props.navigation.state.params.name, 
       usernameText: this.props.navigation.state.params.username, 
       accessToken: this.props.navigation.state.params.accessToken,
-      dataSource: ds.cloneWithRows(['row 1', 'row 2']),
+      dataSource: ds.cloneWithRows([['','',''], ['','','']]),
       listDataSource: []
     };
     this.getFriends()

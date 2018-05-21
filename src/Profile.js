@@ -47,28 +47,36 @@ export default class Profile extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      let profile = [];
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          let profile = [];
 
-      responseJson.data[0].profile.forEach(function(obj) { 
-        let row = []
-        row.push(obj.key)
-        row.push(obj.value)
-        profile.push(row)
-      });
+          responseJson.data[0].profile.forEach(function(obj) { 
+            let row = []
+            row.push(obj.key)
+            row.push(obj.value)
+            profile.push(row)
+          });
 
-      self.setState({
-        profileID: responseJson.data[0]._id
-      })
+          self.setState({
+            profileID: responseJson.data[0]._id
+          })
 
-      self.setState({
-        listDataSource: profile
-      })
+          self.setState({
+            listDataSource: profile
+          })
 
-      self.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-      })
+          self.setState({
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+          })
+        }
+        else {
+          Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -106,9 +114,17 @@ export default class Profile extends Component {
         },
         body: JSON.stringify(profile)
       })
-      .then((response) => response.json())
+      .then((response) => response.json(),
+        (error) => Alert.alert('No Internet Connection'))
       .then((responseJson) => {
-        Alert.alert("saved profile")
+        if (responseJson !== undefined) {
+          if (responseJson.code === undefined || responseJson.code == 200) {
+            Alert.alert("saved profile")
+          }
+          else {
+            Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
+          }
+        }
       })
       .catch((error) => {
         console.error(error);

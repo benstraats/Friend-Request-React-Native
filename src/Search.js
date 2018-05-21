@@ -54,47 +54,55 @@ export default class Search extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      let friends = [];
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          let friends = [];
 
-      responseJson.users.data.forEach(function(obj) { 
-        let row = [];
-        row.push(obj._id)
-        row.push(obj.name)
-        row.push(obj.email)
+          responseJson.users.data.forEach(function(obj) { 
+            let row = [];
+            row.push(obj._id)
+            row.push(obj.name)
+            row.push(obj.email)
 
-        responseJson.friends.data.forEach(function(friend) {
-          if (friend.user1 == obj._id || friend.user2 == obj._id) {
-            row.push('friends')
-            row.push(friend._id)
-          }
-        })
+            responseJson.friends.data.forEach(function(friend) {
+              if (friend.user1 == obj._id || friend.user2 == obj._id) {
+                row.push('friends')
+                row.push(friend._id)
+              }
+            })
 
-        responseJson.requests.data.forEach(function(request) {
-          if (request.requester == obj._id) {
-            row.push('requestee')
-            row.push(request._id)
-          } else if(request.requestee == obj._id) {
-            row.push('requester')
-            row.push(request._id)
-          }
-        })
+            responseJson.requests.data.forEach(function(request) {
+              if (request.requester == obj._id) {
+                row.push('requestee')
+                row.push(request._id)
+              } else if(request.requestee == obj._id) {
+                row.push('requester')
+                row.push(request._id)
+              }
+            })
 
-        if (row.length == 3) {
-          row.push('not friends')
+            if (row.length == 3) {
+              row.push('not friends')
+            }
+
+            friends.push(row)
+          });
+
+          self.setState({
+            listDataSource: this.state.listDataSource.concat(friends)
+          })
+
+          self.setState({
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+          })
         }
-
-        friends.push(row)
-      });
-
-      self.setState({
-        listDataSource: this.state.listDataSource.concat(friends)
-      })
-
-      self.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-      })
+        else {
+          Alert.alert('Failed to search', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -146,24 +154,32 @@ export default class Search extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      let profile = ''
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          let profile = ''
 
-      let x = responseJson.data;
-      let y = x[0]
+          let x = responseJson.data;
+          let y = x[0]
 
-      if (y !== undefined) {
-        let z = y.profile
+          if (y !== undefined) {
+            let z = y.profile
 
-        z.forEach(function(obj) { 
-          profile += obj.key + ": " + obj.value + "\n"
-        });
+            z.forEach(function(obj) { 
+              profile += obj.key + ": " + obj.value + "\n"
+            });
 
-        Alert.alert('Friends Profile', profile)
-      }
-      else {
-        Alert.alert('Friends Profile', "User has no profile")
+            Alert.alert('Friends Profile', profile)
+          }
+          else {
+            Alert.alert('Friends Profile', "User has no profile")
+          }
+        }
+        else {
+          Alert.alert('Failed to view profile', '' + JSON.stringify(responseJson))
+        }
       }
     })
     .catch((error) => {
@@ -186,9 +202,17 @@ export default class Search extends Component {
         "requestID": requestID
       })
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      Alert.alert('Accepted request')
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Accepted request')
+        }
+        else {
+          Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -207,9 +231,17 @@ export default class Search extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       },
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      Alert.alert('Rejected request')
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Rejected request')
+        }
+        else {
+          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -231,9 +263,17 @@ export default class Search extends Component {
         "requesteeID": requesteeID
       })
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      Alert.alert('Request Sent')
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Request Sent')
+        }
+        else {
+          Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);

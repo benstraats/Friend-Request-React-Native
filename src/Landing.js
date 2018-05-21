@@ -67,38 +67,46 @@ class Landing extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      let friends = [];
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          let friends = [];
 
-      responseJson.friends.data.forEach(function(obj) { 
-        let friendID = obj.user1
+          responseJson.friends.data.forEach(function(obj) { 
+            let friendID = obj.user1
 
-        if (friendID == self.state.userID) {
-          friendID = obj.user2
+            if (friendID == self.state.userID) {
+              friendID = obj.user2
+            }
+
+            friendInfo = []
+            friendInfo.push(friendID)
+
+            responseJson.users.data.forEach(function(obj) {
+              if (obj._id == friendID) {
+                friendInfo.push(obj.name)
+                friendInfo.push(obj.email)
+                friendInfo.push("friend")
+              }
+            })
+
+            friends.push(friendInfo)
+          });
+
+          self.setState({
+            listDataSource: this.state.listDataSource.concat(friends)
+          })
+
+          self.setState({
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+          })
         }
-
-        friendInfo = []
-        friendInfo.push(friendID)
-
-        responseJson.users.data.forEach(function(obj) {
-          if (obj._id == friendID) {
-            friendInfo.push(obj.name)
-            friendInfo.push(obj.email)
-            friendInfo.push("friend")
-          }
-        })
-
-        friends.push(friendInfo)
-      });
-
-      self.setState({
-        listDataSource: this.state.listDataSource.concat(friends)
-      })
-
-      self.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-      })
+        else {
+          Alert.alert('Failed to get friends', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -116,36 +124,44 @@ class Landing extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       }
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      let friends = [];
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          let friends = [];
 
-      responseJson.requests.data.forEach(function(obj) { 
-        let requesterID = obj.requester
+          responseJson.requests.data.forEach(function(obj) { 
+            let requesterID = obj.requester
 
-        friendInfo = []
-        friendInfo.push(requesterID)
+            friendInfo = []
+            friendInfo.push(requesterID)
 
-        responseJson.users.data.forEach(function(userObj) {
-          if (userObj._id == requesterID) {
-            friendInfo.push('Request from: ' + userObj.name)
-            friendInfo.push(userObj.email)
-            friendInfo.push("request")
-          }
-        })
+            responseJson.users.data.forEach(function(userObj) {
+              if (userObj._id == requesterID) {
+                friendInfo.push('Request from: ' + userObj.name)
+                friendInfo.push(userObj.email)
+                friendInfo.push("request")
+              }
+            })
 
-        friendInfo.push(obj._id)
+            friendInfo.push(obj._id)
 
-        friends.push(friendInfo)
-      });
+            friends.push(friendInfo)
+          });
 
-      self.setState({
-        listDataSource: friends.concat(this.state.listDataSource)
-      })
+          self.setState({
+            listDataSource: friends.concat(this.state.listDataSource)
+          })
 
-      self.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-      })
+          self.setState({
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+          })
+        }
+        else {
+          Alert.alert('Failed to get friend requests', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -177,24 +193,32 @@ class Landing extends Component {
           'Authorization': 'Bearer ' + self.state.accessToken
         }
       })
-      .then((response) => response.json())
+      .then((response) => response.json(),
+        (error) => Alert.alert('No Internet Connection'))
       .then((responseJson) => {
-        let profile = ''
+        if (responseJson !== undefined) {
+          if (responseJson.code === undefined || responseJson.code == 200) {
+            let profile = ''
 
-        let x = responseJson.data;
-        let y = x[0]
+            let x = responseJson.data;
+            let y = x[0]
 
-        if (y !== undefined) {
-          let z = y.profile
+            if (y !== undefined) {
+              let z = y.profile
 
-          z.forEach(function(obj) { 
-            profile += obj.key + ": " + obj.value + "\n"
-          });
+              z.forEach(function(obj) { 
+                profile += obj.key + ": " + obj.value + "\n"
+              });
 
-          Alert.alert(rowData[1], profile)
-        }
-        else {
-          Alert.alert(rowData[1], "User has no profile")
+              Alert.alert(rowData[1], profile)
+            }
+            else {
+              Alert.alert(rowData[1], "User has no profile")
+            }
+          }
+          else {
+            Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
+          }
         }
       })
       .catch((error) => {
@@ -226,9 +250,17 @@ class Landing extends Component {
         "requestID": requestID
       })
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      Alert.alert('Accepted request')
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Accepted request')
+        }
+        else {
+          Alert.alert('Faile dto accept request', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -247,9 +279,17 @@ class Landing extends Component {
         'Authorization': 'Bearer ' + self.state.accessToken
       },
     })
-    .then((response) => response.json())
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
     .then((responseJson) => {
-      Alert.alert('Rejected request')
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Rejected request')
+        }
+        else {
+          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+        }
+      }
     })
     .catch((error) => {
       console.error(error);

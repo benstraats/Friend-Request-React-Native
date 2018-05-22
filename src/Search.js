@@ -36,17 +36,41 @@ export default class Search extends Component {
       accessToken: this.props.navigation.state.params.accessToken,
       listDataSource: [],
       dataSource: ds.cloneWithRows([['','','','',''], ['','','','','']]),
+      searchSkip: 0,
+      searchLimit: 50,
+      fullyDoneSearch: true,
+      currentlySearching: false,
     };
   }
 
-  startSearch = () =>{
-    let self = this;
-
-    self.setState({
+  startSearch = () => {
+    this.setState({
       listDataSource: []
     })
 
-    fetch('http://192.168.2.25:3030/search/' + this.state.searchText + '?$limit=50', {
+    this.setState({
+      searchSkip: 0
+    })
+
+    this.setState({
+      savedSearchText: this.state.searchText
+    })
+
+    this.setState({
+      fullyDoneSearch: false
+    })
+
+    this.setState({
+      currentlySearching: true
+    })
+
+    this.apiSearch()
+  }
+
+  apiSearch = () =>{
+    let self = this;
+
+    fetch('http://192.168.2.25:3030/search/' + this.state.savedSearchText + '?$limit=' + this.state.searchLimit + '&$skip=' + this.state.searchSkip, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -60,6 +84,12 @@ export default class Search extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
+
+          if (responseJson.users.data.length < self.state.searchLimit || responseJson.users.data.limit === self.state.searchLimit + self.state.searchLimit) {
+            self.setState({
+              fullyDoneSearch: true
+            })
+          }
 
           responseJson.users.data.forEach(function(obj) { 
             let row = [];
@@ -102,6 +132,9 @@ export default class Search extends Component {
         else {
           Alert.alert('Failed to search', '' + JSON.stringify(responseJson))
         }
+        self.setState({
+          currentlySearching: false
+        })
       }
     })
     .catch((error) => {
@@ -280,6 +313,20 @@ export default class Search extends Component {
     });
   }
 
+  fullyScrolled = () =>{
+    if (!this.state.currentlySearching && !this.state.fullyDoneSearch) {
+      this.setState({
+        searchSkip: this.state.searchSkip + this.state.searchLimit
+      })
+
+      this.setState({
+        currentlySearching: true
+      })
+
+      this.apiSearch();
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -302,6 +349,7 @@ export default class Search extends Component {
             renderRow={
               (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2] + "\n" + rowData[3]}</Text>
             }
+            onEndReached={this.fullyScrolled()}
           />
         </View>
       </View>

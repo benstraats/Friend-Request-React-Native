@@ -42,10 +42,62 @@ class Landing extends Component {
       usernameText: this.props.navigation.state.params.username, 
       accessToken: this.props.navigation.state.params.accessToken,
       dataSource: ds.cloneWithRows([['','',''], ['','','']]),
-      listDataSource: []
+      listDataSource: [],
+
+      friendSkip: 0,
+      friendLimit: 50,
+      friendCurrentlyLoading: false,
+      friendFullyDoneLoading: false,
+
+      requestSkip: 0,
+      requestLimit: 50,
+      requestCurrentlyLoading: false,
+      requestFullyDoneLoading: false,
     };
+    this.initialLoad()
+  }
+
+  initialLoad = () => {
+    this.setState({
+      listDataSource: [],
+      friendSkip: 0,
+      friendCurrentlyLoading: true,
+      friendFullyDoneLoading: false,
+
+      requestSkip: 0,
+      requestCurrentlyLoading: true,
+      requestFullyDoneLoading: false,
+    })
+
     this.getFriends()
     this.getRequests()
+  }
+
+  scrolledToBottom = () => {
+    this.loadNextFriends()
+    this.loadNextRequests()
+  }
+
+  loadNextFriends = () => {
+    if (!this.state.friendCurrentlyLoading && !this.state.friendFullyDoneLoading) {
+      this.setState({
+        friendSkip: this.state.friendSkip + this.state.friendLimit,
+        friendCurrentlyLoading: true,
+      })
+
+      this.getFriends()
+    }
+  }
+
+  loadNextRequests = () => {
+    if (!this.state.requestCurrentlyLoading && !this.state.requestFullyDoneLoading) {
+      this.setState({
+        requestSkip: this.state.requestSkip + this.state.requestLimit,
+        requestCurrentlyLoading: true,
+      })
+
+      this.getRequests()
+    }
   }
 
   showUserInfo = () =>{
@@ -59,7 +111,7 @@ class Landing extends Component {
   getFriends = () =>{
     let self = this;
 
-    fetch('http://192.168.2.25:3030/myfriends?$limit=50', {
+    fetch('http://192.168.2.25:3030/myfriends?$limit=' + self.state.friendLimit + '&$skip=' + self.state.friendSkip, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -73,6 +125,12 @@ class Landing extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
+
+          if (responseJson.friends.data.length < self.state.friendLimit || responseJson.friends.data.limit === self.state.friendLimit + self.state.friendSkip) {
+            self.setState({
+              friendFullyDoneLoading: true
+            })
+          }
 
           responseJson.friends.data.forEach(function(obj) { 
             let friendID = obj.user1
@@ -106,6 +164,10 @@ class Landing extends Component {
         else {
           Alert.alert('Failed to get friends', '' + JSON.stringify(responseJson))
         }
+
+        self.setState({
+          friendCurrentlyLoading: false
+        })
       }
     })
     .catch((error) => {
@@ -116,7 +178,7 @@ class Landing extends Component {
   getRequests = () =>{
     let self = this;
 
-    fetch('http://192.168.2.25:3030/myrequests?$limit=50', {
+    fetch('http://192.168.2.25:3030/myrequests?$limit=' + self.state.requestLimit + '&$skip=' + self.state.requestSkip, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -130,6 +192,12 @@ class Landing extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
+
+          if (responseJson.requests.data.length < self.state.requestLimit || responseJson.requests.data.limit === self.state.requestLimit + self.state.requestSkip) {
+            self.setState({
+              requestFullyDoneLoading: true
+            })
+          }
 
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
@@ -161,6 +229,10 @@ class Landing extends Component {
         else {
           Alert.alert('Failed to get friend requests', '' + JSON.stringify(responseJson))
         }
+
+        self.setState({
+          requestCurrentlyLoading: false
+        })
       }
     })
     .catch((error) => {
@@ -305,6 +377,7 @@ class Landing extends Component {
           renderRow={
             (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2]}</Text>
           }
+          onEndReached={this.scrolledToBottom()}
         />
       </View>
     );

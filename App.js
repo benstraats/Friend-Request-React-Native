@@ -28,7 +28,26 @@ class Login extends Component {
   }
 
   signUpClick = () =>{
+
+    if (this.state.usernameText.length < 3) {
+      Alert.alert("Username too short")
+      return
+    }
+
+    if (this.state.passwordText.length < 6) {
+      Alert.alert("Password too short")
+      return
+    }
+
     if (this.state.status) {
+      if (this.state.fullNameText.length < 3) {
+        Alert.alert("Name too short")
+        return
+      }
+      if (this.state.retypePasswordText !== this.state.passwordText) {
+        Alert.alert("Passwords don\'t match")
+        return
+      }
       this.createUser(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
     } else {
       this.getAccessToken(this.state.usernameText, this.state.passwordText);
@@ -159,6 +178,7 @@ class Login extends Component {
             autoCorrect={false}
             returnKeyType='next'
             underlineColorAndroid={'#ffb028'}
+            maxLength={100}
             onChangeText={(text) => this.setState({fullNameText: text})}
           />
         }
@@ -168,6 +188,7 @@ class Login extends Component {
           autoCapitalize='none'
           returnKeyType='next'
           underlineColorAndroid={'#ffb028'}
+          maxLength={30}
           onChangeText={(text) => this.setState({usernameText: text})}
         />
         <TextInput
@@ -177,6 +198,7 @@ class Login extends Component {
           returnKeyType='next'
           secureTextEntry={true}
           underlineColorAndroid={'#ffb028'}
+          maxLength={50}
           onChangeText={(text) => this.setState({passwordText: text})}
         />
         { this.state.status &&
@@ -187,6 +209,7 @@ class Login extends Component {
             returnKeyType='go'
             secureTextEntry={true}
             underlineColorAndroid={'#ffb028'}
+            maxLength={50}
             onChangeText={(text) => this.setState({retypePasswordText: text})}
           />
         }

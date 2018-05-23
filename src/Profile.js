@@ -133,10 +133,15 @@ export default class Profile extends Component {
   }
 
   addRow = () => {
-    this.state.listDataSource.push(['',''])
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-    })
+    if (this.state.listDataSource.length < 50) {
+      this.state.listDataSource.push(['',''])
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+      })
+    }
+    else {
+      Alert.alert("Reached max profile length")
+    }
   }
 
   deleteRow = (rowData) => {
@@ -166,6 +171,7 @@ export default class Profile extends Component {
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
                 onChangeText={(text) => rowData[0] = text}
+                maxLength={200}
                 defaultValue={rowData[0]}
               />
               <TextInput
@@ -174,6 +180,7 @@ export default class Profile extends Component {
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
                 onChangeText={(text) => rowData[1] = text}
+                maxLength={200}
                 defaultValue={rowData[1]}
               />
               <Button

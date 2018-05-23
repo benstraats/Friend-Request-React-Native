@@ -336,6 +336,7 @@ export default class Search extends Component {
           autoCapitalize='none'
           returnKeyType='next'
           underlineColorAndroid={'#ffb028'}
+          maxLength={100}
           onChangeText={(text) => this.setState({searchText: text})}
         />
         <Button

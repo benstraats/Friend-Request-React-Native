@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10,
     paddingBottom: 10,
+  },
+  linearMiddle: {
+    flexDirection: 'row',
   }
 })
 
@@ -330,20 +333,22 @@ export default class Search extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TextInput
-          style={{height: 40, width: 200}}
-          placeholder="Search"
-          autoCapitalize='none'
-          returnKeyType='next'
-          underlineColorAndroid={'#ffb028'}
-          maxLength={100}
-          onChangeText={(text) => this.setState({searchText: text})}
-        />
-        <Button
-          onPress={this.startSearch}
-          title={"Search"}
-          color="#ffb028"
-        />
+        <View style={styles.linearMiddle}>
+          <TextInput
+            style={{height: 40, width: 200}}
+            placeholder="Search"
+            autoCapitalize='none'
+            returnKeyType='next'
+            underlineColorAndroid={'#ffb028'}
+            maxLength={100}
+            onChangeText={(text) => this.setState({searchText: text})}
+          />
+          <Button
+            onPress={this.startSearch}
+            title={"Search"}
+            color="#ffb028"
+          />
+        </View>
         <View>
           <ListView
             dataSource={this.state.dataSource}

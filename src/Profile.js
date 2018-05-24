@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     alignItems: 'center',
+  },
+  linearMiddle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   }
 })
 
@@ -156,11 +160,6 @@ export default class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button
-          onPress={this.saveProfile}
-          title={"Save"}
-          color="#ffb028"
-        />
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => 
@@ -191,11 +190,18 @@ export default class Profile extends Component {
             </View>
           }
         />
-        <Button
-          onPress={this.addRow}
-          title={"Add Row"}
-          color="#ffb028"
-        />
+        <View style={styles.linearMiddle}>
+          <Button
+            onPress={this.saveProfile}
+            title={"Save"}
+            color="#ffb028"
+          />
+          <Button
+            onPress={this.addRow}
+            title={"Add Row"}
+            color="#ffb028"
+          />
+        </View>
       </View>
     );
   }

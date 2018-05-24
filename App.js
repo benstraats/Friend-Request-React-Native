@@ -188,7 +188,7 @@ class Login extends Component {
           autoCapitalize='none'
           returnKeyType='next'
           underlineColorAndroid={'#ffb028'}
-          maxLength={30}
+          maxLength={50}
           onChangeText={(text) => this.setState({usernameText: text})}
         />
         <TextInput

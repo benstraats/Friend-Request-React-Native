@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
   rowViewContainer: {
     flex: 1, 
     flexDirection: 'row',
-    fontSize: 18,
     paddingRight: 10,
     paddingTop: 10,
     paddingBottom: 10,
@@ -21,7 +20,8 @@ const styles = StyleSheet.create({
   },
   linearMiddle: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    margin: 20,
+    padding: 10
   }
 })
 

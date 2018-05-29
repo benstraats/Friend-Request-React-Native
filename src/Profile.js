@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     alignItems: 'center',
+  },
+  linearMiddle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   }
 })
 
@@ -133,10 +137,15 @@ export default class Profile extends Component {
   }
 
   addRow = () => {
-    this.state.listDataSource.push(['',''])
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-    })
+    if (this.state.listDataSource.length < 50) {
+      this.state.listDataSource.push(['',''])
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+      })
+    }
+    else {
+      Alert.alert("Reached max profile length")
+    }
   }
 
   deleteRow = (rowData) => {
@@ -151,11 +160,6 @@ export default class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button
-          onPress={this.saveProfile}
-          title={"Save"}
-          color="#ffb028"
-        />
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => 
@@ -166,6 +170,7 @@ export default class Profile extends Component {
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
                 onChangeText={(text) => rowData[0] = text}
+                maxLength={200}
                 defaultValue={rowData[0]}
               />
               <TextInput
@@ -174,6 +179,7 @@ export default class Profile extends Component {
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
                 onChangeText={(text) => rowData[1] = text}
+                maxLength={200}
                 defaultValue={rowData[1]}
               />
               <Button
@@ -184,11 +190,18 @@ export default class Profile extends Component {
             </View>
           }
         />
-        <Button
-          onPress={this.addRow}
-          title={"Add Row"}
-          color="#ffb028"
-        />
+        <View style={styles.linearMiddle}>
+          <Button
+            onPress={this.saveProfile}
+            title={"Save"}
+            color="#ffb028"
+          />
+          <Button
+            onPress={this.addRow}
+            title={"Add Row"}
+            color="#ffb028"
+          />
+        </View>
       </View>
     );
   }

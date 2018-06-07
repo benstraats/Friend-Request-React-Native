@@ -304,7 +304,6 @@ export default class Search extends Component {
   }
 
   fullyScrolled = () =>{
-    Alert.alert('Scrolled to end')
     if (!this.state.currentlySearching && !this.state.fullyDoneSearch) {
       this.setState({
         searchSkip: this.state.searchSkip + this.state.searchLimit,

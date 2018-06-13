@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, TextInput, ListView } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
+import SearchListItem from './SearchListItem'
 
 const styles = StyleSheet.create({
   container: {
@@ -132,177 +133,6 @@ export default class Search extends Component {
     });
   }
 
-  onPressFn = (rowData) =>{
-
-    if (rowData[3] == 'friends') {
-      this.viewProfile(rowData[0])
-    }
-
-    else if (rowData[3] == 'requestee') {
-      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequest(rowData[4])},
-        {text: 'Accept', onPress: () => this.acceptRequest(rowData[4])},
-      ],);
-      
-    }
-
-    else if (rowData[3] == 'requester') {
-      Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Don\'t Cancel', style: 'cancel'},
-        {text: 'Cancel Request', onPress: () => this.rejectRequest(rowData[4])},
-      ],);
-    }
-
-    else if (rowData[3] == 'not friends') {
-      Alert.alert('Request User', 'Do you want to send a friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Cancel'},
-        {text: 'Send Request', onPress: () => this.sendRequest(rowData[0])},
-      ],);
-    }
-  }
-
-  viewProfile = (targetID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/profile?userID=' + targetID, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let profile = ''
-
-          let x = responseJson.data;
-          let y = x[0]
-
-          if (y !== undefined) {
-            let z = y.profile
-
-            z.forEach(function(obj) { 
-              profile += obj.key + ": " + obj.value + "\n"
-            });
-
-            Alert.alert('Friends Profile', profile)
-          }
-          else {
-            Alert.alert('Friends Profile', "User has no profile")
-          }
-        }
-        else {
-          Alert.alert('Failed to view profile', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  acceptRequest = (requestID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/friends', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requestID": requestID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Accepted request')
-        }
-        else {
-          Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  rejectRequest = (requestID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/requests/' + requestID, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Rejected request')
-        }
-        else {
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  sendRequest = (requesteeID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/requests', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requesteeID": requesteeID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Request Sent')
-        }
-        else {
-          Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
   fullyScrolled = () =>{
     if (!this.state.currentlySearching && !this.state.fullyDoneSearch) {
       this.setState({
@@ -316,7 +146,7 @@ export default class Search extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View>
         <View style={styles.linearMiddle}>
           <TextInput
             style={{height: 40, width: 200}}
@@ -337,7 +167,7 @@ export default class Search extends Component {
           <ListView
             dataSource={this.state.dataSource}
             renderRow={
-              (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2] + "\n" + rowData[3]}</Text>
+              (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>
             }
             onEndReached={this.fullyScrolled()}
           />

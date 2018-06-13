@@ -43,31 +43,20 @@ export default class Search extends Component {
       searchLimit: 50,
       fullyDoneSearch: true,
       currentlySearching: false,
+      savedSearchText: '',
     };
   }
 
   startSearch = () => {
     this.setState({
-      listDataSource: []
+      listDataSource: [],
+      searchSkip: 0,
+      savedSearchText: this.state.searchText,
+      fullyDoneSearch: false,
+      currentlySearching: true,
+    }, () => {
+      this.apiSearch()
     })
-
-    this.setState({
-      searchSkip: 0
-    })
-
-    this.setState({
-      savedSearchText: this.state.searchText
-    })
-
-    this.setState({
-      fullyDoneSearch: false
-    })
-
-    this.setState({
-      currentlySearching: true
-    })
-
-    this.apiSearch()
   }
 
   apiSearch = () =>{
@@ -124,20 +113,18 @@ export default class Search extends Component {
             friends.push(row)
           });
 
-          self.setState({
-            listDataSource: this.state.listDataSource.concat(friends)
-          })
-
-          self.setState({
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+          this.setState({
+            listDataSource: this.state.listDataSource.concat(friends),
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+          }, () => {
+            self.setState({
+              currentlySearching: false
+            })
           })
         }
         else {
           Alert.alert('Failed to search', '' + JSON.stringify(responseJson))
         }
-        self.setState({
-          currentlySearching: false
-        })
       }
     })
     .catch((error) => {
@@ -319,14 +306,11 @@ export default class Search extends Component {
   fullyScrolled = () =>{
     if (!this.state.currentlySearching && !this.state.fullyDoneSearch) {
       this.setState({
-        searchSkip: this.state.searchSkip + this.state.searchLimit
-      })
-
-      this.setState({
+        searchSkip: this.state.searchSkip + this.state.searchLimit,
         currentlySearching: true
+      }, () => {
+        this.apiSearch()
       })
-
-      this.apiSearch();
     }
   }
 

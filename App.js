@@ -10,6 +10,13 @@ const styles = StyleSheet.create({
    alignItems: 'center',
    margin: 20,
    padding: 10
+  },
+  closeContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10
   }
 })
 
@@ -170,54 +177,56 @@ class Login extends Component {
           source={require('./assets/logo.png')} 
           style={{width: 200, height: 200}} 
         />
-        { this.state.status &&
-          <TextInput 
-            style={{height: 40, width: 200}} 
-            placeholder= 'Full Name'
-            autoCapitalize='words'
-            autoCorrect={false}
-            returnKeyType='next'
-            underlineColorAndroid={'#ffb028'}
-            maxLength={100}
-            onChangeText={(text) => this.setState({fullNameText: text})}
-          />
-        }
-        <TextInput
-          style={{height: 40, width: 200}}
-          placeholder="Username"
-          autoCapitalize='none'
-          returnKeyType='next'
-          underlineColorAndroid={'#ffb028'}
-          maxLength={50}
-          onChangeText={(text) => this.setState({usernameText: text})}
-        />
-        <TextInput
-          style={{height: 40, width: 200}}
-          placeholder="Password"
-          autoCapitalize='none'
-          returnKeyType='next'
-          secureTextEntry={true}
-          underlineColorAndroid={'#ffb028'}
-          maxLength={50}
-          onChangeText={(text) => this.setState({passwordText: text})}
-        />
-        { this.state.status &&
+        <View style={styles.closeContainer}>
+          { this.state.status &&
+            <TextInput 
+              style={{height: 40, width: 200}} 
+              placeholder= 'Full Name'
+              autoCapitalize='words'
+              autoCorrect={false}
+              returnKeyType='next'
+              underlineColorAndroid={'#ffb028'}
+              maxLength={100}
+              onChangeText={(text) => this.setState({fullNameText: text})}
+            />
+          }
           <TextInput
             style={{height: 40, width: 200}}
-            placeholder="Retype Password"
+            placeholder="Username"
             autoCapitalize='none'
-            returnKeyType='go'
+            returnKeyType='next'
+            underlineColorAndroid={'#ffb028'}
+            maxLength={50}
+            onChangeText={(text) => this.setState({usernameText: text})}
+          />
+          <TextInput
+            style={{height: 40, width: 200}}
+            placeholder="Password"
+            autoCapitalize='none'
+            returnKeyType='next'
             secureTextEntry={true}
             underlineColorAndroid={'#ffb028'}
             maxLength={50}
-            onChangeText={(text) => this.setState({retypePasswordText: text})}
+            onChangeText={(text) => this.setState({passwordText: text})}
           />
-        }
-        <Button
-          onPress={this.signUpClick}
-          title={this.state.status ? "Sign Up" : "Login"}
-          color="#ffb028"
-        />
+          { this.state.status &&
+            <TextInput
+              style={{height: 40, width: 200}}
+              placeholder="Retype Password"
+              autoCapitalize='none'
+              returnKeyType='go'
+              secureTextEntry={true}
+              underlineColorAndroid={'#ffb028'}
+              maxLength={50}
+              onChangeText={(text) => this.setState({retypePasswordText: text})}
+            />
+          }
+          <Button
+            onPress={this.signUpClick}
+            title={this.state.status ? "Sign Up" : "Login"}
+            color="#ffb028"
+          />
+        </View>
         <Button
           onPress={this.ShowHideTextComponentView}
           title={this.state.status ? "I Already Have an Account" : "I Don\'t Have an Account"}

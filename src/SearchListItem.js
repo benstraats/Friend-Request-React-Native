@@ -19,39 +19,43 @@ export default class SearchListItem extends Component {
     super(props);
     this.state = {
       accessToken: this.props.accessToken,
+      usersID: this.props.rowData[0],
+      usersName: this.props.rowData[1],
+      usersUsername: this.props.rowData[2],
+      usersRelationship: this.props.rowData[3],
+      usersRelationshipID: this.props.rowData[4]
     };
   }
 
   rowPressed = () => {
-    let rowData = this.props.rowData
 
-    if (rowData[3] == 'friends') {
-      this.viewProfile(rowData[0])
+    if (this.state.usersRelationship == 'Friends') {
+      this.viewProfile(this.state.usersID)
     }
 
-    else if (rowData[3] == 'requestee') {
-      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[1] + ' (' + rowData[2] + ')?',
+    else if (this.state.usersRelationship == 'Accept Request') {
+      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequest(rowData[4])},
-        {text: 'Accept', onPress: () => this.acceptRequest(rowData[4])},
+        {text: 'Reject', onPress: () => this.rejectRequest(this.state.usersRelationshipID)},
+        {text: 'Accept', onPress: () => this.acceptRequest(this.state.usersRelationshipID)},
       ],);
       
     }
 
-    else if (rowData[3] == 'requester') {
-      Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
+    else if (this.state.usersRelationship == 'Cancel Request') {
+      Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Don\'t Cancel', style: 'cancel'},
-        {text: 'Cancel Request', onPress: () => this.rejectRequest(rowData[4])},
+        {text: 'Cancel Request', onPress: () => this.rejectRequest(this.state.usersRelationshipID)},
       ],);
     }
 
-    else if (rowData[3] == 'not friends') {
-      Alert.alert('Request User', 'Do you want to send a friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
+    else if (this.state.usersRelationship == 'Add User') {
+      Alert.alert('Request User', 'Do you want to send a friend request to ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Cancel'},
-        {text: 'Send Request', onPress: () => this.sendRequest(rowData[0])},
+        {text: 'Send Request', onPress: () => this.sendRequest(this.state.usersID)},
       ],);
     }
   }
@@ -119,7 +123,10 @@ export default class SearchListItem extends Component {
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Accepted request')
+          self.setState({
+            usersRelationship: 'Friends',
+            usersRelationshipID: responseJson._id
+          })
         }
         else {
           Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
@@ -147,7 +154,10 @@ export default class SearchListItem extends Component {
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Rejected request')
+          self.setState({
+            usersRelationship: 'Add User',
+            usersRelationshipID: undefined
+          })
         }
         else {
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
@@ -178,7 +188,10 @@ export default class SearchListItem extends Component {
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Request Sent')
+          self.setState({
+            usersRelationship: 'Cancel Request',
+            usersRelationshipID: responseJson._id
+          })
         }
         else {
           Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
@@ -197,15 +210,15 @@ export default class SearchListItem extends Component {
             <View style={styles.spacedRow}>
                 <View>
                     <Text>
-                        {this.props.rowData[1]}
+                        {this.state.usersName}
                     </Text>
                     <Text>
-                        {this.props.rowData[2]}
+                        {this.state.usersUsername}
                     </Text>
                 </View>
                 <View>
                     <Text>
-                        {this.props.rowData[3]}
+                        {this.state.usersRelationship}
                     </Text>
                 </View>
             </View>

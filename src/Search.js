@@ -92,23 +92,23 @@ export default class Search extends Component {
 
             responseJson.friends.data.forEach(function(friend) {
               if (friend.user1 == obj._id || friend.user2 == obj._id) {
-                row.push('friends')
+                row.push('Friends')
                 row.push(friend._id)
               }
             })
 
             responseJson.requests.data.forEach(function(request) {
               if (request.requester == obj._id) {
-                row.push('requestee')
+                row.push('Accept Request')
                 row.push(request._id)
               } else if(request.requestee == obj._id) {
-                row.push('requester')
+                row.push('Cancel Request')
                 row.push(request._id)
               }
             })
 
             if (row.length == 3) {
-              row.push('not friends')
+              row.push('Add User')
             }
 
             friends.push(row)

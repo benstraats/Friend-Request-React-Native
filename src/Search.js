@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, TextInput, ListView } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import SearchListItem from './SearchListItem'
+import StatusBarOffset from './StatusBarOffset'
 
 const styles = StyleSheet.create({
   container: {
@@ -27,6 +28,8 @@ const styles = StyleSheet.create({
   },
   linearMiddle: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   }
 })
 
@@ -147,6 +150,7 @@ export default class Search extends Component {
   render() {
     return (
       <View>
+        <StatusBarOffset />
         <View style={styles.linearMiddle}>
           <TextInput
             style={{height: 40, width: 200}}

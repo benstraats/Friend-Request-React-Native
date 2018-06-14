@@ -12,6 +12,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  textBold: {
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  textFaded: {
+    fontSize: 12
+  },
 })
 
 export default class SearchListItem extends Component {
@@ -209,20 +216,26 @@ export default class SearchListItem extends Component {
         <TouchableOpacity style={{backgroundColor: "white"}} onPress={this.rowPressed}>
             <View style={styles.spacedRow}>
                 <View>
-                    <Text>
+                    <Text style={styles.textBold}>
                         {this.state.usersName}
                     </Text>
-                    <Text>
+                    <Text style={styles.textFaded}>
                         {this.state.usersUsername}
                     </Text>
                 </View>
                 <View>
-                    <Text>
+                    <Text style={styles.textFaded}>
                         {this.state.usersRelationship}
                     </Text>
                 </View>
             </View>
         </TouchableOpacity>
+        <View
+          style={{
+            borderBottomColor: 'black',
+            borderBottomWidth: 1,
+          }}
+        />
       </View>
     );
   }

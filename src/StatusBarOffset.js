@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Platform} from 'react-native';
+import {View, StyleSheet, Platform} from 'react-native';
 
 export default class StatusBarOffset extends Component{
   render(){
@@ -12,8 +12,7 @@ export default class StatusBarOffset extends Component{
 
 const styles = StyleSheet.create({
   statusBarBackground: {
-    height: 25,
+    height: Platform.OS === 'ios' ? 20 : 24,
     backgroundColor: "white",
   }
-
 })

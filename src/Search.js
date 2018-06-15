@@ -1,36 +1,23 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, TextInput, ListView } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { Alert, Button, StyleSheet, View, TextInput, ListView } from 'react-native';
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   margin: 20,
-   padding: 10
+   backgroundColor: '#fff',
   },
-  list: {
-    paddingTop: 30,
-    maxWidth: '100%',
-  },
-  nestedList: {
-    paddingLeft: 10,
-    alignItems: 'flex-start'
-  },
-  rowViewContainer: {
-    fontSize: 18,
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-  linearMiddle: {
+  rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  }
+  },
+  searchTextBox: {
+    flex: 99,
+  },
+  serachButton: {
+    flex: 1,
+  },
 })
 
 export default class Search extends Component {
@@ -149,11 +136,11 @@ export default class Search extends Component {
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
         <StatusBarOffset />
-        <View style={styles.linearMiddle}>
+        <View style={styles.rowContainer}>
           <TextInput
-            style={{height: 40, width: 200}}
+            style={styles.searchTextBox}
             placeholder="Search"
             autoCapitalize='none'
             returnKeyType='next'
@@ -162,12 +149,13 @@ export default class Search extends Component {
             onChangeText={(text) => this.setState({searchText: text})}
           />
           <Button
+            style={styles.searchButton}
             onPress={this.startSearch}
             title={"Search"}
             color="#ffb028"
           />
         </View>
-        <View>
+        <View style={styles.container}>
           <ListView
             dataSource={this.state.dataSource}
             renderRow={

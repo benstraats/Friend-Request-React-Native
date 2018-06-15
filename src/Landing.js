@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, ListView, SectionList, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -9,25 +9,11 @@ import StatusBarOffset from './StatusBarOffset'
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   margin: 20,
-   padding: 10
+   backgroundColor: '#fff',
   },
-  list: {
-    paddingTop: 30,
-    maxWidth: '100%',
-  },
-  nestedList: {
-    paddingLeft: 10,
-    alignItems: 'flex-start'
-  },
-  rowViewContainer: 
-  {
-    fontSize: 18,
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
+  sectionHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   textBold: {
     fontSize: 18,
@@ -392,19 +378,7 @@ class Landing extends Component {
 
   render() {
     return (
-      /*
-      <View style={styles.list}>
-        <ListView
-          contentContainerStyle={styles.nestedList}
-          dataSource={this.state.dataSource}
-          renderRow={
-            (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2]}</Text>
-          }
-          onEndReached={this.scrolledToBottom()}
-        />
-      </View>
-      */
-      <View>
+      <View style={styles.container}>
         <StatusBarOffset />
         <SectionList
           renderItem={({item, index, section}) => 
@@ -426,13 +400,14 @@ class Landing extends Component {
           </TouchableOpacity>
           }
           renderSectionHeader={({section: {title}}) => (
-            <Text style={{fontWeight: 'bold'}}>{title}</Text>
+            <Text style={styles.sectionHeader}>{title}</Text>
           )}
           sections={[
             {title: 'Requests', data: this.state.requestSectionData},
-            {title: 'Friends', data: this.state.friendSectionData},
+            {title: '\nFriends', data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
+          onEndReached={this.scrolledToBottom()}
         />
       </View>
     );

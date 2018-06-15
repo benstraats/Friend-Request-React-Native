@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, ListView, TextInput } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {

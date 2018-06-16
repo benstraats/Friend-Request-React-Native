@@ -1,48 +1,37 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, ListView } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
 import Profile from './Profile'
+import StatusBarOffset from './StatusBarOffset'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   margin: 20,
-   padding: 10
+   backgroundColor: '#fff',
   },
-  list: {
-    paddingTop: 30,
-    maxWidth: '100%',
+  sectionHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
-  nestedList: {
-    paddingLeft: 10,
-    alignItems: 'flex-start'
-  },
-  rowViewContainer: 
-  {
- 
+  textBold: {
     fontSize: 18,
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
- 
-  }
+    fontWeight: 'bold'
+  },
+  textFaded: {
+    fontSize: 12
+  },
 })
 
 class Landing extends Component {
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       userID: this.props.navigation.state.params.userID,
       fullNameText: this.props.navigation.state.params.name, 
       usernameText: this.props.navigation.state.params.username, 
       accessToken: this.props.navigation.state.params.accessToken,
-      dataSource: ds.cloneWithRows([['','',''], ['','','']]),
-      listDataSource: [],
 
       friendSkip: 0,
       friendLimit: 50,
@@ -53,13 +42,17 @@ class Landing extends Component {
       requestLimit: 50,
       requestCurrentlyLoading: false,
       requestFullyDoneLoading: false,
+
+      requestSectionData: [],
+      friendSectionData: [],
     };
     this.initialLoad()
   }
 
   initialLoad = () => {
     this.setState({
-      listDataSource: [],
+      requestSectionData: [],
+      friendSectionData: [],
       friendSkip: 0,
       friendCurrentlyLoading: true,
       friendFullyDoneLoading: false,
@@ -146,7 +139,7 @@ class Landing extends Component {
               if (obj._id == friendID) {
                 friendInfo.push(obj.name)
                 friendInfo.push(obj.email)
-                friendInfo.push("friend")
+                friendInfo.push('friend')
               }
             })
 
@@ -154,11 +147,7 @@ class Landing extends Component {
           });
 
           self.setState({
-            listDataSource: this.state.listDataSource.concat(friends)
-          })
-
-          self.setState({
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+            friendSectionData: this.state.friendSectionData.concat(friends)
           })
         }
         else {
@@ -207,7 +196,7 @@ class Landing extends Component {
 
             responseJson.users.data.forEach(function(userObj) {
               if (userObj._id == requesterID) {
-                friendInfo.push('Request from: ' + userObj.name)
+                friendInfo.push(userObj.name)
                 friendInfo.push(userObj.email)
                 friendInfo.push("request")
               }
@@ -219,11 +208,7 @@ class Landing extends Component {
           });
 
           self.setState({
-            listDataSource: friends.concat(this.state.listDataSource)
-          })
-
-          self.setState({
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+            requestSectionData: this.state.requestSectionData.concat(friends)
           })
         }
         else {
@@ -240,16 +225,16 @@ class Landing extends Component {
     });
   }
 
-  ListViewItemSeparatorLine = () => {
-    return (
-      <View
-        style={{
-          height: .5,
-          width: "100%",
-          backgroundColor: "#000",
-        }}
-      />
-    );
+  //Using this function as a hold since figuring it out was a pain
+  setTouched = (rowData) =>{
+    //There HAS to be a better way
+    let index = this.state.friendSectionData.indexOf(rowData);
+    let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+    clonedArray[index][1] = 'TOUCHED'
+
+    this.setState({
+      friendSectionData: clonedArray
+    })
   }
 
   onPressFn = (rowData) =>{
@@ -298,18 +283,19 @@ class Landing extends Component {
       });
     }
     else {
-      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[2] + '?',
+     Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[2] + '?',
       [
         {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequest(rowData[4])},
-        {text: 'Accept', onPress: () => this.acceptRequest(rowData[4])},
-      ],);
+        {text: 'Reject', onPress: () => this.rejectRequest(rowData)},
+        {text: 'Accept', onPress: () => this.acceptRequest(rowData)},
+      ],); 
     }
   }
 
-  acceptRequest = (requestID) =>{
+  acceptRequest = (rowData) =>{
 
     let self = this;
+    let requestID = rowData[4]
 
     fetch('http://192.168.2.25:3030/friends', {
       method: 'POST',
@@ -328,6 +314,20 @@ class Landing extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           Alert.alert('Accepted request')
+          let index = this.state.requestSectionData.indexOf(rowData);
+          let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
+          clonedArray.splice(index, 1);
+
+          this.setState({
+            requestSectionData: clonedArray
+          })
+
+          let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+          friendClonedArray.push(rowData);
+
+          this.setState({
+            friendSectionData: friendClonedArray
+          })
         }
         else {
           Alert.alert('Faile dto accept request', '' + JSON.stringify(responseJson))
@@ -339,9 +339,10 @@ class Landing extends Component {
     });
   }
 
-  rejectRequest = (requestID) =>{
+  rejectRequest = (rowData) =>{
 
     let self = this;
+    let requestID = rowData[4]
 
     fetch('http://192.168.2.25:3030/requests/' + requestID, {
       method: 'DELETE',
@@ -357,6 +358,13 @@ class Landing extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           Alert.alert('Rejected request')
+          let index = this.state.requestSectionData.indexOf(rowData);
+          let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
+          clonedArray.splice(index, 1);
+
+          this.setState({
+            requestSectionData: clonedArray
+          })
         }
         else {
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
@@ -370,13 +378,35 @@ class Landing extends Component {
 
   render() {
     return (
-      <View style={styles.list}>
-        <ListView
-          contentContainerStyle={styles.nestedList}
-          dataSource={this.state.dataSource}
-          renderRow={
-            (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2]}</Text>
+      <View style={styles.container}>
+        <StatusBarOffset />
+        <SectionList
+          renderItem={({item, index, section}) => 
+            <TouchableOpacity key={index} style={{backgroundColor: "white"}} onPress={this.onPressFn.bind(this, item)}>
+              <View>
+                <Text style={styles.textBold}>
+                  {item[1]}
+                </Text>
+                <Text style={styles.textFaded}>
+                  {item[2]}
+              </Text>
+            </View>
+            <View
+              style={{
+                borderBottomColor: 'black',
+                borderBottomWidth: 1,
+              }}
+            />
+          </TouchableOpacity>
           }
+          renderSectionHeader={({section: {title}}) => (
+            <Text style={styles.sectionHeader}>{title}</Text>
+          )}
+          sections={[
+            {title: 'Requests', data: this.state.requestSectionData},
+            {title: '\nFriends', data: this.state.friendSectionData},
+          ]}
+          keyExtractor={(item, index) => item + index}
           onEndReached={this.scrolledToBottom()}
         />
       </View>

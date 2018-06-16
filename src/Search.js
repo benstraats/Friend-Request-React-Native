@@ -1,32 +1,23 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, TextInput, ListView } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { Alert, Button, StyleSheet, View, TextInput, ListView } from 'react-native';
+import SearchListItem from './SearchListItem'
+import StatusBarOffset from './StatusBarOffset'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   margin: 20,
-   padding: 10
+   backgroundColor: '#fff',
   },
-  list: {
-    paddingTop: 30,
-    maxWidth: '100%',
-  },
-  nestedList: {
-    paddingLeft: 10,
-    alignItems: 'flex-start'
-  },
-  rowViewContainer: {
-    fontSize: 18,
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-  linearMiddle: {
+  rowContainer: {
     flexDirection: 'row',
-  }
+    justifyContent: 'space-between',
+  },
+  searchTextBox: {
+    flex: 99,
+  },
+  serachButton: {
+    flex: 1,
+  },
 })
 
 export default class Search extends Component {
@@ -38,7 +29,7 @@ export default class Search extends Component {
       userID: this.props.navigation.state.params.userID,
       accessToken: this.props.navigation.state.params.accessToken,
       listDataSource: [],
-      dataSource: ds.cloneWithRows([['','','','',''], ['','','','','']]),
+      dataSource: ds.cloneWithRows([]),
       searchSkip: 0,
       searchLimit: 50,
       fullyDoneSearch: true,
@@ -91,23 +82,23 @@ export default class Search extends Component {
 
             responseJson.friends.data.forEach(function(friend) {
               if (friend.user1 == obj._id || friend.user2 == obj._id) {
-                row.push('friends')
+                row.push('Friends')
                 row.push(friend._id)
               }
             })
 
             responseJson.requests.data.forEach(function(request) {
               if (request.requester == obj._id) {
-                row.push('requestee')
+                row.push('Accept Request')
                 row.push(request._id)
               } else if(request.requestee == obj._id) {
-                row.push('requester')
+                row.push('Cancel Request')
                 row.push(request._id)
               }
             })
 
             if (row.length == 3) {
-              row.push('not friends')
+              row.push('Add User')
             }
 
             friends.push(row)
@@ -132,177 +123,6 @@ export default class Search extends Component {
     });
   }
 
-  onPressFn = (rowData) =>{
-
-    if (rowData[3] == 'friends') {
-      this.viewProfile(rowData[0])
-    }
-
-    else if (rowData[3] == 'requestee') {
-      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequest(rowData[4])},
-        {text: 'Accept', onPress: () => this.acceptRequest(rowData[4])},
-      ],);
-      
-    }
-
-    else if (rowData[3] == 'requester') {
-      Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Don\'t Cancel', style: 'cancel'},
-        {text: 'Cancel Request', onPress: () => this.rejectRequest(rowData[4])},
-      ],);
-    }
-
-    else if (rowData[3] == 'not friends') {
-      Alert.alert('Request User', 'Do you want to send a friend request to ' + rowData[1] + ' (' + rowData[2] + ')?',
-      [
-        {text: 'Cancel'},
-        {text: 'Send Request', onPress: () => this.sendRequest(rowData[0])},
-      ],);
-    }
-  }
-
-  viewProfile = (targetID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/profile?userID=' + targetID, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let profile = ''
-
-          let x = responseJson.data;
-          let y = x[0]
-
-          if (y !== undefined) {
-            let z = y.profile
-
-            z.forEach(function(obj) { 
-              profile += obj.key + ": " + obj.value + "\n"
-            });
-
-            Alert.alert('Friends Profile', profile)
-          }
-          else {
-            Alert.alert('Friends Profile', "User has no profile")
-          }
-        }
-        else {
-          Alert.alert('Failed to view profile', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  acceptRequest = (requestID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/friends', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requestID": requestID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Accepted request')
-        }
-        else {
-          Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  rejectRequest = (requestID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/requests/' + requestID, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Rejected request')
-        }
-        else {
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
-  sendRequest = (requesteeID) =>{
-
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/requests', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requesteeID": requesteeID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert('Request Sent')
-        }
-        else {
-          Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
-        }
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-
   fullyScrolled = () =>{
     if (!this.state.currentlySearching && !this.state.fullyDoneSearch) {
       this.setState({
@@ -317,9 +137,10 @@ export default class Search extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.linearMiddle}>
+        <StatusBarOffset />
+        <View style={styles.rowContainer}>
           <TextInput
-            style={{height: 40, width: 200}}
+            style={styles.searchTextBox}
             placeholder="Search"
             autoCapitalize='none'
             returnKeyType='next'
@@ -328,16 +149,17 @@ export default class Search extends Component {
             onChangeText={(text) => this.setState({searchText: text})}
           />
           <Button
+            style={styles.searchButton}
             onPress={this.startSearch}
             title={"Search"}
             color="#ffb028"
           />
         </View>
-        <View>
+        <View style={styles.container}>
           <ListView
             dataSource={this.state.dataSource}
             renderRow={
-              (rowData) => <Text style={styles.rowViewContainer} onPress={this.onPressFn.bind(this, rowData)}>{rowData[1] + "\n" + rowData[2] + "\n" + rowData[3]}</Text>
+              (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>
             }
             onEndReached={this.fullyScrolled()}
           />

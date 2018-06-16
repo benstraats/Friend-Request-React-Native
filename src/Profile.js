@@ -34,6 +34,7 @@ export default class Profile extends Component {
       listDataSource: [],
       dataSource: ds.cloneWithRows([['',''], ['','']]),
       profileID: '',
+      savingProfile: true
     };
     this.getProfile();
   }
@@ -54,26 +55,37 @@ export default class Profile extends Component {
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          let profile = [];
 
-          responseJson.data[0].profile.forEach(function(obj) { 
-            let row = []
-            row.push(obj.key)
-            row.push(obj.value)
-            profile.push(row)
-          });
+          //User hasnt created a profile yet
+          if (responseJson.data[0] === undefined) {
+            self.setState({
+              profileID: undefined,
+              listDataSource: [],
+              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+              saveProfile: true
+            })
+          }
 
-          self.setState({
-            profileID: responseJson.data[0]._id
-          })
+          else {
+            let profile = [];
 
-          self.setState({
-            listDataSource: profile
-          })
+            responseJson.data[0].profile.forEach(function(obj) { 
+              let row = []
+              row.push(obj.key)
+              row.push(obj.value)
+              profile.push(row)
+            })
 
-          self.setState({
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
-          })
+            self.setState({
+              listDataSource: profile,
+            })
+
+            self.setState({
+              profileID: responseJson.data[0]._id,
+              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+              saveProfile: false
+            })
+          }
         }
         else {
           Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
@@ -103,8 +115,35 @@ export default class Profile extends Component {
       i++
     })
 
-    if (self.state.profileID == '') {
-      Alert.alert("first time saving")
+    if (self.state.profileID == '' || self.state.profileID === undefined) {
+      fetch('http://192.168.2.25:3030/profile', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + self.state.accessToken
+        },
+        body: JSON.stringify(profile)
+      })
+      .then((response) => response.json(),
+        (error) => Alert.alert('No Internet Connection'))
+      .then((responseJson) => {
+        if (responseJson !== undefined) {
+          if (responseJson.code === undefined || responseJson.code == 200) {
+            Alert.alert("saved profile")
+            self.setState({
+              profileID: responseJson._id,
+              saveProfile: false
+            })
+          }
+          else {
+            Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
+          }
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
     else {
       fetch('http://192.168.2.25:3030/profile/' + self.state.profileID, {

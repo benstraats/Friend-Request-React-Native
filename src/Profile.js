@@ -1,26 +1,25 @@
 import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
+import StatusBarOffset from './StatusBarOffset'
 
 const styles = StyleSheet.create({
   container: {
-   flex: 1,
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   margin: 20,
-   padding: 10
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  rowViewContainer: {
-    flex: 1, 
+  rowContainer: {
+    flex: 1,
     flexDirection: 'row',
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    alignItems: 'center',
   },
-  linearMiddle: {
+  rowTextBoxes: {
+    flex: 50,
+  },
+  rowDeleteButtons: {
+    flex: 1,
+  },
+  buttonRow: {
     flexDirection: 'row',
-    margin: 20,
-    padding: 10
+    justifyContent: 'space-between',
   }
 })
 
@@ -159,12 +158,27 @@ export default class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBarOffset />
+        <View style={styles.buttonRow}>
+          <Button
+            style={styles.globalButtons}
+            onPress={this.saveProfile}
+            title={"Save"}
+            color="#ffb028"
+          />
+          <Button
+            style={styles.globalButtons}
+            onPress={this.addRow}
+            title={"Add Row"}
+            color="#ffb028"
+          />
+        </View>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => 
-            <View style={styles.rowViewContainer}>
+            <View style={styles.rowContainer}>
               <TextInput
-                style={{height: 40, width: 100}}
+                style={styles.rowTextBoxes}
                 autoCapitalize='none'
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
@@ -173,7 +187,7 @@ export default class Profile extends Component {
                 defaultValue={rowData[0]}
               />
               <TextInput
-                style={{height: 40, width: 100}}
+                style={styles.rowTextBoxes}
                 autoCapitalize='none'
                 returnKeyType='go'
                 underlineColorAndroid={'#ffb028'}
@@ -182,6 +196,7 @@ export default class Profile extends Component {
                 defaultValue={rowData[1]}
               />
               <Button
+                style={styles.rowDeleteButtons}
                 onPress={() => this.deleteRow(rowData)}
                 title={"Delete Row"}
                 color="#ffb028"
@@ -189,18 +204,6 @@ export default class Profile extends Component {
             </View>
           }
         />
-        <View style={styles.linearMiddle}>
-          <Button
-            onPress={this.saveProfile}
-            title={"Save"}
-            color="#ffb028"
-          />
-          <Button
-            onPress={this.addRow}
-            title={"Add Row"}
-            color="#ffb028"
-          />
-        </View>
       </View>
     );
   }

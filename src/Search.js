@@ -39,6 +39,7 @@ export default class Search extends Component {
   }
 
   startSearch = () => {
+    let self=this
     this.setState({
       listDataSource: [],
       searchSkip: 0,
@@ -46,6 +47,9 @@ export default class Search extends Component {
       fullyDoneSearch: false,
       currentlySearching: true,
     }, () => {
+      self.setState({
+        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+      })
       this.apiSearch()
     })
   }

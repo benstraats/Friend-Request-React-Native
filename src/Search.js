@@ -106,9 +106,9 @@ export default class Search extends Component {
 
           this.setState({
             listDataSource: this.state.listDataSource.concat(friends),
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
           }, () => {
             self.setState({
+              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
               currentlySearching: false
             })
           })

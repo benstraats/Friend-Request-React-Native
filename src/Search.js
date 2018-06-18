@@ -157,6 +157,7 @@ export default class Search extends Component {
         </View>
         <View style={styles.container}>
           <ListView
+            enableEmptySections={true}
             dataSource={this.state.dataSource}
             renderRow={
               (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>

@@ -32,7 +32,7 @@ export default class Profile extends Component {
       userID: this.props.navigation.state.params.userID,
       accessToken: this.props.navigation.state.params.accessToken,
       listDataSource: [],
-      dataSource: ds.cloneWithRows([['',''], ['','']]),
+      dataSource: ds.cloneWithRows([]),
       profileID: '',
       savingProfile: true
     };
@@ -214,6 +214,7 @@ export default class Profile extends Component {
         </View>
         <ListView
           dataSource={this.state.dataSource}
+          enableEmptySections={true}
           renderRow={(rowData) => 
             <View style={styles.rowContainer}>
               <TextInput

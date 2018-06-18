@@ -381,6 +381,7 @@ class Landing extends Component {
       <View style={styles.container}>
         <StatusBarOffset />
         <SectionList
+          enableEmptySections={true}
           renderItem={({item, index, section}) => 
             <TouchableOpacity key={index} style={{backgroundColor: "white"}} onPress={this.onPressFn.bind(this, item)}>
               <View>

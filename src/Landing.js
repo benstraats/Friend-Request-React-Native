@@ -35,18 +35,19 @@ class Landing extends Component {
 
       friendSkip: 0,
       friendLimit: 50,
-      friendCurrentlyLoading: false,
+      friendCurrentlyLoading: true,
       friendFullyDoneLoading: false,
 
       requestSkip: 0,
       requestLimit: 50,
-      requestCurrentlyLoading: false,
+      requestCurrentlyLoading: true,
       requestFullyDoneLoading: false,
 
       requestSectionData: [],
       friendSectionData: [],
     };
-    this.initialLoad()
+    this.getFriends()
+    this.getRequests()
   }
 
   initialLoad = () => {

@@ -9,13 +9,18 @@ const styles = StyleSheet.create({
    flex: 1,
    justifyContent: 'space-between',
    alignItems: 'center',
+   backgroundColor: 'white',
   },
   closeContainer: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  textStyle: {
+    height: 40,
+    width: 200,
+  },
 })
 
 class Login extends Component {
@@ -182,30 +187,38 @@ class Login extends Component {
             <View style={styles.closeContainer}>
               { this.state.status &&
                 <TextInput 
-                  style={{height: 40, width: 200}} 
+                  style={styles.textStyle} 
                   placeholder= 'Full Name'
                   autoCapitalize='words'
                   autoCorrect={false}
-                  returnKeyType='next'
+                  returnKeyType = { "next" }
+                  onSubmitEditing={() => { this.nameTextInput.focus(); }}
+                  blurOnSubmit={false}
                   underlineColorAndroid={'#ffb028'}
                   maxLength={100}
                   onChangeText={(text) => this.setState({fullNameText: text})}
                 />
               }
               <TextInput
-                style={{height: 40, width: 200}}
+                style={styles.textStyle}
+                ref={(input) => { this.nameTextInput = input; }}
                 placeholder="Username"
                 autoCapitalize='none'
-                returnKeyType='next'
+                returnKeyType={"next"}
+                onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+                blurOnSubmit={false}
                 underlineColorAndroid={'#ffb028'}
                 maxLength={50}
                 onChangeText={(text) => this.setState({usernameText: text})}
               />
               <TextInput
-                style={{height: 40, width: 200}}
+                style={styles.textStyle}
+                ref={(input) => { this.passwordTextInput = input; }}
                 placeholder="Password"
                 autoCapitalize='none'
-                returnKeyType='next'
+                returnKeyType={this.state.status ? "next" : "go"}
+                onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
+                blurOnSubmit={!this.state.status}
                 secureTextEntry={true}
                 underlineColorAndroid={'#ffb028'}
                 maxLength={50}
@@ -213,10 +226,12 @@ class Login extends Component {
               />
               { this.state.status &&
                 <TextInput
-                  style={{height: 40, width: 200}}
+                  style={styles.textStyle}
+                  ref={(input) => { this.retypePasswordTextInput = input; }}
                   placeholder="Retype Password"
                   autoCapitalize='none'
-                  returnKeyType='go'
+                  returnKeyType={"go"}
+                  onSubmitEditing={this.signUpClick}
                   secureTextEntry={true}
                   underlineColorAndroid={'#ffb028'}
                   maxLength={50}

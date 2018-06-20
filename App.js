@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput } from 'react-native';
+import { Alert, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import Landing from './src/Landing'
 import {createStackNavigator,} from 'react-navigation';
 import StatusBarOffset from './src/StatusBarOffset'
@@ -33,29 +33,46 @@ class Login extends Component {
       retypePasswordText: '', 
       status: true,
       accessToken: '',
-      userID: ''
+      userID: '',
+      errorText: '',
+      showError: false,
     };
+  }
+
+  setError = (error) => {
+    this.setState({
+      errorText: error,
+      showError: true,
+    })
+  }
+
+  hideError = () => {
+    this.setState({
+      showError: false,
+    })
   }
 
   signUpClick = () =>{
 
+    this.hideError()
+
     if (this.state.usernameText.length < 3) {
-      Alert.alert("Username too short")
+      this.setError("Username too short")
       return
     }
 
     if (this.state.passwordText.length < 6) {
-      Alert.alert("Password too short")
+      this.setError("Password too short")
       return
     }
 
     if (this.state.status) {
       if (this.state.fullNameText.length < 3) {
-        Alert.alert("Name too short")
+        this.setError("Name too short")
         return
       }
       if (this.state.retypePasswordText !== this.state.passwordText) {
-        Alert.alert("Passwords don\'t match")
+        this.setError("Passwords don\'t match")
         return
       }
       this.createUser(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
@@ -80,14 +97,14 @@ class Login extends Component {
       })
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
+      (error) => this.setError('No Internet Connection'))
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           self.getAccessToken(username, password) 
         }
         else {
-          Alert.alert('Failed to signup', '' + JSON.stringify(responseJson))
+          this.setError('Username is taken')
         }
       }
     })
@@ -112,7 +129,7 @@ class Login extends Component {
       })
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
+      (error) => this.setError('No Internet Connection'))
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
@@ -120,7 +137,7 @@ class Login extends Component {
           self.getUserInfo(username)
         }
         else {
-          Alert.alert('Failed to login', '' + JSON.stringify(responseJson))
+          this.setError('Invalid login details')
         }
       }
     })
@@ -141,7 +158,7 @@ class Login extends Component {
       }
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
+      (error) => this.setError('No Internet Connection'))
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
@@ -155,7 +172,7 @@ class Login extends Component {
           });
         }
         else {
-          Alert.alert('Failed to get user details', '' + JSON.stringify(responseJson))
+          this.setError('Failed to get user details')
         }
       }
     })
@@ -179,63 +196,67 @@ class Login extends Component {
         <KeyboardAvoidingView style={styles.container} behavior="position" enabled>
           <View>
             <StatusBarOffset />
-              <Image 
-                source={require('./assets/logo.png')} 
-                style={{width: 200, height: 200}} 
-              />
-            </View>
-            <View style={styles.closeContainer}>
-              { this.state.status &&
-                <TextInput 
-                  style={styles.textStyle} 
-                  placeholder= 'Full Name'
-                  autoCapitalize='words'
-                  autoCorrect={false}
-                  returnKeyType = { "next" }
-                  onSubmitEditing={() => { this.nameTextInput.focus(); }}
-                  blurOnSubmit={false}
-                  underlineColorAndroid={'#ffb028'}
-                  maxLength={100}
-                  onChangeText={(text) => this.setState({fullNameText: text})}
-                />
-              }
-              <TextInput
-                style={styles.textStyle}
-                ref={(input) => { this.nameTextInput = input; }}
-                placeholder="Username"
-                autoCapitalize='none'
-                returnKeyType={"next"}
-                onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+            <Image 
+              source={require('./assets/logo.png')} 
+              style={{width: 200, height: 200}} 
+            />
+          </View>
+          <View style={styles.closeContainer}>
+            {this.state.showError && <Text
+              style={{textAlign: 'center',}}>
+              {this.state.errorText}
+            </Text>}
+            { this.state.status &&
+              <TextInput 
+                style={styles.textStyle} 
+                placeholder= 'Full Name'
+                autoCapitalize='words'
+                autoCorrect={false}
+                returnKeyType = { "next" }
+                onSubmitEditing={() => { this.nameTextInput.focus(); }}
                 blurOnSubmit={false}
                 underlineColorAndroid={'#ffb028'}
-                maxLength={50}
-                onChangeText={(text) => this.setState({usernameText: text})}
+                maxLength={100}
+                onChangeText={(text) => this.setState({fullNameText: text})}
               />
+            }
+            <TextInput
+              style={styles.textStyle}
+              ref={(input) => { this.nameTextInput = input; }}
+              placeholder="Username"
+              autoCapitalize='none'
+              returnKeyType={"next"}
+              onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+              blurOnSubmit={false}
+              underlineColorAndroid={'#ffb028'}
+              maxLength={50}
+              onChangeText={(text) => this.setState({usernameText: text})}
+            />
+            <TextInput
+              style={styles.textStyle}
+              ref={(input) => { this.passwordTextInput = input; }}
+              placeholder="Password"
+              autoCapitalize='none'
+              returnKeyType={this.state.status ? "next" : "go"}
+              onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
+              blurOnSubmit={!this.state.status}
+              secureTextEntry={true}
+              underlineColorAndroid={'#ffb028'}
+              maxLength={50}
+              onChangeText={(text) => this.setState({passwordText: text})}
+            />
+            { this.state.status &&
               <TextInput
                 style={styles.textStyle}
-                ref={(input) => { this.passwordTextInput = input; }}
-                placeholder="Password"
+                ref={(input) => { this.retypePasswordTextInput = input; }}
+                placeholder="Retype Password"
                 autoCapitalize='none'
-                returnKeyType={this.state.status ? "next" : "go"}
-                onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
-                blurOnSubmit={!this.state.status}
+                returnKeyType={"go"}
+                onSubmitEditing={this.signUpClick}
                 secureTextEntry={true}
                 underlineColorAndroid={'#ffb028'}
                 maxLength={50}
-                onChangeText={(text) => this.setState({passwordText: text})}
-              />
-              { this.state.status &&
-                <TextInput
-                  style={styles.textStyle}
-                  ref={(input) => { this.retypePasswordTextInput = input; }}
-                  placeholder="Retype Password"
-                  autoCapitalize='none'
-                  returnKeyType={"go"}
-                  onSubmitEditing={this.signUpClick}
-                  secureTextEntry={true}
-                  underlineColorAndroid={'#ffb028'}
-                  maxLength={50}
-                  onChangeText={(text) => this.setState({retypePasswordText: text})}
+                onChangeText={(text) => this.setState({retypePasswordText: text})}
                 />
               }
               <Button

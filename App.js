@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import Landing from './src/Landing'
 import {createStackNavigator,} from 'react-navigation';
 import StatusBarOffset from './src/StatusBarOffset'
@@ -36,6 +36,7 @@ class Login extends Component {
       userID: '',
       errorText: '',
       showError: false,
+      loading: false,
     };
   }
 
@@ -43,18 +44,16 @@ class Login extends Component {
     this.setState({
       errorText: error,
       showError: true,
-    })
-  }
-
-  hideError = () => {
-    this.setState({
-      showError: false,
+      loading: false,
     })
   }
 
   signUpClick = () =>{
 
-    this.hideError()
+    this.setState({
+      showError: false,
+      loading: true,
+    })
 
     if (this.state.usernameText.length < 3) {
       this.setError("Username too short")
@@ -259,19 +258,21 @@ class Login extends Component {
                 onChangeText={(text) => this.setState({retypePasswordText: text})}
                 />
               }
+              {this.state.loading ? 
+              <ActivityIndicator size="large" color="#ffb028" /> : 
               <Button
                 onPress={this.signUpClick}
                 title={this.state.status ? "Sign Up" : "Login"}
                 color="#ffb028"
-              />
+              />}
             </View>
           </KeyboardAvoidingView>
           <View>
-            <Button
+            {!this.state.loading && <Button
               onPress={this.ShowHideTextComponentView}
               title={this.state.status ? "I Already Have an Account" : "I Don\'t Have an Account"}
               color="#ffb028"
-            />
+            />}
             <StatusBarOffset />
           </View>
       </View>

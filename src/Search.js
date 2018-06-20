@@ -147,7 +147,8 @@ export default class Search extends Component {
             style={styles.searchTextBox}
             placeholder="Search"
             autoCapitalize='none'
-            returnKeyType='next'
+            returnKeyType={"search"}
+            onSubmitEditing={this.startSearch}
             underlineColorAndroid={'#ffb028'}
             maxLength={100}
             onChangeText={(text) => this.setState({searchText: text})}

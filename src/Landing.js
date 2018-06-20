@@ -448,11 +448,20 @@ class Landing extends Component {
           </TouchableOpacity>
           }
           renderSectionHeader={({section: {title}}) => (
+            <View
+              style={{
+                borderBottomColor: 'black',
+                borderBottomWidth: 1,
+              }}
+            >
             <Text style={styles.sectionHeader}>{title}</Text>
+            </View>
           )}
-          sections={[
+          sections={this.state.requestSectionData.length !== 0 ? [
             {title: 'Requests', data: this.state.requestSectionData},
             {title: '\nFriends', data: this.state.friendSectionData},
+          ] : [
+            {title: 'Friends', data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={this.scrolledToBottom()}

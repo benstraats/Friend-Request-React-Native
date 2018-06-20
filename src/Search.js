@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, TextInput, ListView } from 'react-native';
+import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
 
@@ -153,12 +153,14 @@ export default class Search extends Component {
             maxLength={100}
             onChangeText={(text) => this.setState({searchText: text})}
           />
+          {this.state.currentlySearching ? 
+          <ActivityIndicator size="large" color="#ffb028" /> :
           <Button
             style={styles.searchButton}
             onPress={this.startSearch}
             title={"Search"}
             color="#ffb028"
-          />
+          />}
         </View>
         <View style={styles.container}>
           <ListView

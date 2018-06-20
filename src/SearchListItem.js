@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View, Image, Text, TouchableOpacity, ListView, TextInput } from 'react-native';
+import { Alert, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 const styles = StyleSheet.create({
   closeColumn: {
@@ -30,11 +30,14 @@ export default class SearchListItem extends Component {
       usersName: this.props.rowData[1],
       usersUsername: this.props.rowData[2],
       usersRelationship: this.props.rowData[3],
-      usersRelationshipID: this.props.rowData[4]
+      usersRelationshipID: this.props.rowData[4],
+      currentlyLoading: false,
     };
   }
 
   rowPressed = () => {
+
+    if (this.state.currentlyLoading) {return}
 
     if (this.state.usersRelationship == 'Friends') {
       this.viewProfile(this.state.usersID)
@@ -122,6 +125,8 @@ export default class SearchListItem extends Component {
   acceptRequest = (requestID) =>{
     let self = this;
 
+    this.setState({currentlyLoading:true})
+
     fetch('http://192.168.2.25:3030/friends', {
       method: 'POST',
       headers: {
@@ -134,16 +139,19 @@ export default class SearchListItem extends Component {
       })
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+      (error) => {Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }).then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           self.setState({
             usersRelationship: 'Friends',
-            usersRelationshipID: responseJson._id
+            usersRelationshipID: responseJson._id,
+            currentlyLoading:false
           })
         }
         else {
+          this.setState({currentlyLoading:false})
           Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
         }
       }
@@ -155,6 +163,7 @@ export default class SearchListItem extends Component {
 
   rejectRequest = (requestID) =>{
     let self = this;
+    this.setState({currentlyLoading:true})
 
     fetch('http://192.168.2.25:3030/requests/' + requestID, {
       method: 'DELETE',
@@ -165,16 +174,19 @@ export default class SearchListItem extends Component {
       },
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+      (error) => {Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }).then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           self.setState({
             usersRelationship: 'Add User',
-            usersRelationshipID: undefined
+            usersRelationshipID: undefined,
+            currentlyLoading: false
           })
         }
         else {
+          this.setState({currentlyLoading:false})
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
         }
       }
@@ -186,6 +198,7 @@ export default class SearchListItem extends Component {
 
   sendRequest = (requesteeID) =>{
     let self = this;
+    this.setState({currentlyLoading:true})
 
     fetch('http://192.168.2.25:3030/requests', {
       method: 'POST',
@@ -199,16 +212,19 @@ export default class SearchListItem extends Component {
       })
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+      (error) => {Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }).then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           self.setState({
             usersRelationship: 'Cancel Request',
-            usersRelationshipID: responseJson._id
+            usersRelationshipID: responseJson._id,
+            currentlyLoading: false
           })
         }
         else {
+          this.setState({currentlyLoading:false})
           Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
         }
       }
@@ -222,6 +238,7 @@ export default class SearchListItem extends Component {
 
     let self = this;
     let friendID = this.state.usersRelationshipID
+    this.setState({currentlyLoading:true})
 
     fetch('http://192.168.2.25:3030/friends/' + friendID, {
       method: 'DELETE',
@@ -232,16 +249,19 @@ export default class SearchListItem extends Component {
       },
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
+      (error) => {Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})})
     .then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           self.setState({
             usersRelationship: 'Add User',
-            usersRelationshipID: undefined
+            usersRelationshipID: undefined,
+            currentlyLoading: false
           })
         }
         else {
+          this.setState({currentlyLoading:false})
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
         }
       }
@@ -265,9 +285,11 @@ export default class SearchListItem extends Component {
                     </Text>
                 </View>
                 <View>
+                    {this.state.currentlyLoading ? 
+                    <ActivityIndicator size="small" color="#ffb028" /> :
                     <Text style={styles.textFaded}>
                         {this.state.usersRelationship}
-                    </Text>
+                    </Text>}
                 </View>
             </View>
         </TouchableOpacity>

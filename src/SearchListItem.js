@@ -95,10 +95,18 @@ export default class SearchListItem extends Component {
               profile += obj.key + ": " + obj.value + "\n"
             });
 
-            Alert.alert('Friends Profile', profile)
+            Alert.alert('Friends Profile', profile,
+            [
+              {text: 'Delete Friend', onPress: () => this.removeFriend()},
+              {text: 'OK'},
+            ],)
           }
           else {
-            Alert.alert('Friends Profile', "User has no profile")
+            Alert.alert('Friends Profile', "User has no profile",
+            [
+              {text: 'Delete Friend', onPress: () => this.removeFriend()},
+              {text: 'OK'},
+            ],)
           }
         }
         else {
@@ -202,6 +210,39 @@ export default class SearchListItem extends Component {
         }
         else {
           Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
+        }
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  removeFriend = () =>{
+
+    let self = this;
+    let friendID = this.state.usersRelationshipID
+
+    fetch('http://192.168.2.25:3030/friends/' + friendID, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      },
+    })
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
+    .then((responseJson) => {
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          self.setState({
+            usersRelationship: 'Add User',
+            usersRelationshipID: undefined
+          })
+        }
+        else {
+          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
         }
       }
     })

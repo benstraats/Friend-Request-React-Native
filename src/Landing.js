@@ -143,6 +143,7 @@ class Landing extends Component {
                 friendInfo.push('friend')
               }
             })
+            friendInfo.push(obj._id)
 
             friends.push(friendInfo)
           });
@@ -268,10 +269,18 @@ class Landing extends Component {
                 profile += obj.key + ": " + obj.value + "\n"
               });
 
-              Alert.alert(rowData[1], profile)
+              Alert.alert(rowData[1], profile,
+                [
+                  {text: 'OK'},
+                  {text: 'Delete Friend', onPress: () => this.removeFriend(rowData)},
+                ],)
             }
             else {
-              Alert.alert(rowData[1], "User has no profile")
+              Alert.alert(rowData[1], "User has no profile",
+              [
+                {text: 'Delete Friend', onPress: () => this.removeFriend(rowData)},
+                {text: 'OK'},
+              ],)
             }
           }
           else {
@@ -365,6 +374,43 @@ class Landing extends Component {
 
           this.setState({
             requestSectionData: clonedArray
+          })
+        }
+        else {
+          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+        }
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  removeFriend = (rowData) =>{
+
+    let self = this;
+    let friendID = rowData[4]
+
+    fetch('http://192.168.2.25:3030/friends/' + friendID, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + self.state.accessToken
+      },
+    })
+    .then((response) => response.json(),
+      (error) => Alert.alert('No Internet Connection'))
+    .then((responseJson) => {
+      if (responseJson !== undefined) {
+        if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert('Deleted friend')
+          let index = this.state.friendSectionData.indexOf(rowData);
+          let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+          clonedArray.splice(index, 1);
+
+          this.setState({
+            friendSectionData: clonedArray
           })
         }
         else {

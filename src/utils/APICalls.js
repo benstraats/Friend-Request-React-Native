@@ -10,7 +10,7 @@ const myRequestsURL = baseURL + "myrequests";
 
 let accessToken = ''
 
-export function createUser(name, username, password, callbackSuccess, callbackError) {
+export function createUser(name, username, password, onSuccess, onFailure) {
     fetch(usersURL, {
       method: 'POST',
       headers: {
@@ -24,14 +24,14 @@ export function createUser(name, username, password, callbackSuccess, callbackEr
       })
     })
     .then((response) => response.json(),
-      (error) => callbackError(error))
-    .then((responseJson) => callbackSuccess(responseJson))
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
     .catch((error) => {
       console.error(error);
     });
   }
 
-  export function getAccessToken(username, password, callbackSuccess, callbackError) {
+  export function getAccessToken(username, password, onSuccess, onFailure) {
     fetch(authenticationURL, {
       method: 'POST',
       headers: {
@@ -45,19 +45,19 @@ export function createUser(name, username, password, callbackSuccess, callbackEr
       })
     })
     .then((response) => response.json(),
-      (error) => callbackError(error))
+      (error) => onFailure(error))
     .then((responseJson) => {
         if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
             accessToken = responseJson.accessToken
         }
-        callbackSuccess(responseJson)
+        onSuccess(responseJson)
     })
     .catch((error) => {
       console.error(error);
     });
   }
 
-  export function getUserInfo(username, callbackSuccess, callbackError) {
+  export function getUserInfo(username, onSuccess, onFailure) {
     fetch(usersURL + '?email=' + username, {
       method: 'GET',
       headers: {
@@ -67,8 +67,117 @@ export function createUser(name, username, password, callbackSuccess, callbackEr
       }
     })
     .then((response) => response.json(),
-      (error) => callbackError(error))
-    .then((responseJson) => callbackSuccess(responseJson))
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function getFriends(limit, skip, onSuccess, onFailure) {
+    let self = this;
+
+    fetch(myFriendsURL + '?$limit=' + limit + '&$skip=' + skip, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      }
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function getRequests(limit, skip, onSuccess, onFailure) {
+    let self = this;
+
+    fetch(myRequestsURL + '?$limit=' + limit + '&$skip=' + skip, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      }
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function getProfile(userID, onSuccess, onFailure) {
+      fetch(profileURL + '?userID=' + userID, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken
+        }
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function acceptRequest(requestID, onSuccess, onFailure) {
+    fetch(friendsURL, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      },
+      body: JSON.stringify({
+        "requestID": requestID
+      })
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function rejectRequest(requestID, onSuccess, onFailure) {
+    fetch(requestsURL + '/' + requestID, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      },
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  export function removeFriend(friendID, onSuccess, onFailure) {
+    fetch(friendsURL + '/' + friendID, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      },
+    })
+    .then((response) => response.json(),
+      (error) => onFailure(error))
+    .then((responseJson) => onSuccess(responseJson))
     .catch((error) => {
       console.error(error);
     });

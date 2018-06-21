@@ -44,7 +44,7 @@ export default class SearchListItem extends Component {
     }
 
     else if (this.state.usersRelationship == 'Accept Request') {
-      Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
+      Alert.alert('Accept Request', 'Do you want to accept the request from ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Cancel', style: 'cancel'},
         {text: 'Reject', onPress: () => this.rejectRequest(this.state.usersRelationshipID)},

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -452,9 +452,13 @@ class Landing extends Component {
               style={{
                 borderBottomColor: 'black',
                 borderBottomWidth: 1,
+                flexDirection: 'row',
               }}
             >
             <Text style={styles.sectionHeader}>{title}</Text>
+            {((this.state.friendCurrentlyLoading && title.indexOf('Friends' != -1)) || 
+            (this.state.requestCurrentlyLoading && title === 'Requests')) 
+            && <ActivityIndicator size="small" color="#ffb028" />}
             </View>
           )}
           sections={this.state.requestSectionData.length !== 0 ? [

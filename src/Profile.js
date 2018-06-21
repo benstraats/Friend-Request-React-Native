@@ -34,7 +34,8 @@ export default class Profile extends Component {
       listDataSource: [],
       dataSource: ds.cloneWithRows([]),
       profileID: '',
-      savingProfile: true
+      savingProfile: true,
+      currentlyLoading: true,
     };
     this.getProfile();
   }
@@ -51,8 +52,10 @@ export default class Profile extends Component {
       }
     })
     .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+      (error) => {
+        Alert.alert('No Internet Connection')
+        self.setState({currentlyLoading:false})
+    }).then((responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
 
@@ -62,7 +65,8 @@ export default class Profile extends Component {
               profileID: undefined,
               listDataSource: [],
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
-              saveProfile: true
+              saveProfile: true,
+              currentlyLoading:false,
             })
           }
 
@@ -83,12 +87,14 @@ export default class Profile extends Component {
             self.setState({
               profileID: responseJson.data[0]._id,
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
-              saveProfile: false
+              saveProfile: false,
+              currentlyLoading: false,
             })
           }
         }
         else {
           Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
+          self.setState({currentlyLoading:false})
         }
       }
     })
@@ -212,6 +218,7 @@ export default class Profile extends Component {
             color="#ffb028"
           />
         </View>
+        {
         <ListView
           dataSource={this.state.dataSource}
           enableEmptySections={true}
@@ -243,7 +250,7 @@ export default class Profile extends Component {
               />
             </View>
           }
-        />
+        />}
       </View>
     );
   }

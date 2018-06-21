@@ -3,6 +3,7 @@ import { ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Imag
 import Landing from './src/Landing'
 import {createStackNavigator,} from 'react-navigation';
 import StatusBarOffset from './src/StatusBarOffset'
+import {createUser, getAccessToken, getUserInfo} from './src/utils/APICalls'
 
 const styles = StyleSheet.create({
   container: {
@@ -32,8 +33,6 @@ class Login extends Component {
       passwordText: '', 
       retypePasswordText: '', 
       status: true,
-      accessToken: '',
-      userID: '',
       errorText: '',
       showError: false,
       loading: false,
@@ -74,110 +73,72 @@ class Login extends Component {
         this.setError("Passwords don\'t match")
         return
       }
-      this.createUser(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
+      this.createUserHelper(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
     } else {
-      this.getAccessToken(this.state.usernameText, this.state.passwordText);
+      this.getAccessTokenHelper(this.state.usernameText, this.state.passwordText);
     }
   }
 
-  createUser(name, username, password) {
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/users', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "name": name,
-        "email": username,
-        "password": password
-      })
-    })
-    .then((response) => response.json(),
-      (error) => this.setError('No Internet Connection'))
-    .then((responseJson) => {
+  createUserHelper(name, username, password) {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.getAccessToken(username, password) 
+          this.getAccessTokenHelper(username, password) 
         }
         else {
           this.setError('Username is taken')
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      this.setError('No Internet Connection')
+    }
+
+    createUser(name, username, password, onSuccess, onFailure)
   }
 
-  getAccessToken(username, password) {
-    let self = this
-
-    fetch('http://192.168.2.25:3030/authentication', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "strategy": "local",
-        "email": username,
-        "password": password
-      })
-    })
-    .then((response) => response.json(),
-      (error) => this.setError('No Internet Connection'))
-    .then((responseJson) => {
+  getAccessTokenHelper(username, password) {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.state.accessToken = responseJson.accessToken
-          self.getUserInfo(username)
+          this.state.accessToken = responseJson.accessToken
+          this.getUserInfoHelper(username)
         }
         else {
           this.setError('Invalid login details')
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      this.setError('No Internet Connection')
+    }
+
+    getAccessToken(username, password, onSuccess, onFailure)
   }
 
-  getUserInfo(username) {
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/users?email=' + username, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => this.setError('No Internet Connection'))
-    .then((responseJson) => {
+  getUserInfoHelper = (username) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.state.userID = responseJson.data[0]._id
-          self.state.fullNameText = responseJson.data[0].name
           this.props.navigation.navigate('landing', {
-            userID: self.state.userID, 
+            userID: responseJson.data[0]._id,
             username: this.state.usernameText,
-            name: this.state.fullNameText,
-            accessToken: this.state.accessToken
+            name: responseJson.data[0].name,
           });
         }
         else {
           this.setError('Failed to get user details')
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      this.setError('No Internet Connection')
+    }
+
+    getUserInfo(username, onSuccess, onFailure)
   }
 
   ShowHideTextComponentView = () =>{

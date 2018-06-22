@@ -216,3 +216,40 @@ export function search(searchText, limit, skip, onSuccess, onFailure) {
     console.error(error);
   });
 }
+
+
+export function createProfile(profile, onSuccess, onFailure) {
+  fetch(profileURL, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + accessToken
+    },
+    body: JSON.stringify(profile)
+  })
+  .then((response) => response.json(),
+    (error) => onFailure(error))
+  .then((responseJson) => onSuccess(responseJson))
+  .catch((error) => {
+    console.error(error);
+  });
+}
+
+export function updateProfile(profileID, profile, onSuccess, onFailure) {
+  fetch(profileURL + '/' + profileID, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + accessToken
+    },
+    body: JSON.stringify(profile)
+  })
+  .then((response) => response.json(),
+    (error) => onFailure(error))
+  .then((responseJson) => onSuccess(responseJson))
+  .catch((error) => {
+    console.error(error);
+  });
+}

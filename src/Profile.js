@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
+import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 
 const styles = StyleSheet.create({
   container: {
@@ -37,31 +38,17 @@ export default class Profile extends Component {
       savingProfile: true,
       currentlyLoading: true,
     };
-    this.getProfile();
+    this.getProfileHelper();
   }
 
-  getProfile = () =>{
-    let self = this;
-
-    fetch('http://192.168.2.25:3030/profile?userID=' + this.state.userID, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => {
-        Alert.alert('No Internet Connection')
-        self.setState({currentlyLoading:false})
-    }).then((responseJson) => {
+  getProfileHelper = () =>{
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
 
           //User hasnt created a profile yet
           if (responseJson.data[0] === undefined) {
-            self.setState({
+            this.setState({
               profileID: undefined,
               listDataSource: [],
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
@@ -80,11 +67,11 @@ export default class Profile extends Component {
               profile.push(row)
             })
 
-            self.setState({
+            this.setState({
               listDataSource: profile,
             })
 
-            self.setState({
+            this.setState({
               profileID: responseJson.data[0]._id,
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
               saveProfile: false,
@@ -94,18 +81,20 @@ export default class Profile extends Component {
         }
         else {
           Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
-          self.setState({currentlyLoading:false})
+          this.setState({currentlyLoading:false})
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }
+
+    getProfile(this.state.userID, onSuccess, onFailure)
   }
 
-  saveProfile = () => {
-
-    let self = this;
+  saveProfileHelper = () => {
 
     let profile = {}
     profile.profile = []
@@ -121,23 +110,13 @@ export default class Profile extends Component {
       i++
     })
 
-    if (self.state.profileID == '' || self.state.profileID === undefined) {
-      fetch('http://192.168.2.25:3030/profile', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + self.state.accessToken
-        },
-        body: JSON.stringify(profile)
-      })
-      .then((response) => response.json(),
-        (error) => Alert.alert('No Internet Connection'))
-      .then((responseJson) => {
+    if (this.state.profileID == '' || this.state.profileID === undefined) {
+
+      let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
             Alert.alert("saved profile")
-            self.setState({
+            this.setState({
               profileID: responseJson._id,
               saveProfile: false
             })
@@ -146,24 +125,16 @@ export default class Profile extends Component {
             Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
           }
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      }
+
+      let onFailure = (error) => {
+        Alert.alert('No Internet Connection')
+      }
+
+      createProfile(profile, onSuccess, onFailure)
     }
     else {
-      fetch('http://192.168.2.25:3030/profile/' + self.state.profileID, {
-        method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + self.state.accessToken
-        },
-        body: JSON.stringify(profile)
-      })
-      .then((response) => response.json(),
-        (error) => Alert.alert('No Internet Connection'))
-      .then((responseJson) => {
+      let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
             Alert.alert("saved profile")
@@ -172,10 +143,13 @@ export default class Profile extends Component {
             Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
           }
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      }
+
+      let onFailure = (error) => {
+        Alert.alert('No Internet Connection')
+      }
+
+      updateProfile(this.state.profileID, profile, onSuccess, onFailure)
     }
   }
 
@@ -207,7 +181,7 @@ export default class Profile extends Component {
         <View style={styles.buttonRow}>
           <Button
             style={styles.globalButtons}
-            onPress={this.saveProfile}
+            onPress={this.saveProfileHelper}
             title={"Save"}
             color="#ffb028"
           />

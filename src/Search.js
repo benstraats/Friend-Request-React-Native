@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
+import {search} from './utils/APICalls'
 
 const styles = StyleSheet.create({
   container: {
@@ -39,7 +40,6 @@ export default class Search extends Component {
   }
 
   startSearch = () => {
-    let self=this
     this.setState({
       listDataSource: [],
       searchSkip: 0,
@@ -47,7 +47,7 @@ export default class Search extends Component {
       fullyDoneSearch: false,
       currentlySearching: true,
     }, () => {
-      self.setState({
+      this.setState({
         dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
       })
       this.apiSearch()
@@ -55,25 +55,14 @@ export default class Search extends Component {
   }
 
   apiSearch = () =>{
-    let self = this;
 
-    fetch('http://192.168.2.25:3030/search/' + this.state.savedSearchText + '?$limit=' + this.state.searchLimit + '&$skip=' + this.state.searchSkip, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
 
-          if (responseJson.users.data.length < self.state.searchLimit || responseJson.users.data.limit === self.state.searchLimit + self.state.searchLimit) {
-            self.setState({
+          if (responseJson.users.data.length < this.state.searchLimit || responseJson.users.data.limit === this.state.searchLimit + this.state.searchLimit) {
+            this.setState({
               fullyDoneSearch: true
             })
           }
@@ -111,7 +100,7 @@ export default class Search extends Component {
           this.setState({
             listDataSource: this.state.listDataSource.concat(friends),
           }, () => {
-            self.setState({
+            this.setState({
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
               currentlySearching: false
             })
@@ -121,10 +110,13 @@ export default class Search extends Component {
           Alert.alert('Failed to search', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+    }
+
+    search(this.state.savedSearchText, this.state.searchLimit, this.state.searchSkip, onSuccess, onFailure)
   }
 
   fullyScrolled = () =>{

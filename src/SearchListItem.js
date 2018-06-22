@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {getProfile, acceptRequest, rejectRequest, requestUser} from './utils/APICalls'
 
 const styles = StyleSheet.create({
   closeColumn: {
@@ -25,7 +26,6 @@ export default class SearchListItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      accessToken: this.props.accessToken,
       usersID: this.props.rowData[0],
       usersName: this.props.rowData[1],
       usersUsername: this.props.rowData[2],
@@ -40,15 +40,15 @@ export default class SearchListItem extends Component {
     if (this.state.currentlyLoading) {return}
 
     if (this.state.usersRelationship == 'Friends') {
-      this.viewProfile(this.state.usersID)
+      this.getProfileHelper(this.state.usersID)
     }
 
     else if (this.state.usersRelationship == 'Accept Request') {
       Alert.alert('Accept Request', 'Do you want to accept the request from ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequest(this.state.usersRelationshipID)},
-        {text: 'Accept', onPress: () => this.acceptRequest(this.state.usersRelationshipID)},
+        {text: 'Reject', onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
+        {text: 'Accept', onPress: () => this.acceptRequestHelper(this.state.usersRelationshipID)},
       ],);
       
     }
@@ -57,7 +57,7 @@ export default class SearchListItem extends Component {
       Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
         {text: 'Don\'t Cancel', style: 'cancel'},
-        {text: 'Cancel Request', onPress: () => this.rejectRequest(this.state.usersRelationshipID)},
+        {text: 'Cancel Request', onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
       ],);
     }
 
@@ -70,20 +70,9 @@ export default class SearchListItem extends Component {
     }
   }
 
-  viewProfile = (targetID) =>{
-    let self = this;
+  getProfileHelper = (targetID) =>{
 
-    fetch('http://192.168.2.25:3030/profile?userID=' + targetID, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      }
-    })
-    .then((response) => response.json(),
-      (error) => Alert.alert('No Internet Connection'))
-    .then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let profile = ''
@@ -100,14 +89,14 @@ export default class SearchListItem extends Component {
 
             Alert.alert('Friends Profile', profile,
             [
-              {text: 'Delete Friend', onPress: () => this.removeFriend()},
+              {text: 'Delete Friend', onPress: () => this.removeFriendHelper()},
               {text: 'OK'},
             ],)
           }
           else {
             Alert.alert('Friends Profile', "User has no profile",
             [
-              {text: 'Delete Friend', onPress: () => this.removeFriend()},
+              {text: 'Delete Friend', onPress: () => this.removeFriendHelper()},
               {text: 'OK'},
             ],)
           }
@@ -116,35 +105,22 @@ export default class SearchListItem extends Component {
           Alert.alert('Failed to view profile', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+    }
+
+    getProfile(targetID, onSuccess, onFailure)
   }
 
-  acceptRequest = (requestID) =>{
-    let self = this;
-
+  acceptRequestHelper = (requestID) =>{
     this.setState({currentlyLoading:true})
 
-    fetch('http://192.168.2.25:3030/friends', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requestID": requestID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => {Alert.alert('No Internet Connection')
-      this.setState({currentlyLoading:false})
-    }).then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.setState({
+          this.setState({
             usersRelationship: 'Friends',
             usersRelationshipID: responseJson._id,
             currentlyLoading:false
@@ -155,31 +131,23 @@ export default class SearchListItem extends Component {
           Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }
+
+    acceptRequest(requestID, onSuccess, onFailure)
   }
 
-  rejectRequest = (requestID) =>{
-    let self = this;
+  rejectRequestHelper = (requestID) =>{
     this.setState({currentlyLoading:true})
 
-    fetch('http://192.168.2.25:3030/requests/' + requestID, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-    })
-    .then((response) => response.json(),
-      (error) => {Alert.alert('No Internet Connection')
-      this.setState({currentlyLoading:false})
-    }).then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.setState({
+          this.setState({
             usersRelationship: 'Add User',
             usersRelationshipID: undefined,
             currentlyLoading: false
@@ -190,34 +158,23 @@ export default class SearchListItem extends Component {
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }
+
+    rejectRequest(requestID, onSuccess, onFailure)
   }
 
   sendRequest = (requesteeID) =>{
-    let self = this;
     this.setState({currentlyLoading:true})
 
-    fetch('http://192.168.2.25:3030/requests', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-      body: JSON.stringify({
-        "requesteeID": requesteeID
-      })
-    })
-    .then((response) => response.json(),
-      (error) => {Alert.alert('No Internet Connection')
-      this.setState({currentlyLoading:false})
-    }).then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.setState({
+          this.setState({
             usersRelationship: 'Cancel Request',
             usersRelationshipID: responseJson._id,
             currentlyLoading: false
@@ -228,33 +185,23 @@ export default class SearchListItem extends Component {
           Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }
+
+    requestUser(requesteeID, onSuccess, onFailure)
   }
 
-  removeFriend = () =>{
-
-    let self = this;
-    let friendID = this.state.usersRelationshipID
+  removeFriendHelper = () =>{
     this.setState({currentlyLoading:true})
 
-    fetch('http://192.168.2.25:3030/friends/' + friendID, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + self.state.accessToken
-      },
-    })
-    .then((response) => response.json(),
-      (error) => {Alert.alert('No Internet Connection')
-      this.setState({currentlyLoading:false})})
-    .then((responseJson) => {
+    let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          self.setState({
+          this.setState({
             usersRelationship: 'Add User',
             usersRelationshipID: undefined,
             currentlyLoading: false
@@ -265,10 +212,14 @@ export default class SearchListItem extends Component {
           Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
         }
       }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
+
+    let onFailure = (error) => {
+      Alert.alert('No Internet Connection')
+      this.setState({currentlyLoading:false})
+    }
+
+    removeFriend(this.state.usersRelationshipID, onSuccess, onFailure)
   }
 
   render() {

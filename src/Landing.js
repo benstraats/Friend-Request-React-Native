@@ -6,11 +6,12 @@ import Search from './Search'
 import Profile from './Profile'
 import StatusBarOffset from './StatusBarOffset'
 import {getFriends, getRequests, getProfile, acceptRequest, rejectRequest, removeFriend} from './utils/APICalls'
+import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   backgroundColor: '#fff',
+   backgroundColor: COLORS.BACKGROUND_COLOR,
   },
   sectionHeader: {
     fontSize: 24,
@@ -123,7 +124,7 @@ class Landing extends Component {
               if (obj._id == friendID) {
                 friendInfo.push(obj.name)
                 friendInfo.push(obj.email)
-                friendInfo.push('friend')
+                friendInfo.push(STRINGS.FRIENDS)
               }
             })
             friendInfo.push(obj._id)
@@ -136,7 +137,7 @@ class Landing extends Component {
           })
         }
         else {
-          Alert.alert('Failed to get friends', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.GET_FRIENDS_LIST_FAIL, '' + JSON.stringify(responseJson))
         }
 
         this.setState({
@@ -146,7 +147,7 @@ class Landing extends Component {
     }
 
     let onFailure = (error) => {
-      this.setError('No Internet Connection')
+      this.setError(STRINGS.NO_INTERNET)
     }
 
     getFriends(this.state.friendLimit, this.state.friendSkip, onSuccess, onFailure)
@@ -175,7 +176,7 @@ class Landing extends Component {
               if (userObj._id == requesterID) {
                 friendInfo.push(userObj.name)
                 friendInfo.push(userObj.email)
-                friendInfo.push("request")
+                friendInfo.push(STRINGS.REQUESTEE)
               }
             })
 
@@ -189,7 +190,7 @@ class Landing extends Component {
           })
         }
         else {
-          Alert.alert('Failed to get friend requests', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.GET_REQUESTS_LIST_FAIL, '' + JSON.stringify(responseJson))
         }
 
         this.setState({
@@ -199,7 +200,7 @@ class Landing extends Component {
     }
 
     let onFailure = (error) => {
-      this.setError('No Internet Connection')
+      this.setError(STRINGS.NO_INTERNET)
     }
 
     getRequests(this.state.requestLimit, this.state.requestSkip, onSuccess, onFailure)
@@ -219,15 +220,15 @@ class Landing extends Component {
 
   onPressFn = (rowData) =>{
 
-    if (rowData[3] === "friend") {
+    if (rowData[3] === STRINGS.FRIENDS) {
       this.getProfileHelper(rowData)
     }
     else {
-     Alert.alert('Accept Request', 'Do you want to accept the friend request from ' + rowData[2] + '?',
+     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData[2] + '?',
       [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequestHelper(rowData)},
-        {text: 'Accept', onPress: () => this.acceptRequestHelper(rowData)},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_CANCEL, style: 'cancel'},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_REJECT, onPress: () => this.rejectRequestHelper(rowData)},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_ACCEPT, onPress: () => this.acceptRequestHelper(rowData)},
       ],); 
     }
   }
@@ -250,26 +251,26 @@ class Landing extends Component {
 
             Alert.alert(rowData[1], profile,
               [
-                {text: 'OK'},
-                {text: 'Delete Friend', onPress: () => this.removeFriendHelper(rowData)},
+                {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
+                {text: STRINGS.PROFILE_ALERT_OK},
               ],)
           }
           else {
-            Alert.alert(rowData[1], "User has no profile",
+            Alert.alert(rowData[1], STRINGS.PROFILE_ALERT_NO_PROFILE,
             [
-              {text: 'Delete Friend', onPress: () => this.removeFriendHelper(rowData)},
-              {text: 'OK'},
+              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
+              {text: STRINGS.PROFILE_ALERT_OK},
             ],)
           }
         }
         else {
-          Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     getProfile(rowData[0], onSuccess, onFailure)
@@ -295,13 +296,13 @@ class Landing extends Component {
           })
         }
         else {
-          Alert.alert('Faile dto accept request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     acceptRequest(rowData[4], onSuccess, onFailure)
@@ -320,13 +321,13 @@ class Landing extends Component {
           })
         }
         else {
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     rejectRequest(rowData[4], onSuccess, onFailure)
@@ -345,13 +346,13 @@ class Landing extends Component {
           })
         }
         else {
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.DELETE_FRIEND_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     removeFriend(rowData[4], onSuccess, onFailure)
@@ -364,7 +365,7 @@ class Landing extends Component {
         <SectionList
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
-            <TouchableOpacity key={index} style={{backgroundColor: "white"}} onPress={this.onPressFn.bind(this, item)}>
+            <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
               <View>
                 <Text style={styles.textBold}>
                   {item[1]}
@@ -375,7 +376,7 @@ class Landing extends Component {
             </View>
             <View
               style={{
-                borderBottomColor: 'black',
+                borderBottomColor: COLORS.ROW_BORDER,
                 borderBottomWidth: 1,
               }}
             />
@@ -384,22 +385,22 @@ class Landing extends Component {
           renderSectionHeader={({section: {title}}) => (
             <View
               style={{
-                borderBottomColor: 'black',
+                borderBottomColor: COLORS.ROW_BORDER,
                 borderBottomWidth: 1,
                 flexDirection: 'row',
               }}
             >
             <Text style={styles.sectionHeader}>{title}</Text>
-            {((this.state.friendCurrentlyLoading && title.indexOf('Friends' != -1)) || 
-            (this.state.requestCurrentlyLoading && title === 'Requests')) 
-            && <ActivityIndicator size="small" color="#ffb028" />}
+            {((this.state.friendCurrentlyLoading && title.indexOf(STRINGS.FRIEND_SECTION_HEADER != -1)) || 
+            (this.state.requestCurrentlyLoading && title.indexOf(STRINGS.REQUEST_SECTION_HEADER != -1))) 
+            && <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />}
             </View>
           )}
           sections={this.state.requestSectionData.length !== 0 ? [
-            {title: 'Requests', data: this.state.requestSectionData},
-            {title: '\nFriends', data: this.state.friendSectionData},
+            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestSectionData.length + ')', data: this.state.requestSectionData},
+            {title: '\n' + STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ] : [
-            {title: 'Friends', data: this.state.friendSectionData},
+            {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={this.scrolledToBottom()}
@@ -418,10 +419,10 @@ export default createBottomTabNavigator(
   {
     tabBarOptions: 
     {
-      activeTintColor: 'white',
-      inactiveTintColor: '#ffb028',
-      activeBackgroundColor: '#ffb028',
-      inactiveBackgroundColor: 'white',
+      activeTintColor: COLORS.BACKGROUND_COLOR,
+      inactiveTintColor: COLORS.PRIMARY_COLOR,
+      activeBackgroundColor: COLORS.PRIMARY_COLOR,
+      inactiveBackgroundColor: COLORS.BACKGROUND_COLOR,
       labelStyle: {
         fontSize: 30,
         justifyContent: 'center',

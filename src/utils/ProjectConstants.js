@@ -43,6 +43,7 @@ export const STRINGS = {
     ACCEPT_REQUEST_FAIL: "Failed to accept request",
     REJECT_REQUEST_FAIL: "Failed to reject request",
     DELETE_FRIEND_FAIL: "Failed to remove friend",
+    SAVE_PROFILE_FAIL: "Failed to save profile",
 
     REQUEST_RESPONSE_ALERT_HEADER: "Accept Request",
     REQUEST_RESPONSE_ALERT_BODY: "Do you want to accept the friend request from ",
@@ -56,4 +57,11 @@ export const STRINGS = {
 
     FRIEND_SECTION_HEADER: "Friends",
     REQUEST_SECTION_HEADER: "Requests",
+
+    SAVED_PROFILE: "Saved Profile",
+    MAX_PROFILE_REACHED: "Max number of profile rows reached",
+
+    SAVE: "Save",
+    ADD_ROW: "Add Row",
+    DELETE_ROW: "Delete Row",
 }

@@ -44,6 +44,8 @@ export const STRINGS = {
     REJECT_REQUEST_FAIL: "Failed to reject request",
     DELETE_FRIEND_FAIL: "Failed to remove friend",
     SAVE_PROFILE_FAIL: "Failed to save profile",
+    SEARCH_FAIL: "Failed to search",
+    SEND_REQUEST_FAIL: "Failed to send request",
 
     REQUEST_RESPONSE_ALERT_HEADER: "Accept Request",
     REQUEST_RESPONSE_ALERT_BODY: "Do you want to accept the friend request from ",
@@ -51,9 +53,20 @@ export const STRINGS = {
     REQUEST_RESPONSE_ALERT_REJECT: "Reject",
     REQUEST_RESPONSE_ALERT_ACCEPT: "Accept",
 
+    REQUEST_CANCEL_ALERT_HEADER: "Cancel Request",
+    REQUEST_CANCEL_ALERT_BODY: "Do you want to cancel the friend request to ",
+    REQUEST_CANCEL_ALERT_DONT_CANCEL: "Don\'t Cancel",
+    REQUEST_CANCEL_ALERT_CANCEL_REQUEST: "Cancel Reuqest",
+
+    PROFILE_ALERT_HEADER: "Friends Profile",
     PROFILE_ALERT_OK: "OK",
     PROFILE_ALERT_DELETE: "Delete Friend",
     PROFILE_ALERT_NO_PROFILE: "User has no profile",
+
+    ADD_ALERT_HEADER: "Request User",
+    ADD_ALERT_BODY: "Do you want to send a friend request to ",
+    ADD_ALERT_CANCEL: "Cancel",
+    ADD_ALERT_SEND: "Send Request",
 
     FRIEND_SECTION_HEADER: "Friends",
     REQUEST_SECTION_HEADER: "Requests",
@@ -64,4 +77,5 @@ export const STRINGS = {
     SAVE: "Save",
     ADD_ROW: "Add Row",
     DELETE_ROW: "Delete Row",
+    SEARCH: "Search",
 }

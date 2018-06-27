@@ -3,11 +3,12 @@ import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
 import {search} from './utils/APICalls'
+import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
-   backgroundColor: '#fff',
+   backgroundColor: COLORS.BACKGROUND_COLOR,
   },
   rowContainer: {
     flexDirection: 'row',
@@ -75,23 +76,23 @@ export default class Search extends Component {
 
             responseJson.friends.data.forEach(function(friend) {
               if (friend.user1 == obj._id || friend.user2 == obj._id) {
-                row.push('Friends')
+                row.push(STRINGS.FRIENDS_MESSAGE)
                 row.push(friend._id)
               }
             })
 
             responseJson.requests.data.forEach(function(request) {
               if (request.requester == obj._id) {
-                row.push('Accept Request')
+                row.push(STRINGS.REQUESTEE_MESSAGE)
                 row.push(request._id)
               } else if(request.requestee == obj._id) {
-                row.push('Cancel Request')
+                row.push(STRINGS.REQUESTER_MESSAGE)
                 row.push(request._id)
               }
             })
 
             if (row.length == 3) {
-              row.push('Add User')
+              row.push(STRINGS.NOT_FRIENDS_MESSAGE)
             }
 
             friends.push(row)
@@ -107,13 +108,13 @@ export default class Search extends Component {
           })
         }
         else {
-          Alert.alert('Failed to search', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.SEARCH_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     search(this.state.savedSearchText, this.state.searchLimit, this.state.searchSkip, onSuccess, onFailure)
@@ -137,21 +138,21 @@ export default class Search extends Component {
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.searchTextBox}
-            placeholder="Search"
+            placeholder={STRINGS.SEARCH}
             autoCapitalize='none'
             returnKeyType={"search"}
             onSubmitEditing={this.startSearch}
-            underlineColorAndroid={'#ffb028'}
+            underlineColorAndroid={COLORS.PRIMARY_COLOR}
             maxLength={100}
             onChangeText={(text) => this.setState({searchText: text})}
           />
           {this.state.currentlySearching ? 
-          <ActivityIndicator size="large" color="#ffb028" /> :
+          <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
           <Button
             style={styles.searchButton}
             onPress={this.startSearch}
-            title={"Search"}
-            color="#ffb028"
+            title={STRINGS.SEARCH}
+            color={COLORS.PRIMARY_COLOR}
           />}
         </View>
         <View style={styles.container}>

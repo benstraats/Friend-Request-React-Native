@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {getProfile, acceptRequest, rejectRequest, requestUser} from './utils/APICalls'
+import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
   closeColumn: {
@@ -39,33 +40,33 @@ export default class SearchListItem extends Component {
 
     if (this.state.currentlyLoading) {return}
 
-    if (this.state.usersRelationship == 'Friends') {
+    if (this.state.usersRelationship == STRINGS.FRIENDS_MESSAGE) {
       this.getProfileHelper(this.state.usersID)
     }
 
-    else if (this.state.usersRelationship == 'Accept Request') {
-      Alert.alert('Accept Request', 'Do you want to accept the request from ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
+    else if (this.state.usersRelationship == STRINGS.REQUESTEE_MESSAGE) {
+      Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Reject', onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
-        {text: 'Accept', onPress: () => this.acceptRequestHelper(this.state.usersRelationshipID)},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_CANCEL, style: 'cancel'},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_REJECT, onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
+        {text: STRINGS.REQUEST_RESPONSE_ALERT_ACCEPT, onPress: () => this.acceptRequestHelper(this.state.usersRelationshipID)},
       ],);
       
     }
 
-    else if (this.state.usersRelationship == 'Cancel Request') {
-      Alert.alert('Cancel Request', 'Do you want to cancel the friend request to ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
+    else if (this.state.usersRelationship == STRINGS.REQUESTER_MESSAGE) {
+      Alert.alert(STRINGS.REQUEST_CANCEL_ALERT_HEADER, STRINGS.REQUEST_CANCEL_ALERT_BODY + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
-        {text: 'Don\'t Cancel', style: 'cancel'},
-        {text: 'Cancel Request', onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
+        {text: STRINGS.REQUEST_CANCEL_ALERT_DONT_CANCEL, style: 'cancel'},
+        {text: STRINGS.REQUEST_CANCEL_ALERT_CANCEL_REQUEST, onPress: () => this.rejectRequestHelper(this.state.usersRelationshipID)},
       ],);
     }
 
-    else if (this.state.usersRelationship == 'Add User') {
-      Alert.alert('Request User', 'Do you want to send a friend request to ' + this.state.usersName + ' (' + this.state.usersUsername + ')?',
+    else if (this.state.usersRelationship == STRINGS.NOT_FRIENDS_MESSAGE) {
+      Alert.alert(STRINGS.ADD_ALERT_HEADER, STRINGS.ADD_ALERT_BODY + this.state.usersName + ' (' + this.state.usersUsername + ')?',
       [
-        {text: 'Cancel'},
-        {text: 'Send Request', onPress: () => this.sendRequest(this.state.usersID)},
+        {text: STRINGS.ADD_ALERT_CANCEL},
+        {text: STRINGS.ADD_ALERT_SEND, onPress: () => this.sendRequest(this.state.usersID)},
       ],);
     }
   }
@@ -87,28 +88,28 @@ export default class SearchListItem extends Component {
               profile += obj.key + ": " + obj.value + "\n"
             });
 
-            Alert.alert('Friends Profile', profile,
+            Alert.alert(STRINGS.PROFILE_ALERT_HEADER, profile,
             [
-              {text: 'Delete Friend', onPress: () => this.removeFriendHelper()},
-              {text: 'OK'},
+              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper()},
+              {text: STRINGS.PROFILE_ALERT_OK},
             ],)
           }
           else {
-            Alert.alert('Friends Profile', "User has no profile",
+            Alert.alert(STRINGS.PROFILE_ALERT_HEADER, STRINGS.PROFILE_ALERT_NO_PROFILE,
             [
-              {text: 'Delete Friend', onPress: () => this.removeFriendHelper()},
-              {text: 'OK'},
+              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper()},
+              {text: STRINGS.PROFILE_ALERT_OK},
             ],)
           }
         }
         else {
-          Alert.alert('Failed to view profile', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
     }
 
     getProfile(targetID, onSuccess, onFailure)
@@ -121,20 +122,20 @@ export default class SearchListItem extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           this.setState({
-            usersRelationship: 'Friends',
+            usersRelationship: STRINGS.FRIENDS_MESSAGE,
             usersRelationshipID: responseJson._id,
             currentlyLoading:false
           })
         }
         else {
           this.setState({currentlyLoading:false})
-          Alert.alert('Failed to accept request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
       this.setState({currentlyLoading:false})
     }
 
@@ -148,20 +149,20 @@ export default class SearchListItem extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           this.setState({
-            usersRelationship: 'Add User',
+            usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
             usersRelationshipID: undefined,
             currentlyLoading: false
           })
         }
         else {
           this.setState({currentlyLoading:false})
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
       this.setState({currentlyLoading:false})
     }
 
@@ -175,20 +176,20 @@ export default class SearchListItem extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           this.setState({
-            usersRelationship: 'Cancel Request',
+            usersRelationship: STRINGS.REQUESTER_MESSAGE,
             usersRelationshipID: responseJson._id,
             currentlyLoading: false
           })
         }
         else {
           this.setState({currentlyLoading:false})
-          Alert.alert('Failed to send request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.SEND_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
       this.setState({currentlyLoading:false})
     }
 
@@ -202,20 +203,20 @@ export default class SearchListItem extends Component {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
           this.setState({
-            usersRelationship: 'Add User',
+            usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
             usersRelationshipID: undefined,
             currentlyLoading: false
           })
         }
         else {
           this.setState({currentlyLoading:false})
-          Alert.alert('Failed to reject request', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
       this.setState({currentlyLoading:false})
     }
 
@@ -225,7 +226,7 @@ export default class SearchListItem extends Component {
   render() {
     return (
       <View>
-        <TouchableOpacity style={{backgroundColor: "white"}} onPress={this.rowPressed}>
+        <TouchableOpacity style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowPressed}>
             <View style={styles.spacedRow}>
                 <View>
                     <Text style={styles.textBold}>
@@ -237,7 +238,7 @@ export default class SearchListItem extends Component {
                 </View>
                 <View>
                     {this.state.currentlyLoading ? 
-                    <ActivityIndicator size="small" color="#ffb028" /> :
+                    <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
                     <Text style={styles.textFaded}>
                         {this.state.usersRelationship}
                     </Text>}
@@ -246,7 +247,7 @@ export default class SearchListItem extends Component {
         </TouchableOpacity>
         <View
           style={{
-            borderBottomColor: 'black',
+            borderBottomColor: COLORS.ROW_BORDER,
             borderBottomWidth: 1,
           }}
         />

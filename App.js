@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
+import { Alert, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import Landing from './src/Landing'
 import {createStackNavigator,} from 'react-navigation';
 import StatusBarOffset from './src/StatusBarOffset'
 import {createUser, getAccessToken, getUserInfo} from './src/utils/APICalls'
+import {COLORS, STRINGS} from './src/utils/ProjectConstants'
 
 const styles = StyleSheet.create({
   container: {
    flex: 1,
    justifyContent: 'space-between',
    alignItems: 'center',
-   backgroundColor: 'white',
+   backgroundColor: COLORS.BACKGROUND_COLOR,
   },
   closeContainer: {
     flex: 1,
@@ -55,22 +56,22 @@ class Login extends Component {
     })
 
     if (this.state.usernameText.length < 3) {
-      this.setError("Username too short")
+      this.setError(STRINGS.USERNAME_TOO_SHORT)
       return
     }
 
     if (this.state.passwordText.length < 6) {
-      this.setError("Password too short")
+      this.setError(STRINGS.PASSWORD_TOO_SHORT)
       return
     }
 
     if (this.state.status) {
       if (this.state.fullNameText.length < 3) {
-        this.setError("Name too short")
+        this.setError(STRINGS.NAME_TOO_SHORT)
         return
       }
       if (this.state.retypePasswordText !== this.state.passwordText) {
-        this.setError("Passwords don\'t match")
+        this.setError(STRINGS.PASSWORDS_DONT_MATCH)
         return
       }
       this.createUserHelper(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
@@ -86,13 +87,13 @@ class Login extends Component {
           this.getAccessTokenHelper(username, password) 
         }
         else {
-          this.setError('Username is taken')
+          this.setError(STRINGS.USERNAME_IS_TAKEN)
         }
       }
     }
 
     let onFailure = (error) => {
-      this.setError('No Internet Connection')
+      this.setError(STRINGS.NO_INTERNET)
     }
 
     createUser(name, username, password, onSuccess, onFailure)
@@ -106,13 +107,13 @@ class Login extends Component {
           this.getUserInfoHelper(username)
         }
         else {
-          this.setError('Invalid login details')
+          this.setError(STRINGS.INVALID_LOGIN)
         }
       }
     }
 
     let onFailure = (error) => {
-      this.setError('No Internet Connection')
+      this.setError(STRINGS.NO_INTERNET)
     }
 
     getAccessToken(username, password, onSuccess, onFailure)
@@ -129,13 +130,13 @@ class Login extends Component {
           });
         }
         else {
-          this.setError('Failed to get user details')
+          this.setError(STRINGS.FAILED_TO_GET_ACCOUNT_DETAILS)
         }
       }
     }
 
     let onFailure = (error) => {
-      this.setError('No Internet Connection')
+      this.setError(STRINGS.NO_INTERNET)
     }
 
     getUserInfo(username, onSuccess, onFailure)
@@ -169,13 +170,13 @@ class Login extends Component {
             { this.state.status &&
               <TextInput 
                 style={styles.textStyle} 
-                placeholder= 'Full Name'
+                placeholder= {STRINGS.FULL_NAME}
                 autoCapitalize='words'
                 autoCorrect={false}
                 returnKeyType = { "next" }
                 onSubmitEditing={() => { this.nameTextInput.focus(); }}
                 blurOnSubmit={false}
-                underlineColorAndroid={'#ffb028'}
+                underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 maxLength={100}
                 onChangeText={(text) => this.setState({fullNameText: text})}
               />
@@ -183,25 +184,25 @@ class Login extends Component {
             <TextInput
               style={styles.textStyle}
               ref={(input) => { this.nameTextInput = input; }}
-              placeholder="Username"
+              placeholder={STRINGS.USERNAME}
               autoCapitalize='none'
               returnKeyType={"next"}
               onSubmitEditing={() => { this.passwordTextInput.focus(); }}
               blurOnSubmit={false}
-              underlineColorAndroid={'#ffb028'}
+              underlineColorAndroid={COLORS.PRIMARY_COLOR}
               maxLength={50}
               onChangeText={(text) => this.setState({usernameText: text})}
             />
             <TextInput
               style={styles.textStyle}
               ref={(input) => { this.passwordTextInput = input; }}
-              placeholder="Password"
+              placeholder={STRINGS.PASSWORD}
               autoCapitalize='none'
               returnKeyType={this.state.status ? "next" : "go"}
               onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
               blurOnSubmit={!this.state.status}
               secureTextEntry={true}
-              underlineColorAndroid={'#ffb028'}
+              underlineColorAndroid={COLORS.PRIMARY_COLOR}
               maxLength={50}
               onChangeText={(text) => this.setState({passwordText: text})}
             />
@@ -209,30 +210,30 @@ class Login extends Component {
               <TextInput
                 style={styles.textStyle}
                 ref={(input) => { this.retypePasswordTextInput = input; }}
-                placeholder="Retype Password"
+                placeholder={STRINGS.RETYPE_PASSWORD}
                 autoCapitalize='none'
                 returnKeyType={"go"}
                 onSubmitEditing={this.signUpClick}
                 secureTextEntry={true}
-                underlineColorAndroid={'#ffb028'}
+                underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 maxLength={50}
                 onChangeText={(text) => this.setState({retypePasswordText: text})}
                 />
               }
               {this.state.loading ? 
-              <ActivityIndicator size="large" color="#ffb028" /> : 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> : 
               <Button
                 onPress={this.signUpClick}
-                title={this.state.status ? "Sign Up" : "Login"}
-                color="#ffb028"
+                title={this.state.status ? STRINGS.SIGN_UP : STRINGS.LOGIN}
+                color={COLORS.PRIMARY_COLOR}
               />}
             </View>
           </KeyboardAvoidingView>
           <View>
             {!this.state.loading && <Button
               onPress={this.ShowHideTextComponentView}
-              title={this.state.status ? "I Already Have an Account" : "I Don\'t Have an Account"}
-              color="#ffb028"
+              title={this.state.status ? STRINGS.ALREADY_HAVE_ACCOUNT : STRINGS.DONT_HAVE_ACCOUNT}
+              color={COLORS.PRIMARY_COLOR}
             />}
             <StatusBarOffset />
           </View>

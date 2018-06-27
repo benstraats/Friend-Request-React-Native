@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
+import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.BACKGROUND_COLOR,
   },
   rowContainer: {
     flex: 1,
@@ -80,14 +81,14 @@ export default class Profile extends Component {
           }
         }
         else {
-          Alert.alert('Failed to get profile', '' + JSON.stringify(responseJson))
+          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
           this.setState({currentlyLoading:false})
         }
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert('No Internet Connection')
+      Alert.alert(STRINGS.NO_INTERNET)
       this.setState({currentlyLoading:false})
     }
 
@@ -115,20 +116,20 @@ export default class Profile extends Component {
       let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
-            Alert.alert("saved profile")
+            Alert.alert(STRINGS.SAVED_PROFILE)
             this.setState({
               profileID: responseJson._id,
               saveProfile: false
             })
           }
           else {
-            Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
+            Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
           }
         }
       }
 
       let onFailure = (error) => {
-        Alert.alert('No Internet Connection')
+        Alert.alert(STRINGS.NO_INTERNET)
       }
 
       createProfile(profile, onSuccess, onFailure)
@@ -137,16 +138,16 @@ export default class Profile extends Component {
       let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
-            Alert.alert("saved profile")
+            Alert.alert(STRINGS.SAVED_PROFILE)
           }
           else {
-            Alert.alert('Failed to save profile', '' + JSON.stringify(responseJson))
+            Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
           }
         }
       }
 
       let onFailure = (error) => {
-        Alert.alert('No Internet Connection')
+        Alert.alert(STRINGS.NO_INTERNET)
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)
@@ -161,7 +162,7 @@ export default class Profile extends Component {
       })
     }
     else {
-      Alert.alert("Reached max profile length")
+      Alert.alert(STRINGS.MAX_PROFILE_REACHED)
     }
   }
 
@@ -182,14 +183,14 @@ export default class Profile extends Component {
           <Button
             style={styles.globalButtons}
             onPress={this.saveProfileHelper}
-            title={"Save"}
-            color="#ffb028"
+            title={STRINGS.SAVE}
+            color={COLORS.PRIMARY_COLOR}
           />
           <Button
             style={styles.globalButtons}
             onPress={this.addRow}
-            title={"Add Row"}
-            color="#ffb028"
+            title={STRINGS.ADD_ROW}
+            color={COLORS.PRIMARY_COLOR}
           />
         </View>
         {
@@ -202,7 +203,7 @@ export default class Profile extends Component {
                 style={styles.rowTextBoxes}
                 autoCapitalize='none'
                 returnKeyType='go'
-                underlineColorAndroid={'#ffb028'}
+                underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 onChangeText={(text) => rowData[0] = text}
                 maxLength={200}
                 defaultValue={rowData[0]}
@@ -211,7 +212,7 @@ export default class Profile extends Component {
                 style={styles.rowTextBoxes}
                 autoCapitalize='none'
                 returnKeyType='go'
-                underlineColorAndroid={'#ffb028'}
+                underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 onChangeText={(text) => rowData[1] = text}
                 maxLength={200}
                 defaultValue={rowData[1]}
@@ -219,8 +220,8 @@ export default class Profile extends Component {
               <Button
                 style={styles.rowDeleteButtons}
                 onPress={() => this.deleteRow(rowData)}
-                title={"Delete Row"}
-                color="#ffb028"
+                title={STRINGS.DELETE_ROW}
+                color={COLORS.PRIMARY_COLOR}
               />
             </View>
           }

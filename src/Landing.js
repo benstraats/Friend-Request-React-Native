@@ -35,6 +35,8 @@ class Landing extends Component {
       usernameText: this.props.navigation.state.params.username, 
       accessToken: this.props.navigation.state.params.accessToken,
 
+      requestSectionExpanded: false,
+
       friendSkip: 0,
       friendLimit: 50,
       friendCurrentlyLoading: true,
@@ -358,6 +360,14 @@ class Landing extends Component {
     removeFriend(rowData[4], onSuccess, onFailure)
   }
 
+  headerPress = (sectionTitle) => {
+    if (sectionTitle.indexOf(STRINGS.REQUEST_SECTION_HEADER) != -1) {
+      this.setState({
+        requestSectionExpanded: !this.state.requestSectionExpanded
+      })
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -366,35 +376,42 @@ class Landing extends Component {
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
             <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
+              {(this.state.requestSectionExpanded || item[3] !== STRINGS.REQUESTEE) && 
               <View>
-                <Text style={styles.textBold}>
-                  {item[1]}
-                </Text>
-                <Text style={styles.textFaded}>
-                  {item[2]}
-              </Text>
-            </View>
-            <View
-              style={{
-                borderBottomColor: COLORS.ROW_BORDER,
-                borderBottomWidth: 1,
-              }}
-            />
-          </TouchableOpacity>
+                <View>
+                  <Text style={styles.textBold}>
+                    {item[1]}
+                  </Text>
+                  <Text style={styles.textFaded}>
+                    {item[2]}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    borderBottomColor: COLORS.ROW_BORDER,
+                    borderBottomWidth: 1,
+                  }}
+                />
+              </View>}
+            </TouchableOpacity>
           }
           renderSectionHeader={({section: {title}}) => (
-            <View
+            <TouchableOpacity
               style={{
                 borderBottomColor: COLORS.ROW_BORDER,
                 borderBottomWidth: 1,
                 flexDirection: 'row',
               }}
+              onPress={this.headerPress.bind(this, title)}
             >
-            <Text style={styles.sectionHeader}>{title}</Text>
-            {((this.state.friendCurrentlyLoading && title.indexOf(STRINGS.FRIEND_SECTION_HEADER != -1)) || 
-            (this.state.requestCurrentlyLoading && title.indexOf(STRINGS.REQUEST_SECTION_HEADER != -1))) 
-            && <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />}
-            </View>
+              <Text style={styles.sectionHeader}>
+                {title}
+              </Text>
+              {((this.state.friendCurrentlyLoading && title.indexOf(STRINGS.FRIEND_SECTION_HEADER != -1)) || 
+                (this.state.requestCurrentlyLoading && title.indexOf(STRINGS.REQUEST_SECTION_HEADER != -1))) 
+                && <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />
+              }
+            </TouchableOpacity>
           )}
           sections={this.state.requestSectionData.length !== 0 ? [
             {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestSectionData.length + ')', data: this.state.requestSectionData},

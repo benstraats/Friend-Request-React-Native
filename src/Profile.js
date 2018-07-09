@@ -38,6 +38,7 @@ export default class Profile extends Component {
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
+      editMode: false,
     };
     this.getProfileHelper();
   }
@@ -119,7 +120,8 @@ export default class Profile extends Component {
             Alert.alert(STRINGS.SAVED_PROFILE)
             this.setState({
               profileID: responseJson._id,
-              saveProfile: false
+              saveProfile: false,
+              editMode: true,
             })
           }
           else {
@@ -138,7 +140,9 @@ export default class Profile extends Component {
       let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
-            Alert.alert(STRINGS.SAVED_PROFILE)
+            this.setState({
+              editMode: false,
+            })
           }
           else {
             Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
@@ -175,57 +179,74 @@ export default class Profile extends Component {
     })
   }
 
+  enterEditMode = () => {
+    this.setState({
+      editMode: true,
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
-        <View style={styles.buttonRow}>
-          <Button
-            style={styles.globalButtons}
-            onPress={this.saveProfileHelper}
-            title={STRINGS.SAVE}
-            color={COLORS.PRIMARY_COLOR}
-          />
-          <Button
-            style={styles.globalButtons}
-            onPress={this.addRow}
-            title={STRINGS.ADD_ROW}
-            color={COLORS.PRIMARY_COLOR}
-          />
-        </View>
-        {
-        <ListView
-          dataSource={this.state.dataSource}
-          enableEmptySections={true}
-          renderRow={(rowData) => 
-            <View style={styles.rowContainer}>
-              <TextInput
-                style={styles.rowTextBoxes}
-                autoCapitalize='none'
-                returnKeyType='go'
-                underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                onChangeText={(text) => rowData[0] = text}
-                maxLength={200}
-                defaultValue={rowData[0]}
-              />
-              <TextInput
-                style={styles.rowTextBoxes}
-                autoCapitalize='none'
-                returnKeyType='go'
-                underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                onChangeText={(text) => rowData[1] = text}
-                maxLength={200}
-                defaultValue={rowData[1]}
+        {this.state.editMode ? 
+          <View>
+            <View style={styles.buttonRow}>
+              <Button
+                style={styles.globalButtons}
+                onPress={this.saveProfileHelper}
+                title={STRINGS.SAVE}
+                color={COLORS.PRIMARY_COLOR}
               />
               <Button
-                style={styles.rowDeleteButtons}
-                onPress={() => this.deleteRow(rowData)}
-                title={STRINGS.DELETE_ROW}
+                style={styles.globalButtons}
+                onPress={this.addRow}
+                title={STRINGS.ADD_ROW}
                 color={COLORS.PRIMARY_COLOR}
               />
             </View>
-          }
-        />}
+            <ListView
+              dataSource={this.state.dataSource}
+              enableEmptySections={true}
+              renderRow={(rowData) => 
+                <View style={styles.rowContainer}>
+                  <TextInput
+                    style={styles.rowTextBoxes}
+                    autoCapitalize='none'
+                    returnKeyType='go'
+                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                    onChangeText={(text) => rowData[0] = text}
+                    maxLength={200}
+                    defaultValue={rowData[0]}
+                  />
+                  <TextInput
+                    style={styles.rowTextBoxes}
+                    autoCapitalize='none'
+                    returnKeyType='go'
+                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                    onChangeText={(text) => rowData[1] = text}
+                    maxLength={200}
+                    defaultValue={rowData[1]}
+                  />
+                  <Button
+                    style={styles.rowDeleteButtons}
+                    onPress={() => this.deleteRow(rowData)}
+                    title={STRINGS.DELETE_ROW}
+                    color={COLORS.PRIMARY_COLOR}
+                  />
+                </View>
+              }
+              />
+          </View> : 
+          <View>
+            <Button
+              style={styles.rowDeleteButtons}
+              onPress={() => this.enterEditMode()}
+              title={'Edit Profile'}
+              color={COLORS.PRIMARY_COLOR}
+              />
+          </View>
+        }
       </View>
     );
   }

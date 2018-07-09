@@ -420,7 +420,7 @@ class Landing extends Component {
             {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
-          onEndReached={this.scrolledToBottom()}
+          onEndReached={() => this.scrolledToBottom()}
         />
       </View>
     );

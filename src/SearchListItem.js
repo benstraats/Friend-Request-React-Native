@@ -226,7 +226,7 @@ export default class SearchListItem extends Component {
   render() {
     return (
       <View>
-        <TouchableOpacity style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowPressed}>
+        <TouchableOpacity style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={() => this.rowPressed()}>
             <View style={styles.spacedRow}>
                 <View>
                     <Text style={styles.textBold}>

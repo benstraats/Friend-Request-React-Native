@@ -141,7 +141,7 @@ export default class Search extends Component {
             placeholder={STRINGS.SEARCH}
             autoCapitalize='none'
             returnKeyType={"search"}
-            onSubmitEditing={this.startSearch}
+            onSubmitEditing={() => this.startSearch()}
             underlineColorAndroid={COLORS.PRIMARY_COLOR}
             maxLength={100}
             onChangeText={(text) => this.setState({searchText: text})}
@@ -150,7 +150,7 @@ export default class Search extends Component {
           <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
           <Button
             style={styles.searchButton}
-            onPress={this.startSearch}
+            onPress={() => this.startSearch()}
             title={STRINGS.SEARCH}
             color={COLORS.PRIMARY_COLOR}
           />}
@@ -162,7 +162,7 @@ export default class Search extends Component {
             renderRow={
               (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>
             }
-            onEndReached={this.fullyScrolled()}
+            onEndReached={() => this.fullyScrolled()}
           />
         </View>
       </View>

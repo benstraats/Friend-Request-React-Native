@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
+import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -38,6 +38,7 @@ export default class Profile extends Component {
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
+      currentlySaving: false,
       editMode: false,
     };
     this.getProfileHelper();
@@ -101,6 +102,10 @@ export default class Profile extends Component {
     let profile = {}
     profile.profile = []
 
+    this.setState({
+      currentlySaving: true,
+    })
+
     let i=0;
 
     this.state.listDataSource.forEach(function(row) {
@@ -122,16 +127,23 @@ export default class Profile extends Component {
               profileID: responseJson._id,
               saveProfile: false,
               editMode: true,
+              currentlySaving: false,
             })
           }
           else {
             Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+            this.setState({
+              currentlySaving: false,
+            })
           }
         }
       }
 
       let onFailure = (error) => {
         Alert.alert(STRINGS.NO_INTERNET)
+        this.setState({
+          currentlySaving: false,
+        })
       }
 
       createProfile(profile, onSuccess, onFailure)
@@ -142,16 +154,23 @@ export default class Profile extends Component {
           if (responseJson.code === undefined || responseJson.code == 200) {
             this.setState({
               editMode: false,
+              currentlySaving: false,
             })
           }
           else {
             Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+            this.setState({
+              currentlySaving: false,
+            })
           }
         }
       }
 
       let onFailure = (error) => {
         Alert.alert(STRINGS.NO_INTERNET)
+        this.setState({
+          currentlySaving: false,
+        })
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)
@@ -191,20 +210,23 @@ export default class Profile extends Component {
         <StatusBarOffset />
         {this.state.editMode ? 
           <View>
-            <View style={styles.buttonRow}>
-              <Button
-                style={styles.globalButtons}
-                onPress={this.saveProfileHelper}
-                title={STRINGS.SAVE}
-                color={COLORS.PRIMARY_COLOR}
-              />
-              <Button
-                style={styles.globalButtons}
-                onPress={this.addRow}
-                title={STRINGS.ADD_ROW}
-                color={COLORS.PRIMARY_COLOR}
-              />
-            </View>
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <View style={styles.buttonRow}>
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.saveProfileHelper}
+                  title={STRINGS.SAVE}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.addRow}
+                  title={STRINGS.ADD_ROW}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+              </View>
+            }
             <ListView
               dataSource={this.state.dataSource}
               enableEmptySections={true}
@@ -236,14 +258,28 @@ export default class Profile extends Component {
                   />
                 </View>
               }
-              />
+            />
           </View> : 
           <View>
-            <Button
-              style={styles.rowDeleteButtons}
-              onPress={() => this.enterEditMode()}
-              title={'Edit Profile'}
-              color={COLORS.PRIMARY_COLOR}
+            {this.state.currentlySearching ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <Button
+                style={styles.rowDeleteButtons}
+                onPress={() => this.enterEditMode()}
+                title={'Edit Profile'}
+                color={COLORS.PRIMARY_COLOR}
+                />
+            }
+              <ListView
+              dataSource={this.state.dataSource}
+              enableEmptySections={true}
+              renderRow={(rowData) => 
+                <View style={styles.rowContainer}>
+                  <Text>
+                    {rowData[0] + ': ' + rowData[1]}
+                  </Text>
+                </View>
+              }
               />
           </View>
         }

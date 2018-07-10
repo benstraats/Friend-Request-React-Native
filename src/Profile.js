@@ -266,7 +266,7 @@ export default class Profile extends Component {
               <Button
                 style={styles.rowDeleteButtons}
                 onPress={() => this.enterEditMode()}
-                title={'Edit Profile'}
+                title={STRINGS.EDIT_PROFILE}
                 color={COLORS.PRIMARY_COLOR}
                 />
             }

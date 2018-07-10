@@ -71,6 +71,7 @@ export const STRINGS = {
     FRIEND_SECTION_HEADER: "Friends",
     REQUEST_SECTION_HEADER: "Requests",
 
+    EDIT_PROFILE: "Edit Profile",
     SAVED_PROFILE: "Saved Profile",
     MAX_PROFILE_REACHED: "Max number of profile rows reached",
 

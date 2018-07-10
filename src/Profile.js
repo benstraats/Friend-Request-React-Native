@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, ListView, TextInput } from 'react-native';
+import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -38,6 +38,8 @@ export default class Profile extends Component {
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
+      currentlySaving: false,
+      editMode: false,
     };
     this.getProfileHelper();
   }
@@ -100,6 +102,10 @@ export default class Profile extends Component {
     let profile = {}
     profile.profile = []
 
+    this.setState({
+      currentlySaving: true,
+    })
+
     let i=0;
 
     this.state.listDataSource.forEach(function(row) {
@@ -119,17 +125,25 @@ export default class Profile extends Component {
             Alert.alert(STRINGS.SAVED_PROFILE)
             this.setState({
               profileID: responseJson._id,
-              saveProfile: false
+              saveProfile: false,
+              editMode: true,
+              currentlySaving: false,
             })
           }
           else {
             Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+            this.setState({
+              currentlySaving: false,
+            })
           }
         }
       }
 
       let onFailure = (error) => {
         Alert.alert(STRINGS.NO_INTERNET)
+        this.setState({
+          currentlySaving: false,
+        })
       }
 
       createProfile(profile, onSuccess, onFailure)
@@ -138,16 +152,25 @@ export default class Profile extends Component {
       let onSuccess = (responseJson) => {
         if (responseJson !== undefined) {
           if (responseJson.code === undefined || responseJson.code == 200) {
-            Alert.alert(STRINGS.SAVED_PROFILE)
+            this.setState({
+              editMode: false,
+              currentlySaving: false,
+            })
           }
           else {
             Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+            this.setState({
+              currentlySaving: false,
+            })
           }
         }
       }
 
       let onFailure = (error) => {
         Alert.alert(STRINGS.NO_INTERNET)
+        this.setState({
+          currentlySaving: false,
+        })
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)
@@ -175,57 +198,91 @@ export default class Profile extends Component {
     })
   }
 
+  enterEditMode = () => {
+    this.setState({
+      editMode: true,
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
-        <View style={styles.buttonRow}>
-          <Button
-            style={styles.globalButtons}
-            onPress={this.saveProfileHelper}
-            title={STRINGS.SAVE}
-            color={COLORS.PRIMARY_COLOR}
-          />
-          <Button
-            style={styles.globalButtons}
-            onPress={this.addRow}
-            title={STRINGS.ADD_ROW}
-            color={COLORS.PRIMARY_COLOR}
-          />
-        </View>
-        {
-        <ListView
-          dataSource={this.state.dataSource}
-          enableEmptySections={true}
-          renderRow={(rowData) => 
-            <View style={styles.rowContainer}>
-              <TextInput
-                style={styles.rowTextBoxes}
-                autoCapitalize='none'
-                returnKeyType='go'
-                underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                onChangeText={(text) => rowData[0] = text}
-                maxLength={200}
-                defaultValue={rowData[0]}
-              />
-              <TextInput
-                style={styles.rowTextBoxes}
-                autoCapitalize='none'
-                returnKeyType='go'
-                underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                onChangeText={(text) => rowData[1] = text}
-                maxLength={200}
-                defaultValue={rowData[1]}
-              />
+        {this.state.editMode ? 
+          <View>
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <View style={styles.buttonRow}>
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.saveProfileHelper}
+                  title={STRINGS.SAVE}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.addRow}
+                  title={STRINGS.ADD_ROW}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+              </View>
+            }
+            <ListView
+              dataSource={this.state.dataSource}
+              enableEmptySections={true}
+              renderRow={(rowData) => 
+                <View style={styles.rowContainer}>
+                  <TextInput
+                    style={styles.rowTextBoxes}
+                    autoCapitalize='none'
+                    returnKeyType='go'
+                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                    onChangeText={(text) => rowData[0] = text}
+                    maxLength={200}
+                    defaultValue={rowData[0]}
+                  />
+                  <TextInput
+                    style={styles.rowTextBoxes}
+                    autoCapitalize='none'
+                    returnKeyType='go'
+                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                    onChangeText={(text) => rowData[1] = text}
+                    maxLength={200}
+                    defaultValue={rowData[1]}
+                  />
+                  <Button
+                    style={styles.rowDeleteButtons}
+                    onPress={() => this.deleteRow(rowData)}
+                    title={STRINGS.DELETE_ROW}
+                    color={COLORS.PRIMARY_COLOR}
+                  />
+                </View>
+              }
+            />
+          </View> : 
+          <View>
+            {this.state.currentlySearching ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
               <Button
                 style={styles.rowDeleteButtons}
-                onPress={() => this.deleteRow(rowData)}
-                title={STRINGS.DELETE_ROW}
+                onPress={() => this.enterEditMode()}
+                title={STRINGS.EDIT_PROFILE}
                 color={COLORS.PRIMARY_COLOR}
+                />
+            }
+              <ListView
+              dataSource={this.state.dataSource}
+              enableEmptySections={true}
+              renderRow={(rowData) => 
+                <View style={styles.rowContainer}>
+                  <Text>
+                    {rowData[0] + ': ' + rowData[1]}
+                  </Text>
+                </View>
+              }
               />
-            </View>
-          }
-        />}
+          </View>
+        }
       </View>
     );
   }

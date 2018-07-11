@@ -434,6 +434,8 @@ class Landing extends Component {
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this._onRefresh}
+              colors={[COLORS.PRIMARY_COLOR]}
+              tintColor={COLORS.PRIMARY_COLOR}
             />
           }
         />

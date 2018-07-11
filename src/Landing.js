@@ -134,6 +134,10 @@ class Landing extends Component {
             friendInfo.push(obj._id)
 
             friends.push(friendInfo)
+
+            friends.push(true)//expanded or not - 6
+            friends.push('')//Profile Info - 7
+            friends.push(false)//Loading profile - 8
           });
 
           this.setState({
@@ -188,6 +192,10 @@ class Landing extends Component {
             friendInfo.push(obj._id)
 
             friends.push(friendInfo)
+
+            friends.push(true)//expanded or not - 6
+            friends.push('')//Profile Info - 7
+            friends.push(false)//Loading profile - 8
           });
 
           this.setState({
@@ -227,7 +235,21 @@ class Landing extends Component {
   onPressFn = (rowData) =>{
 
     if (rowData[3] === STRINGS.FRIENDS) {
-      this.getProfileHelper(rowData)
+      let index = this.state.friendSectionData.indexOf(rowData);
+      let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+      clonedArray[index][6] = !clonedArray[index][6]
+
+      if (clonedArray[index][6]) {
+        clonedArray[index][8] = true
+      } else {
+        clonedArray[index][8] = false
+      }
+
+      this.setState({
+        friendSectionData: clonedArray
+      })
+
+      this.getProfileHelper(clonedArray[index]);
     }
     else {
      Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData[2] + '?',
@@ -252,22 +274,20 @@ class Landing extends Component {
             let z = y.profile
 
             z.forEach(function(obj) { 
-              profile += obj.key + ": " + obj.value + "\n"
+              profile +=  "\n" + obj.key + ": " + obj.value
             });
-
-            Alert.alert(rowData[1], profile,
-              [
-                {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
-                {text: STRINGS.PROFILE_ALERT_OK},
-              ],)
           }
           else {
-            Alert.alert(rowData[1], STRINGS.PROFILE_ALERT_NO_PROFILE,
-            [
-              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
-              {text: STRINGS.PROFILE_ALERT_OK},
-            ],)
+            profile = STRINGS.PROFILE_ALERT_NO_PROFILE
           }
+          let index = this.state.friendSectionData.indexOf(rowData);
+          let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+          clonedArray[index][7] = profile
+          clonedArray[index][8] = false
+
+          this.setState({
+            friendSectionData: clonedArray
+          })
         }
         else {
           Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
@@ -385,7 +405,7 @@ class Landing extends Component {
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
             <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
-              {(this.state.requestSectionExpanded || item[3] !== STRINGS.REQUESTEE) && 
+              {((this.state.requestSectionExpanded || item[3] !== STRINGS.REQUESTEE) && item[0] !== undefined && item !== undefined) && 
               <View>
                 <View>
                   <Text style={styles.textBold}>
@@ -394,6 +414,13 @@ class Landing extends Component {
                   <Text style={styles.textFaded}>
                     {item[2]}
                   </Text>
+                  {item[6] &&
+                  <View>
+                      {item[8] ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
+                      <Text>{item[7]}</Text>
+                      }
+                    </View>
+                  }
                 </View>
                 <View
                   style={{
@@ -433,7 +460,7 @@ class Landing extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
+              onRefresh={() => this._onRefresh()}
               colors={[COLORS.PRIMARY_COLOR]}
               tintColor={COLORS.PRIMARY_COLOR}
             />

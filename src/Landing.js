@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -36,6 +36,8 @@ class Landing extends Component {
       accessToken: this.props.navigation.state.params.accessToken,
 
       requestSectionExpanded: false,
+
+      refreshing: false,
 
       friendSkip: 0,
       friendLimit: 50,
@@ -143,13 +145,14 @@ class Landing extends Component {
         }
 
         this.setState({
-          friendCurrentlyLoading: false
+          friendCurrentlyLoading: false,
+          refreshing: false,
         })
       }
     }
 
     let onFailure = (error) => {
-      this.setError(STRINGS.NO_INTERNET)
+      //this.setError(STRINGS.NO_INTERNET)
     }
 
     getFriends(this.state.friendLimit, this.state.friendSkip, onSuccess, onFailure)
@@ -196,13 +199,14 @@ class Landing extends Component {
         }
 
         this.setState({
-          requestCurrentlyLoading: false
+          requestCurrentlyLoading: false,
+          refreshing: false,
         })
       }
     }
 
     let onFailure = (error) => {
-      this.setError(STRINGS.NO_INTERNET)
+      //this.setError(STRINGS.NO_INTERNET)
     }
 
     getRequests(this.state.requestLimit, this.state.requestSkip, onSuccess, onFailure)
@@ -368,6 +372,11 @@ class Landing extends Component {
     }
   }
 
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.initialLoad();
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -421,6 +430,12 @@ class Landing extends Component {
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={() => this.scrolledToBottom()}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
         />
       </View>
     );

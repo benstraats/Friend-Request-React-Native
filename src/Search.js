@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator, RefreshControl } from 'react-native';
+import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
 import {search} from './utils/APICalls'
@@ -36,7 +36,6 @@ export default class Search extends Component {
       searchLimit: 50,
       fullyDoneSearch: true,
       currentlySearching: false,
-      refreshing: false,
       savedSearchText: '',
     };
   }
@@ -105,7 +104,6 @@ export default class Search extends Component {
             this.setState({
               dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
               currentlySearching: false,
-              refreshing: false,
             })
           })
         }
@@ -131,11 +129,6 @@ export default class Search extends Component {
         this.apiSearch()
       })
     }
-  }
-
-  _onRefresh = () => {
-    this.setState({refreshing: true});
-    this.startSearch();
   }
 
   render() {
@@ -170,14 +163,6 @@ export default class Search extends Component {
               (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>
             }
             onEndReached={() => this.fullyScrolled()}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={this._onRefresh}
-                colors={[COLORS.PRIMARY_COLOR]}
-                tintColor={COLORS.PRIMARY_COLOR}
-              />
-            }
           />
         </View>
       </View>

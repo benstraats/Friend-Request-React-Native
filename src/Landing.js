@@ -121,23 +121,22 @@ class Landing extends Component {
               friendID = obj.user2
             }
 
-            friendInfo = []
-            friendInfo.push(friendID)
+            friendInfo = {}
+            friendInfo.userID = friendID
 
             responseJson.users.data.forEach(function(obj) {
               if (obj._id == friendID) {
-                friendInfo.push(obj.name)
-                friendInfo.push(obj.email)
-                friendInfo.push(STRINGS.FRIENDS)
+                friendInfo.userName = obj.name
+                friendInfo.userEmail = obj.email
+                friendInfo.relationship = STRINGS.FRIENDS
               }
             })
-            friendInfo.push(obj._id)
+            friendInfo.relationshipID = obj._id
+            friendInfo.expanded = false
+            friendInfo.profileInfo = ''
+            friendInfo.loadingProfile = false
 
             friends.push(friendInfo)
-
-            friends.push(true)//expanded or not - 6
-            friends.push('')//Profile Info - 7
-            friends.push(false)//Loading profile - 8
           });
 
           this.setState({
@@ -167,7 +166,7 @@ class Landing extends Component {
     let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          let friends = [];
+          let requests = [];
 
           if (responseJson.requests.data.length < this.state.requestLimit || responseJson.requests.data.limit === this.state.requestLimit + this.state.requestSkip) {
             this.setState({
@@ -178,28 +177,26 @@ class Landing extends Component {
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
 
-            friendInfo = []
-            friendInfo.push(requesterID)
+            requestInfo = {}
+            requestInfo.userID = requesterID
 
             responseJson.users.data.forEach(function(userObj) {
               if (userObj._id == requesterID) {
-                friendInfo.push(userObj.name)
-                friendInfo.push(userObj.email)
-                friendInfo.push(STRINGS.REQUESTEE)
+                requestInfo.userName = userObj.name
+                requestInfo.userEmail = userObj.email
+                requestInfo.relationship = STRINGS.REQUESTEE
               }
             })
+            requestInfo.relationshipID = obj._id
+            requestInfo.expanded = false
+            requestInfo.profileInfo = ''
+            requestInfo.loadingProfile = false
 
-            friendInfo.push(obj._id)
-
-            friends.push(friendInfo)
-
-            friends.push(true)//expanded or not - 6
-            friends.push('')//Profile Info - 7
-            friends.push(false)//Loading profile - 8
+            requests.push(requestInfo)
           });
 
           this.setState({
-            requestSectionData: this.state.requestSectionData.concat(friends)
+            requestSectionData: this.state.requestSectionData.concat(requests)
           })
         }
         else {
@@ -233,16 +230,16 @@ class Landing extends Component {
   }
 
   onPressFn = (rowData) =>{
-
-    if (rowData[3] === STRINGS.FRIENDS) {
+    //Alert.alert('Row info', JSON.stringify(rowData))
+    if (rowData.relationship === STRINGS.FRIENDS) {
       let index = this.state.friendSectionData.indexOf(rowData);
       let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-      clonedArray[index][6] = !clonedArray[index][6]
+      clonedArray[index].expanded = !clonedArray[index].expanded
 
-      if (clonedArray[index][6]) {
-        clonedArray[index][8] = true
+      if (clonedArray[index].expanded) {
+        clonedArray[index].loadingProfile = true
       } else {
-        clonedArray[index][8] = false
+        clonedArray[index].loadingProfile = false
       }
 
       this.setState({
@@ -252,7 +249,7 @@ class Landing extends Component {
       this.getProfileHelper(clonedArray[index]);
     }
     else {
-     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData[2] + '?',
+     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData.userEmail + '?',
       [
         {text: STRINGS.REQUEST_RESPONSE_ALERT_CANCEL, style: 'cancel'},
         {text: STRINGS.REQUEST_RESPONSE_ALERT_REJECT, onPress: () => this.rejectRequestHelper(rowData)},
@@ -282,8 +279,8 @@ class Landing extends Component {
           }
           let index = this.state.friendSectionData.indexOf(rowData);
           let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-          clonedArray[index][7] = profile
-          clonedArray[index][8] = false
+          clonedArray[index].profileInfo = profile
+          clonedArray[index].loadingProfile = false
 
           this.setState({
             friendSectionData: clonedArray
@@ -299,7 +296,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    getProfile(rowData[0], onSuccess, onFailure)
+    getProfile(rowData.userID, onSuccess, onFailure)
   }
 
   acceptRequestHelper = (rowData) =>{
@@ -313,6 +310,9 @@ class Landing extends Component {
           this.setState({
             requestSectionData: clonedArray
           })
+
+          rowData.relationship = STRINGS.FRIENDS
+          rowData.relationshipID = responseJson._id
 
           let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
           friendClonedArray.push(rowData);
@@ -331,7 +331,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    acceptRequest(rowData[4], onSuccess, onFailure)
+    acceptRequest(rowData.relationshipID, onSuccess, onFailure)
   }
 
   rejectRequestHelper = (rowData) =>{
@@ -356,7 +356,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    rejectRequest(rowData[4], onSuccess, onFailure)
+    rejectRequest(rowData.relationshipID, onSuccess, onFailure)
   }
 
   removeFriendHelper = (rowData) =>{
@@ -381,7 +381,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    removeFriend(rowData[4], onSuccess, onFailure)
+    removeFriend(rowData.relationshipID, onSuccess, onFailure)
   }
 
   headerPress = (sectionTitle) => {
@@ -405,19 +405,19 @@ class Landing extends Component {
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
             <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
-              {((this.state.requestSectionExpanded || item[3] !== STRINGS.REQUESTEE) && item[0] !== undefined && item !== undefined) && 
+              {((this.state.requestSectionExpanded || item.relationship !== STRINGS.REQUESTEE) && item.userID !== undefined && item !== undefined) && 
               <View>
                 <View>
                   <Text style={styles.textBold}>
-                    {item[1]}
+                    {item.userName}
                   </Text>
                   <Text style={styles.textFaded}>
-                    {item[2]}
+                    {item.userEmail}
                   </Text>
-                  {item[6] &&
+                  {item.expanded &&
                   <View>
-                      {item[8] ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
-                      <Text>{item[7]}</Text>
+                      {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
+                      <Text>{item.profileInfo}</Text>
                       }
                     </View>
                   }

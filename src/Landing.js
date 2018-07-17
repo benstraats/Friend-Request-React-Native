@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -51,15 +51,31 @@ class Landing extends Component {
 
       requestSectionData: [],
       friendSectionData: [],
+
+      appState: AppState.currentState
     };
     this.getFriendsHelper()
     this.getRequestsHelper()
   }
 
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      //This wont be triggered on tab switching of profile and search. Good thing?
+      this.initialLoad();
+    }
+    this.setState({appState: nextAppState});
+  }
+
   initialLoad = () => {
     this.setState({
-      requestSectionData: [],
-      friendSectionData: [],
       friendSkip: 0,
       friendCurrentlyLoading: true,
       friendFullyDoneLoading: false,
@@ -139,9 +155,15 @@ class Landing extends Component {
             friends.push(friendInfo)
           });
 
-          this.setState({
-            friendSectionData: this.state.friendSectionData.concat(friends)
-          })
+          if (this.state.friendSkip === 0) {
+            this.setState({
+              friendSectionData: friends
+            })
+          } else {
+            this.setState({
+              friendSectionData: this.state.friendSectionData.concat(friends)
+            })
+          }
         }
         else {
           Alert.alert(STRINGS.GET_FRIENDS_LIST_FAIL, '' + JSON.stringify(responseJson))
@@ -195,9 +217,15 @@ class Landing extends Component {
             requests.push(requestInfo)
           });
 
-          this.setState({
-            requestSectionData: this.state.requestSectionData.concat(requests)
-          })
+          if (this.state.requestSkip === 0) {
+            this.setState({
+              requestSectionData: requests
+            })
+          } else {
+            this.setState({
+              requestSectionData: this.state.requestSectionData.concat(requests)
+            })
+          }
         }
         else {
           Alert.alert(STRINGS.GET_REQUESTS_LIST_FAIL, '' + JSON.stringify(responseJson))
@@ -311,15 +339,17 @@ class Landing extends Component {
             requestSectionData: clonedArray
           })
 
-          rowData.relationship = STRINGS.FRIENDS
-          rowData.relationshipID = responseJson._id
+          if (this.state.friendFullyDoneLoading) {
+            rowData.relationship = STRINGS.FRIENDS
+            rowData.relationshipID = responseJson._id
 
-          let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-          friendClonedArray.push(rowData);
+            let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+            friendClonedArray.push(rowData);
 
-          this.setState({
-            friendSectionData: friendClonedArray
-          })
+            this.setState({
+              friendSectionData: friendClonedArray
+            })
+          }
         }
         else {
           Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))

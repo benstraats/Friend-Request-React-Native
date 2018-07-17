@@ -121,17 +121,20 @@ class Landing extends Component {
               friendID = obj.user2
             }
 
-            friendInfo = []
-            friendInfo.push(friendID)
+            friendInfo = {}
+            friendInfo.userID = friendID
 
             responseJson.users.data.forEach(function(obj) {
               if (obj._id == friendID) {
-                friendInfo.push(obj.name)
-                friendInfo.push(obj.email)
-                friendInfo.push(STRINGS.FRIENDS)
+                friendInfo.userName = obj.name
+                friendInfo.userEmail = obj.email
+                friendInfo.relationship = STRINGS.FRIENDS
               }
             })
-            friendInfo.push(obj._id)
+            friendInfo.relationshipID = obj._id
+            friendInfo.expanded = false
+            friendInfo.profileInfo = ''
+            friendInfo.loadingProfile = false
 
             friends.push(friendInfo)
           });
@@ -163,7 +166,7 @@ class Landing extends Component {
     let onSuccess = (responseJson) => {
       if (responseJson !== undefined) {
         if (responseJson.code === undefined || responseJson.code == 200) {
-          let friends = [];
+          let requests = [];
 
           if (responseJson.requests.data.length < this.state.requestLimit || responseJson.requests.data.limit === this.state.requestLimit + this.state.requestSkip) {
             this.setState({
@@ -174,24 +177,26 @@ class Landing extends Component {
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
 
-            friendInfo = []
-            friendInfo.push(requesterID)
+            requestInfo = {}
+            requestInfo.userID = requesterID
 
             responseJson.users.data.forEach(function(userObj) {
               if (userObj._id == requesterID) {
-                friendInfo.push(userObj.name)
-                friendInfo.push(userObj.email)
-                friendInfo.push(STRINGS.REQUESTEE)
+                requestInfo.userName = userObj.name
+                requestInfo.userEmail = userObj.email
+                requestInfo.relationship = STRINGS.REQUESTEE
               }
             })
+            requestInfo.relationshipID = obj._id
+            requestInfo.expanded = false
+            requestInfo.profileInfo = ''
+            requestInfo.loadingProfile = false
 
-            friendInfo.push(obj._id)
-
-            friends.push(friendInfo)
+            requests.push(requestInfo)
           });
 
           this.setState({
-            requestSectionData: this.state.requestSectionData.concat(friends)
+            requestSectionData: this.state.requestSectionData.concat(requests)
           })
         }
         else {
@@ -225,12 +230,26 @@ class Landing extends Component {
   }
 
   onPressFn = (rowData) =>{
+    //Alert.alert('Row info', JSON.stringify(rowData))
+    if (rowData.relationship === STRINGS.FRIENDS) {
+      let index = this.state.friendSectionData.indexOf(rowData);
+      let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+      clonedArray[index].expanded = !clonedArray[index].expanded
 
-    if (rowData[3] === STRINGS.FRIENDS) {
-      this.getProfileHelper(rowData)
+      if (clonedArray[index].expanded) {
+        clonedArray[index].loadingProfile = true
+      } else {
+        clonedArray[index].loadingProfile = false
+      }
+
+      this.setState({
+        friendSectionData: clonedArray
+      })
+
+      this.getProfileHelper(clonedArray[index]);
     }
     else {
-     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData[2] + '?',
+     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData.userEmail + '?',
       [
         {text: STRINGS.REQUEST_RESPONSE_ALERT_CANCEL, style: 'cancel'},
         {text: STRINGS.REQUEST_RESPONSE_ALERT_REJECT, onPress: () => this.rejectRequestHelper(rowData)},
@@ -252,22 +271,20 @@ class Landing extends Component {
             let z = y.profile
 
             z.forEach(function(obj) { 
-              profile += obj.key + ": " + obj.value + "\n"
+              profile +=  "\n" + obj.key + ": " + obj.value
             });
-
-            Alert.alert(rowData[1], profile,
-              [
-                {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
-                {text: STRINGS.PROFILE_ALERT_OK},
-              ],)
           }
           else {
-            Alert.alert(rowData[1], STRINGS.PROFILE_ALERT_NO_PROFILE,
-            [
-              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper(rowData)},
-              {text: STRINGS.PROFILE_ALERT_OK},
-            ],)
+            profile = STRINGS.PROFILE_ALERT_NO_PROFILE
           }
+          let index = this.state.friendSectionData.indexOf(rowData);
+          let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+          clonedArray[index].profileInfo = profile
+          clonedArray[index].loadingProfile = false
+
+          this.setState({
+            friendSectionData: clonedArray
+          })
         }
         else {
           Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
@@ -279,7 +296,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    getProfile(rowData[0], onSuccess, onFailure)
+    getProfile(rowData.userID, onSuccess, onFailure)
   }
 
   acceptRequestHelper = (rowData) =>{
@@ -293,6 +310,9 @@ class Landing extends Component {
           this.setState({
             requestSectionData: clonedArray
           })
+
+          rowData.relationship = STRINGS.FRIENDS
+          rowData.relationshipID = responseJson._id
 
           let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
           friendClonedArray.push(rowData);
@@ -311,7 +331,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    acceptRequest(rowData[4], onSuccess, onFailure)
+    acceptRequest(rowData.relationshipID, onSuccess, onFailure)
   }
 
   rejectRequestHelper = (rowData) =>{
@@ -336,7 +356,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    rejectRequest(rowData[4], onSuccess, onFailure)
+    rejectRequest(rowData.relationshipID, onSuccess, onFailure)
   }
 
   removeFriendHelper = (rowData) =>{
@@ -361,7 +381,7 @@ class Landing extends Component {
       Alert.alert(STRINGS.NO_INTERNET)
     }
 
-    removeFriend(rowData[4], onSuccess, onFailure)
+    removeFriend(rowData.relationshipID, onSuccess, onFailure)
   }
 
   headerPress = (sectionTitle) => {
@@ -385,15 +405,22 @@ class Landing extends Component {
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
             <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
-              {(this.state.requestSectionExpanded || item[3] !== STRINGS.REQUESTEE) && 
+              {((this.state.requestSectionExpanded || item.relationship !== STRINGS.REQUESTEE) && item.userID !== undefined && item !== undefined) && 
               <View>
                 <View>
                   <Text style={styles.textBold}>
-                    {item[1]}
+                    {item.userName}
                   </Text>
                   <Text style={styles.textFaded}>
-                    {item[2]}
+                    {item.userEmail}
                   </Text>
+                  {item.expanded &&
+                  <View>
+                      {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
+                      <Text>{item.profileInfo}</Text>
+                      }
+                    </View>
+                  }
                 </View>
                 <View
                   style={{
@@ -433,7 +460,7 @@ class Landing extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
+              onRefresh={() => this._onRefresh()}
               colors={[COLORS.PRIMARY_COLOR]}
               tintColor={COLORS.PRIMARY_COLOR}
             />

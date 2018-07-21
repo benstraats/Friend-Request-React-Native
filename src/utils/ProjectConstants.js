@@ -58,10 +58,10 @@ export const STRINGS = {
     REQUEST_CANCEL_ALERT_DONT_CANCEL: "Don\'t Cancel",
     REQUEST_CANCEL_ALERT_CANCEL_REQUEST: "Cancel Reuqest",
 
-    PROFILE_ALERT_HEADER: "Friends Profile",
-    PROFILE_ALERT_OK: "OK",
-    PROFILE_ALERT_DELETE: "Delete Friend",
-    PROFILE_ALERT_NO_PROFILE: "User has no profile",
+    DELETE_FRIEND_ALERT_HEADER: 'Remove Friend',
+    DELETE_FRIEND_ALERT_BODY: 'Are you sure you want to remove ',
+    DELETE_FRIEND_ALERT_ACCEPT: 'Remove ',
+    DELETE_FRIEND_ALERT_CANCEL: 'Cancel ',
 
     ADD_ALERT_HEADER: "Request User",
     ADD_ALERT_BODY: "Do you want to send a friend request to ",
@@ -70,6 +70,9 @@ export const STRINGS = {
 
     FRIEND_SECTION_HEADER: "Friends",
     REQUEST_SECTION_HEADER: "Requests",
+
+    DELETE_FRIEND: "Delete Friend",
+    NO_PROFILE: "User has no profile",
 
     EDIT_PROFILE: "Edit Profile",
     SAVED_PROFILE: "Saved Profile",

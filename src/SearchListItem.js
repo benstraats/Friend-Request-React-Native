@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import {getProfile, acceptRequest, rejectRequest, requestUser} from './utils/APICalls'
+import { Alert, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
+import {getProfile, acceptRequest, rejectRequest, requestUser, removeFriend} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
@@ -33,6 +33,9 @@ export default class SearchListItem extends Component {
       usersRelationship: this.props.rowData[3],
       usersRelationshipID: this.props.rowData[4],
       currentlyLoading: false,
+      loadingProfile: false,
+      expandedRow: false,
+      profileText: '',
     };
   }
 
@@ -41,7 +44,7 @@ export default class SearchListItem extends Component {
     if (this.state.currentlyLoading) {return}
 
     if (this.state.usersRelationship == STRINGS.FRIENDS_MESSAGE) {
-      this.getProfileHelper(this.state.usersID)
+      this.friendRowTapped()
     }
 
     else if (this.state.usersRelationship == STRINGS.REQUESTEE_MESSAGE) {
@@ -71,6 +74,21 @@ export default class SearchListItem extends Component {
     }
   }
 
+  friendRowTapped = () => {
+    if (this.state.expandedRow) {//collapse row
+      this.setState({
+        loadingProfile: false,
+        expandedRow: false,
+      })
+    } else {//expand row
+      this.setState({
+        loadingProfile: true,
+        expandedRow: true,
+      })
+      this.getProfileHelper(this.state.usersID)
+    }
+  }
+
   getProfileHelper = (targetID) =>{
 
     let onSuccess = (responseJson) => {
@@ -87,20 +105,15 @@ export default class SearchListItem extends Component {
             z.forEach(function(obj) { 
               profile += obj.key + ": " + obj.value + "\n"
             });
-
-            Alert.alert(STRINGS.PROFILE_ALERT_HEADER, profile,
-            [
-              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper()},
-              {text: STRINGS.PROFILE_ALERT_OK},
-            ],)
           }
           else {
-            Alert.alert(STRINGS.PROFILE_ALERT_HEADER, STRINGS.PROFILE_ALERT_NO_PROFILE,
-            [
-              {text: STRINGS.PROFILE_ALERT_DELETE, onPress: () => this.removeFriendHelper()},
-              {text: STRINGS.PROFILE_ALERT_OK},
-            ],)
+            profle = STRINGS.NO_PROFILE
           }
+
+          this.setState({
+            profileText: profile,
+            loadingProfile: false,
+          })
         }
         else {
           Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
@@ -223,27 +236,50 @@ export default class SearchListItem extends Component {
     removeFriend(this.state.usersRelationshipID, onSuccess, onFailure)
   }
 
+  deleteFriendAlert = () => {
+    Alert.alert(STRINGS.DELETE_FRIEND_ALERT_HEADER, STRINGS.DELETE_FRIEND_ALERT_BODY + this.state.usersName + '?',
+      [
+        {text: STRINGS.DELETE_FRIEND_ALERT_CANCEL, style: 'cancel'},
+        {text: STRINGS.DELETE_FRIEND_ALERT_ACCEPT, onPress: () => this.removeFriendHelper()},
+      ],); 
+  }
+
   render() {
     return (
       <View>
         <TouchableOpacity style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={() => this.rowPressed()}>
             <View style={styles.spacedRow}>
-                <View>
-                    <Text style={styles.textBold}>
-                        {this.state.usersName}
-                    </Text>
-                    <Text style={styles.textFaded}>
-                        {this.state.usersUsername}
-                    </Text>
-                </View>
-                <View>
-                    {this.state.currentlyLoading ? 
-                    <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
-                    <Text style={styles.textFaded}>
-                        {this.state.usersRelationship}
-                    </Text>}
-                </View>
+              <View>
+                  <Text style={styles.textBold}>
+                      {this.state.usersName}
+                  </Text>
+                  <Text style={styles.textFaded}>
+                      {this.state.usersUsername}
+                  </Text>
+              </View>
+              <View>
+                  {this.state.currentlyLoading ? 
+                  <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
+                  <Text style={styles.textFaded}>
+                      {this.state.usersRelationship}
+                  </Text>}
+              </View>
             </View>
+            {(this.state.usersRelationship == STRINGS.FRIENDS_MESSAGE && this.state.expandedRow) &&
+              <View>
+                {this.state.loadingProfile && 
+                  <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />
+                }
+                <Text>
+                  {this.state.profileText}
+                </Text>
+                <Button
+                  onPress={() => this.deleteFriendAlert()}
+                  title={STRINGS.DELETE_FRIEND}
+                  color={COLORS.PRIMARY_COLOR}
+                  />
+              </View>
+            }
         </TouchableOpacity>
         <View
           style={{

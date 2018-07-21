@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState } from 'react-native';
+import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 
 import Search from './Search'
@@ -303,7 +303,7 @@ class Landing extends Component {
             });
           }
           else {
-            profile = STRINGS.PROFILE_ALERT_NO_PROFILE
+            profile = STRINGS.NO_PROFILE
           }
           let index = this.state.friendSectionData.indexOf(rowData);
           let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
@@ -427,6 +427,14 @@ class Landing extends Component {
     this.initialLoad();
   }
 
+  deleteFriendAlert = (rowData) => {
+    Alert.alert(STRINGS.DELETE_FRIEND_ALERT_HEADER, STRINGS.DELETE_FRIEND_ALERT_BODY + rowData.userName + '?',
+      [
+        {text: STRINGS.DELETE_FRIEND_ALERT_CANCEL, style: 'cancel'},
+        {text: STRINGS.DELETE_FRIEND_ALERT_ACCEPT, onPress: () => this.removeFriendHelper(rowData)},
+      ],); 
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -449,6 +457,11 @@ class Landing extends Component {
                       {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
                       <Text>{item.profileInfo}</Text>
                       }
+                      <Button
+                        onPress={() => this.deleteFriendAlert(item)}
+                        title={STRINGS.DELETE_FRIEND}
+                        color={COLORS.PRIMARY_COLOR}
+                        />
                     </View>
                   }
                 </View>

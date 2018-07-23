@@ -48,6 +48,7 @@ class Landing extends Component {
       requestLimit: 50,
       requestCurrentlyLoading: true,
       requestFullyDoneLoading: false,
+      requestTotal: 0,
 
       requestSectionData: [],
       friendSectionData: [],
@@ -91,7 +92,7 @@ class Landing extends Component {
 
   scrolledToBottom = () => {
     this.loadNextFriends()
-    this.loadNextRequests()
+    //this.loadNextRequests()
   }
 
   loadNextFriends = () => {
@@ -124,7 +125,7 @@ class Landing extends Component {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
 
-          if (responseJson.friends.data.length < this.state.friendLimit || responseJson.friends.data.limit === this.state.friendLimit + this.state.friendSkip) {
+          if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
             this.setState({
               friendFullyDoneLoading: true
             })
@@ -190,11 +191,15 @@ class Landing extends Component {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let requests = [];
 
-          if (responseJson.requests.data.length < this.state.requestLimit || responseJson.requests.data.limit === this.state.requestLimit + this.state.requestSkip) {
+          if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
             this.setState({
               requestFullyDoneLoading: true
             })
           }
+
+          this.setState({
+            requestTotal: responseJson.requests.total
+          })
 
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
@@ -493,7 +498,7 @@ class Landing extends Component {
             </TouchableOpacity>
           )}
           sections={this.state.requestSectionData.length !== 0 ? [
-            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestSectionData.length + ')', data: this.state.requestSectionData},
+            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestTotal + ')', data: this.state.requestSectionData},
             {title: '\n' + STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ] : [
             {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},

@@ -263,7 +263,6 @@ class Landing extends Component {
   }
 
   onPressFn = (rowData) =>{
-    //Alert.alert('Row info', JSON.stringify(rowData))
     if (rowData.relationship === STRINGS.FRIENDS) {
       let index = this.state.friendSectionData.indexOf(rowData);
       let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
@@ -352,7 +351,8 @@ class Landing extends Component {
             friendClonedArray.push(rowData);
 
             this.setState({
-              friendSectionData: friendClonedArray
+              friendSectionData: friendClonedArray,
+              requestTotal: this.state.requestTotal-1,
             })
           }
         }
@@ -378,7 +378,8 @@ class Landing extends Component {
           clonedArray.splice(index, 1);
 
           this.setState({
-            requestSectionData: clonedArray
+            requestSectionData: clonedArray,
+            requestTotal: this.state.requestTotal-1,
           })
         }
         else {

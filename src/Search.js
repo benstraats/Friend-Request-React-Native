@@ -62,7 +62,7 @@ export default class Search extends Component {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
 
-          if (responseJson.users.data.length < this.state.searchLimit || responseJson.users.data.limit === this.state.searchLimit + this.state.searchLimit) {
+          if (responseJson.users.total <= this.state.searchSkip + this.state.searchLimit) {
             this.setState({
               fullyDoneSearch: true
             })

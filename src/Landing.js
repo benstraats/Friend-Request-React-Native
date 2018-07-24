@@ -48,6 +48,7 @@ class Landing extends Component {
       requestLimit: 50,
       requestCurrentlyLoading: true,
       requestFullyDoneLoading: false,
+      requestTotal: 0,
 
       requestSectionData: [],
       friendSectionData: [],
@@ -91,7 +92,6 @@ class Landing extends Component {
 
   scrolledToBottom = () => {
     this.loadNextFriends()
-    this.loadNextRequests()
   }
 
   loadNextFriends = () => {
@@ -99,9 +99,9 @@ class Landing extends Component {
       this.setState({
         friendSkip: this.state.friendSkip + this.state.friendLimit,
         friendCurrentlyLoading: true,
+      }, () => {
+        this.getFriendsHelper()
       })
-
-      this.getFriendsHelper()
     }
   }
 
@@ -110,9 +110,9 @@ class Landing extends Component {
       this.setState({
         requestSkip: this.state.requestSkip + this.state.requestLimit,
         requestCurrentlyLoading: true,
+      }, () => {
+        this.getRequestsHelper()
       })
-
-      this.getRequestsHelper()
     }
   }
 
@@ -124,7 +124,7 @@ class Landing extends Component {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let friends = [];
 
-          if (responseJson.friends.data.length < this.state.friendLimit || responseJson.friends.data.limit === this.state.friendLimit + this.state.friendSkip) {
+          if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
             this.setState({
               friendFullyDoneLoading: true
             })
@@ -190,11 +190,15 @@ class Landing extends Component {
         if (responseJson.code === undefined || responseJson.code == 200) {
           let requests = [];
 
-          if (responseJson.requests.data.length < this.state.requestLimit || responseJson.requests.data.limit === this.state.requestLimit + this.state.requestSkip) {
+          if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
             this.setState({
               requestFullyDoneLoading: true
             })
           }
+
+          this.setState({
+            requestTotal: responseJson.requests.total
+          })
 
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
@@ -258,7 +262,6 @@ class Landing extends Component {
   }
 
   onPressFn = (rowData) =>{
-    //Alert.alert('Row info', JSON.stringify(rowData))
     if (rowData.relationship === STRINGS.FRIENDS) {
       let index = this.state.friendSectionData.indexOf(rowData);
       let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
@@ -347,7 +350,8 @@ class Landing extends Component {
             friendClonedArray.push(rowData);
 
             this.setState({
-              friendSectionData: friendClonedArray
+              friendSectionData: friendClonedArray,
+              requestTotal: this.state.requestTotal-1,
             })
           }
         }
@@ -373,7 +377,8 @@ class Landing extends Component {
           clonedArray.splice(index, 1);
 
           this.setState({
-            requestSectionData: clonedArray
+            requestSectionData: clonedArray,
+            requestTotal: this.state.requestTotal-1,
           })
         }
         else {
@@ -435,6 +440,23 @@ class Landing extends Component {
       ],); 
   }
 
+  viewableItemsChanged = (items) => {
+    if (!this.state.requestCurrentlyLoading && !this.state.requestFullyDoneLoading && this.state.requestSectionExpanded) {
+      let friendsSectionVisible = false;
+      for (let i=0; i<items.viewableItems.length; i++) {
+        if ((items.viewableItems[i].item.title !== undefined && items.viewableItems[i].item.title.indexOf(STRINGS.FRIEND_SECTION_HEADER) != -1) || items.viewableItems[i].item.relationship === STRINGS.FRIENDS) {
+          friendsSectionVisible = true;
+          Alert.alert('foasdfund!')
+          break;
+        }
+      }
+      if (friendsSectionVisible) {
+        Alert.alert('loading next batch')
+        this.loadNextRequests();
+      }
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -493,13 +515,14 @@ class Landing extends Component {
             </TouchableOpacity>
           )}
           sections={this.state.requestSectionData.length !== 0 ? [
-            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestSectionData.length + ')', data: this.state.requestSectionData},
+            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestTotal + ')', data: this.state.requestSectionData},
             {title: '\n' + STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ] : [
             {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={() => this.scrolledToBottom()}
+          onViewableItemsChanged={(items) => this.viewableItemsChanged(items)}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}

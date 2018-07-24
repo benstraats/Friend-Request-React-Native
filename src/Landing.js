@@ -92,7 +92,6 @@ class Landing extends Component {
 
   scrolledToBottom = () => {
     this.loadNextFriends()
-    //this.loadNextRequests()
   }
 
   loadNextFriends = () => {
@@ -100,9 +99,9 @@ class Landing extends Component {
       this.setState({
         friendSkip: this.state.friendSkip + this.state.friendLimit,
         friendCurrentlyLoading: true,
+      }, () => {
+        this.getFriendsHelper()
       })
-
-      this.getFriendsHelper()
     }
   }
 
@@ -111,9 +110,9 @@ class Landing extends Component {
       this.setState({
         requestSkip: this.state.requestSkip + this.state.requestLimit,
         requestCurrentlyLoading: true,
+      }, () => {
+        this.getRequestsHelper()
       })
-
-      this.getRequestsHelper()
     }
   }
 
@@ -441,6 +440,23 @@ class Landing extends Component {
       ],); 
   }
 
+  viewableItemsChanged = (items) => {
+    if (!this.state.requestCurrentlyLoading && !this.state.requestFullyDoneLoading && this.state.requestSectionExpanded) {
+      let friendsSectionVisible = false;
+      for (let i=0; i<items.viewableItems.length; i++) {
+        if ((items.viewableItems[i].item.title !== undefined && items.viewableItems[i].item.title.indexOf(STRINGS.FRIEND_SECTION_HEADER) != -1) || items.viewableItems[i].item.relationship === STRINGS.FRIENDS) {
+          friendsSectionVisible = true;
+          Alert.alert('foasdfund!')
+          break;
+        }
+      }
+      if (friendsSectionVisible) {
+        Alert.alert('loading next batch')
+        this.loadNextRequests();
+      }
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -506,6 +522,7 @@ class Landing extends Component {
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={() => this.scrolledToBottom()}
+          onViewableItemsChanged={(items) => this.viewableItemsChanged(items)}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}

@@ -339,7 +339,8 @@ class Landing extends Component {
           clonedArray.splice(index, 1);
 
           this.setState({
-            requestSectionData: clonedArray
+            requestSectionData: clonedArray,
+            requestTotal: this.state.requestTotal-1,
           })
 
           if (this.state.friendFullyDoneLoading) {
@@ -351,7 +352,6 @@ class Landing extends Component {
 
             this.setState({
               friendSectionData: friendClonedArray,
-              requestTotal: this.state.requestTotal-1,
             })
           }
         }

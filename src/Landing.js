@@ -522,6 +522,7 @@ class Landing extends Component {
           ]}
           keyExtractor={(item, index) => item + index}
           onEndReached={() => this.scrolledToBottom()}
+          onEndReachedThreshold={0.5}
           onViewableItemsChanged={(items) => this.viewableItemsChanged(items)}
           refreshControl={
             <RefreshControl

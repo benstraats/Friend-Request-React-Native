@@ -58,63 +58,64 @@ export default class Search extends Component {
   apiSearch = () =>{
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let friends = [];
+      if (responseJson === undefined) {
+        this.apiSearch()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let friends = [];
 
-          if (responseJson.users.total <= this.state.searchSkip + this.state.searchLimit) {
-            this.setState({
-              fullyDoneSearch: true
-            })
+      if (responseJson.users.total <= this.state.searchSkip + this.state.searchLimit) {
+        this.setState({
+          fullyDoneSearch: true
+        })
+      }
+
+      responseJson.users.data.forEach(function(obj) { 
+        let row = [];
+        row.push(obj._id)
+        row.push(obj.name)
+        row.push(obj.email)
+
+        responseJson.friends.data.forEach(function(friend) {
+          if (friend.user1 == obj._id || friend.user2 == obj._id) {
+            row.push(STRINGS.FRIENDS_MESSAGE)
+            row.push(friend._id)
           }
+        })
 
-          responseJson.users.data.forEach(function(obj) { 
-            let row = [];
-            row.push(obj._id)
-            row.push(obj.name)
-            row.push(obj.email)
+        responseJson.requests.data.forEach(function(request) {
+          if (request.requester == obj._id) {
+            row.push(STRINGS.REQUESTEE_MESSAGE)
+            row.push(request._id)
+          } else if(request.requestee == obj._id) {
+            row.push(STRINGS.REQUESTER_MESSAGE)
+            row.push(request._id)
+          }
+        })
 
-            responseJson.friends.data.forEach(function(friend) {
-              if (friend.user1 == obj._id || friend.user2 == obj._id) {
-                row.push(STRINGS.FRIENDS_MESSAGE)
-                row.push(friend._id)
-              }
-            })
-
-            responseJson.requests.data.forEach(function(request) {
-              if (request.requester == obj._id) {
-                row.push(STRINGS.REQUESTEE_MESSAGE)
-                row.push(request._id)
-              } else if(request.requestee == obj._id) {
-                row.push(STRINGS.REQUESTER_MESSAGE)
-                row.push(request._id)
-              }
-            })
-
-            if (row.length == 3) {
-              row.push(STRINGS.NOT_FRIENDS_MESSAGE)
-            }
-
-            friends.push(row)
-          });
-
-          this.setState({
-            listDataSource: this.state.listDataSource.concat(friends),
-          }, () => {
-            this.setState({
-              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
-              currentlySearching: false,
-            })
-          })
+        if (row.length == 3) {
+          row.push(STRINGS.NOT_FRIENDS_MESSAGE)
         }
-        else {
-          Alert.alert(STRINGS.SEARCH_FAIL, '' + JSON.stringify(responseJson))
-        }
+
+        friends.push(row)
+      });
+
+      this.setState({
+        listDataSource: this.state.listDataSource.concat(friends),
+      }, () => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+          currentlySearching: false,
+        })
+      })
+      }
+      else {
+        //response error
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     search(this.state.savedSearchText, this.state.searchLimit, this.state.searchSkip, onSuccess, onFailure)

@@ -46,52 +46,51 @@ export default class Profile extends Component {
 
   getProfileHelper = () =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-
-          //User hasnt created a profile yet
-          if (responseJson.data[0] === undefined) {
-            this.setState({
-              profileID: undefined,
-              listDataSource: [],
-              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
-              saveProfile: true,
-              currentlyLoading:false,
-            })
-          }
-
-          else {
-            let profile = [];
-
-            responseJson.data[0].profile.forEach(function(obj) { 
-              let row = []
-              row.push(obj.key)
-              row.push(obj.value)
-              profile.push(row)
-            })
-
-            this.setState({
-              listDataSource: profile,
-            })
-
-            this.setState({
-              profileID: responseJson.data[0]._id,
-              dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
-              saveProfile: false,
-              currentlyLoading: false,
-            })
-          }
+      if (responseJson === undefined) {
+        this.getProfileHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        //User hasnt created a profile yet
+        if (responseJson.data[0] === undefined) {
+          this.setState({
+            profileID: undefined,
+            listDataSource: [],
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+            saveProfile: true,
+            currentlyLoading:false,
+          })
         }
+
         else {
-          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
-          this.setState({currentlyLoading:false})
+          let profile = [];
+
+          responseJson.data[0].profile.forEach(function(obj) { 
+            let row = []
+            row.push(obj.key)
+            row.push(obj.value)
+            profile.push(row)
+          })
+
+          this.setState({
+            listDataSource: profile,
+          })
+
+          this.setState({
+            profileID: responseJson.data[0]._id,
+            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+            saveProfile: false,
+            currentlyLoading: false,
+          })
         }
+      }
+      else {
+        //response error
+        this.setState({currentlyLoading:false})
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      //fatal error
     }
 
     getProfile(this.state.userID, onSuccess, onFailure)
@@ -120,57 +119,54 @@ export default class Profile extends Component {
     if (this.state.profileID == '' || this.state.profileID === undefined) {
 
       let onSuccess = (responseJson) => {
-        if (responseJson !== undefined) {
-          if (responseJson.code === undefined || responseJson.code == 200) {
-            Alert.alert(STRINGS.SAVED_PROFILE)
-            this.setState({
-              profileID: responseJson._id,
-              saveProfile: false,
-              editMode: true,
-              currentlySaving: false,
-            })
-          }
-          else {
-            Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
-            this.setState({
-              currentlySaving: false,
-            })
-          }
+        if (responseJson === undefined) {
+          this.saveProfileHelper()
+        }
+        else if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert(STRINGS.SAVED_PROFILE)
+          this.setState({
+            profileID: responseJson._id,
+            saveProfile: false,
+            editMode: true,
+            currentlySaving: false,
+          })
+        }
+        else {
+          //response error
+          this.setState({
+            currentlySaving: false,
+          })
         }
       }
 
       let onFailure = (error) => {
-        Alert.alert(STRINGS.NO_INTERNET)
-        this.setState({
-          currentlySaving: false,
-        })
+        //fatal error
       }
 
       createProfile(profile, onSuccess, onFailure)
     }
     else {
       let onSuccess = (responseJson) => {
-        if (responseJson !== undefined) {
-          if (responseJson.code === undefined || responseJson.code == 200) {
-            this.setState({
-              editMode: false,
-              currentlySaving: false,
-            })
-          }
-          else {
-            Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
-            this.setState({
-              currentlySaving: false,
-            })
-          }
+        if (responseJson === undefined) {
+          this.saveProfileHelper()
+        }
+        else if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert(STRINGS.SAVED_PROFILE)
+          this.setState({
+            editMode: false,
+            currentlySaving: false,
+          })
+        }
+        else {
+          //response error
+          this.setState({
+            currentlySaving: false,
+          })
         }
       }
 
       let onFailure = (error) => {
-        Alert.alert(STRINGS.NO_INTERNET)
-        this.setState({
-          currentlySaving: false,
-        })
+        //fatal error
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)

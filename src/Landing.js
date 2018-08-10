@@ -120,53 +120,52 @@ class Landing extends Component {
     let self = this;
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let friends = [];
 
-          if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
-            this.setState({
-              friendFullyDoneLoading: true
-            })
-          }
+      if (responseJson === undefined) {
+        this.getFriendsHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let friends = [];
 
-          responseJson.friends.data.forEach(function(obj) { 
-            let friendID = obj.user1
-
-            if (friendID == self.state.userID) {
-              friendID = obj.user2
-            }
-
-            friendInfo = {}
-            friendInfo.userID = friendID
-
-            responseJson.users.data.forEach(function(obj) {
-              if (obj._id == friendID) {
-                friendInfo.userName = obj.name
-                friendInfo.userEmail = obj.email
-                friendInfo.relationship = STRINGS.FRIENDS
-              }
-            })
-            friendInfo.relationshipID = obj._id
-            friendInfo.expanded = false
-            friendInfo.profileInfo = ''
-            friendInfo.loadingProfile = false
-
-            friends.push(friendInfo)
-          });
-
-          if (this.state.friendSkip === 0) {
-            this.setState({
-              friendSectionData: friends
-            })
-          } else {
-            this.setState({
-              friendSectionData: this.state.friendSectionData.concat(friends)
-            })
-          }
+        if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
+          this.setState({
+            friendFullyDoneLoading: true
+          })
         }
-        else {
-          Alert.alert(STRINGS.GET_FRIENDS_LIST_FAIL, '' + JSON.stringify(responseJson))
+
+        responseJson.friends.data.forEach(function(obj) { 
+          let friendID = obj.user1
+
+          if (friendID == self.state.userID) {
+            friendID = obj.user2
+          }
+
+          friendInfo = {}
+          friendInfo.userID = friendID
+
+          responseJson.users.data.forEach(function(obj) {
+            if (obj._id == friendID) {
+              friendInfo.userName = obj.name
+              friendInfo.userEmail = obj.email
+              friendInfo.relationship = STRINGS.FRIENDS
+            }
+          })
+          friendInfo.relationshipID = obj._id
+          friendInfo.expanded = false
+          friendInfo.profileInfo = ''
+          friendInfo.loadingProfile = false
+
+          friends.push(friendInfo)
+        });
+
+        if (this.state.friendSkip === 0) {
+          this.setState({
+            friendSectionData: friends
+          })
+        } else {
+          this.setState({
+            friendSectionData: this.state.friendSectionData.concat(friends)
+          })
         }
 
         this.setState({
@@ -174,38 +173,45 @@ class Landing extends Component {
           refreshing: false,
         })
       }
+      else {
+        //bad response code
+        this.setState({
+          friendCurrentlyLoading: false,
+        })
+      }
     }
 
     let onFailure = (error) => {
-      //this.setError(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     getFriends(this.state.friendLimit, this.state.friendSkip, onSuccess, onFailure)
   }
 
   getRequestsHelper = () =>{
-
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let requests = [];
-
+      if (responseJson === undefined) {
+        this.getRequestsHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let requests = [];
+  
           if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
             this.setState({
               requestFullyDoneLoading: true
             })
           }
-
+  
           this.setState({
             requestTotal: responseJson.requests.total
           })
-
+  
           responseJson.requests.data.forEach(function(obj) { 
             let requesterID = obj.requester
-
+  
             requestInfo = {}
             requestInfo.userID = requesterID
-
+  
             responseJson.users.data.forEach(function(userObj) {
               if (userObj._id == requesterID) {
                 requestInfo.userName = userObj.name
@@ -217,10 +223,10 @@ class Landing extends Component {
             requestInfo.expanded = false
             requestInfo.profileInfo = ''
             requestInfo.loadingProfile = false
-
+  
             requests.push(requestInfo)
           });
-
+  
           if (this.state.requestSkip === 0) {
             this.setState({
               requestSectionData: requests
@@ -230,35 +236,25 @@ class Landing extends Component {
               requestSectionData: this.state.requestSectionData.concat(requests)
             })
           }
-        }
-        else {
-          Alert.alert(STRINGS.GET_REQUESTS_LIST_FAIL, '' + JSON.stringify(responseJson))
-        }
-
+  
+          this.setState({
+            requestCurrentlyLoading: false,
+            refreshing: false,
+          })
+      }
+      else {
+        //bad response
         this.setState({
           requestCurrentlyLoading: false,
-          refreshing: false,
         })
       }
     }
 
     let onFailure = (error) => {
-      //this.setError(STRINGS.NO_INTERNET)
+      this.getRequestsHelper()
     }
 
     getRequests(this.state.requestLimit, this.state.requestSkip, onSuccess, onFailure)
-  }
-
-  //Using this function as a hold since figuring it out was a pain
-  setTouched = (rowData) =>{
-    //There HAS to be a better way
-    let index = this.state.friendSectionData.indexOf(rowData);
-    let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-    clonedArray[index][1] = 'TOUCHED'
-
-    this.setState({
-      friendSectionData: clonedArray
-    })
   }
 
   onPressFn = (rowData) =>{
@@ -291,40 +287,41 @@ class Landing extends Component {
 
   getProfileHelper = (rowData) => {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let profile = ''
+      if (responseJson === undefined) {
+        this.getProfileHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let profile = ''
 
-          let x = responseJson.data;
-          let y = x[0]
+        let x = responseJson.data;
+        let y = x[0]
 
-          if (y !== undefined) {
-            let z = y.profile
+        if (y !== undefined) {
+          let z = y.profile
 
-            z.forEach(function(obj) { 
-              profile +=  "\n" + obj.key + ": " + obj.value
-            });
-          }
-          else {
-            profile = STRINGS.NO_PROFILE
-          }
-          let index = this.state.friendSectionData.indexOf(rowData);
-          let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-          clonedArray[index].profileInfo = profile
-          clonedArray[index].loadingProfile = false
-
-          this.setState({
-            friendSectionData: clonedArray
-          })
+          z.forEach(function(obj) { 
+            profile +=  "\n" + obj.key + ": " + obj.value
+          });
         }
         else {
-          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+          profile = STRINGS.NO_PROFILE
         }
+        let index = this.state.friendSectionData.indexOf(rowData);
+        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+        clonedArray[index].profileInfo = profile
+        clonedArray[index].loadingProfile = false
+
+        this.setState({
+          friendSectionData: clonedArray
+        })
+      }
+      else {
+        //bad response
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     getProfile(rowData.userID, onSuccess, onFailure)
@@ -332,37 +329,38 @@ class Landing extends Component {
 
   acceptRequestHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let index = this.state.requestSectionData.indexOf(rowData);
-          let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
-          clonedArray.splice(index, 1);
+      if (responseJson === undefined) {
+        this.acceptRequestHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let index = this.state.requestSectionData.indexOf(rowData);
+        let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
+        clonedArray.splice(index, 1);
+
+        this.setState({
+          requestSectionData: clonedArray,
+          requestTotal: this.state.requestTotal-1,
+        })
+
+        if (this.state.friendFullyDoneLoading) {
+          rowData.relationship = STRINGS.FRIENDS
+          rowData.relationshipID = responseJson._id
+
+          let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+          friendClonedArray.push(rowData);
 
           this.setState({
-            requestSectionData: clonedArray
+            friendSectionData: friendClonedArray,
           })
-
-          if (this.state.friendFullyDoneLoading) {
-            rowData.relationship = STRINGS.FRIENDS
-            rowData.relationshipID = responseJson._id
-
-            let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-            friendClonedArray.push(rowData);
-
-            this.setState({
-              friendSectionData: friendClonedArray,
-              requestTotal: this.state.requestTotal-1,
-            })
-          }
         }
-        else {
-          Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      }
+      else {
+        //response Error
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     acceptRequest(rowData.relationshipID, onSuccess, onFailure)
@@ -370,9 +368,12 @@ class Landing extends Component {
 
   rejectRequestHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let index = this.state.requestSectionData.indexOf(rowData);
+
+      if (responseJson === undefined) {
+        this.rejectRequestHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let index = this.state.requestSectionData.indexOf(rowData);
           let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
           clonedArray.splice(index, 1);
 
@@ -380,15 +381,14 @@ class Landing extends Component {
             requestSectionData: clonedArray,
             requestTotal: this.state.requestTotal-1,
           })
-        }
-        else {
-          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      }
+      else {
+        //response error
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     rejectRequest(rowData.relationshipID, onSuccess, onFailure)
@@ -396,24 +396,26 @@ class Landing extends Component {
 
   removeFriendHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let index = this.state.friendSectionData.indexOf(rowData);
-          let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-          clonedArray.splice(index, 1);
 
-          this.setState({
-            friendSectionData: clonedArray
-          })
-        }
-        else {
-          Alert.alert(STRINGS.DELETE_FRIEND_FAIL, '' + JSON.stringify(responseJson))
-        }
+      if (responseJson === undefined) {
+        this.removeFriendHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let index = this.state.friendSectionData.indexOf(rowData);
+        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+        clonedArray.splice(index, 1);
+
+        this.setState({
+          friendSectionData: clonedArray
+        })
+      }
+      else {
+        //response error
       }
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      //fatal error
     }
 
     removeFriend(rowData.relationshipID, onSuccess, onFailure)
@@ -446,12 +448,10 @@ class Landing extends Component {
       for (let i=0; i<items.viewableItems.length; i++) {
         if ((items.viewableItems[i].item.title !== undefined && items.viewableItems[i].item.title.indexOf(STRINGS.FRIEND_SECTION_HEADER) != -1) || items.viewableItems[i].item.relationship === STRINGS.FRIENDS) {
           friendsSectionVisible = true;
-          Alert.alert('foasdfund!')
           break;
         }
       }
       if (friendsSectionVisible) {
-        Alert.alert('loading next batch')
         this.loadNextRequests();
       }
     }

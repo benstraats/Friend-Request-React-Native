@@ -24,6 +24,7 @@ export const STRINGS = {
     PASSWORDS_DONT_MATCH: "Passwords don\'t match",
 
     USERNAME_IS_TAKEN: "Username is taken",
+    INVALID_SIGNUP: "Username is taken or user info is invalid",
     INVALID_LOGIN: "Invalid login details",
     FAILED_TO_GET_ACCOUNT_DETAILS: "Failed to get account details",
     

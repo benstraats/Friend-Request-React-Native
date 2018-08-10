@@ -46,8 +46,10 @@ export default class Profile extends Component {
 
   getProfileHelper = () =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
-
+      if (responseJson === undefined) {
+        this.getProfileHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         //User hasnt created a profile yet
         if (responseJson.data[0] === undefined) {
           this.setState({
@@ -82,13 +84,13 @@ export default class Profile extends Component {
         }
       }
       else {
-        Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+        //response error
         this.setState({currentlyLoading:false})
       }
     }
 
     let onFailure = (error) => {
-      this.getProfileHelper()
+      //fatal error
     }
 
     getProfile(this.state.userID, onSuccess, onFailure)
@@ -117,7 +119,10 @@ export default class Profile extends Component {
     if (this.state.profileID == '' || this.state.profileID === undefined) {
 
       let onSuccess = (responseJson) => {
-        if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        if (responseJson === undefined) {
+          this.saveProfileHelper()
+        }
+        else if (responseJson.code === undefined || responseJson.code == 200) {
           Alert.alert(STRINGS.SAVED_PROFILE)
           this.setState({
             profileID: responseJson._id,
@@ -127,7 +132,7 @@ export default class Profile extends Component {
           })
         }
         else {
-          Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+          //response error
           this.setState({
             currentlySaving: false,
           })
@@ -135,21 +140,25 @@ export default class Profile extends Component {
       }
 
       let onFailure = (error) => {
-        this.saveProfileHelper()
+        //fatal error
       }
 
       createProfile(profile, onSuccess, onFailure)
     }
     else {
       let onSuccess = (responseJson) => {
-        if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        if (responseJson === undefined) {
+          this.saveProfileHelper()
+        }
+        else if (responseJson.code === undefined || responseJson.code == 200) {
+          Alert.alert(STRINGS.SAVED_PROFILE)
           this.setState({
             editMode: false,
             currentlySaving: false,
           })
         }
         else {
-          Alert.alert(STRINGS.SAVE_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+          //response error
           this.setState({
             currentlySaving: false,
           })
@@ -157,7 +166,7 @@ export default class Profile extends Component {
       }
 
       let onFailure = (error) => {
-        this.saveProfileHelper()
+        //fatal error
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)

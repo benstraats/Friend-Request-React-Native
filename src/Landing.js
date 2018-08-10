@@ -120,7 +120,11 @@ class Landing extends Component {
     let self = this;
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+
+      if (responseJson === undefined) {
+        this.getFriendsHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         let friends = [];
 
         if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
@@ -170,71 +174,79 @@ class Landing extends Component {
         })
       }
       else {
-        this.getFriendsHelper()
+        //bad response code
+        this.setState({
+          friendCurrentlyLoading: false,
+        })
       }
     }
 
     let onFailure = (error) => {
-      this.getFriendsHelper()
+      //fatal error
     }
 
     getFriends(this.state.friendLimit, this.state.friendSkip, onSuccess, onFailure)
   }
 
   getRequestsHelper = () =>{
-
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+      if (responseJson === undefined) {
+        this.getRequestsHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         let requests = [];
-
-        if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
+  
+          if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
+            this.setState({
+              requestFullyDoneLoading: true
+            })
+          }
+  
           this.setState({
-            requestFullyDoneLoading: true
+            requestTotal: responseJson.requests.total
           })
-        }
-
-        this.setState({
-          requestTotal: responseJson.requests.total
-        })
-
-        responseJson.requests.data.forEach(function(obj) { 
-          let requesterID = obj.requester
-
-          requestInfo = {}
-          requestInfo.userID = requesterID
-
-          responseJson.users.data.forEach(function(userObj) {
-            if (userObj._id == requesterID) {
-              requestInfo.userName = userObj.name
-              requestInfo.userEmail = userObj.email
-              requestInfo.relationship = STRINGS.REQUESTEE
-            }
-          })
-          requestInfo.relationshipID = obj._id
-          requestInfo.expanded = false
-          requestInfo.profileInfo = ''
-          requestInfo.loadingProfile = false
-
-          requests.push(requestInfo)
-        });
-
-        if (this.state.requestSkip === 0) {
+  
+          responseJson.requests.data.forEach(function(obj) { 
+            let requesterID = obj.requester
+  
+            requestInfo = {}
+            requestInfo.userID = requesterID
+  
+            responseJson.users.data.forEach(function(userObj) {
+              if (userObj._id == requesterID) {
+                requestInfo.userName = userObj.name
+                requestInfo.userEmail = userObj.email
+                requestInfo.relationship = STRINGS.REQUESTEE
+              }
+            })
+            requestInfo.relationshipID = obj._id
+            requestInfo.expanded = false
+            requestInfo.profileInfo = ''
+            requestInfo.loadingProfile = false
+  
+            requests.push(requestInfo)
+          });
+  
+          if (this.state.requestSkip === 0) {
+            this.setState({
+              requestSectionData: requests
+            })
+          } else {
+            this.setState({
+              requestSectionData: this.state.requestSectionData.concat(requests)
+            })
+          }
+  
           this.setState({
-            requestSectionData: requests
+            requestCurrentlyLoading: false,
+            refreshing: false,
           })
-        } else {
-          this.setState({
-            requestSectionData: this.state.requestSectionData.concat(requests)
-          })
-        }
-
-        this.setState({
-          requestCurrentlyLoading: false,
-          refreshing: false,
-        })
       }
       else {
-        this.getRequestsHelper()
+        //bad response
+        this.setState({
+          requestCurrentlyLoading: false,
+        })
       }
     }
 
@@ -275,7 +287,10 @@ class Landing extends Component {
 
   getProfileHelper = (rowData) => {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+      if (responseJson === undefined) {
+        this.getProfileHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         let profile = ''
 
         let x = responseJson.data;
@@ -301,12 +316,12 @@ class Landing extends Component {
         })
       }
       else {
-        this.getProfileHelper(rowData)
+        //bad response
       }
     }
 
     let onFailure = (error) => {
-      this.getProfileHelper(rowData)
+      //fatal error
     }
 
     getProfile(rowData.userID, onSuccess, onFailure)
@@ -314,7 +329,10 @@ class Landing extends Component {
 
   acceptRequestHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+      if (responseJson === undefined) {
+        this.acceptRequestHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         let index = this.state.requestSectionData.indexOf(rowData);
         let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
         clonedArray.splice(index, 1);
@@ -337,12 +355,12 @@ class Landing extends Component {
         }
       }
       else {
-        this.acceptRequestHelper(rowData)
+        //response Error
       }
     }
 
     let onFailure = (error) => {
-      this.acceptRequestHelper(rowData)
+      //fatal error
     }
 
     acceptRequest(rowData.relationshipID, onSuccess, onFailure)
@@ -350,8 +368,12 @@ class Landing extends Component {
 
   rejectRequestHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-        if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
-          let index = this.state.requestSectionData.indexOf(rowData);
+
+      if (responseJson === undefined) {
+        this.rejectRequestHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        let index = this.state.requestSectionData.indexOf(rowData);
           let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
           clonedArray.splice(index, 1);
 
@@ -359,15 +381,14 @@ class Landing extends Component {
             requestSectionData: clonedArray,
             requestTotal: this.state.requestTotal-1,
           })
-        }
-        else {
-          this.rejectRequestHelper(rowData)
-        }
-      
+      }
+      else {
+        //response error
+      }
     }
 
     let onFailure = (error) => {
-      this.rejectRequestHelper(rowData)
+      //fatal error
     }
 
     rejectRequest(rowData.relationshipID, onSuccess, onFailure)
@@ -375,7 +396,11 @@ class Landing extends Component {
 
   removeFriendHelper = (rowData) =>{
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+
+      if (responseJson === undefined) {
+        this.removeFriendHelper(rowData)
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         let index = this.state.friendSectionData.indexOf(rowData);
         let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
         clonedArray.splice(index, 1);
@@ -385,12 +410,12 @@ class Landing extends Component {
         })
       }
       else {
-        this.removeFriendHelper(rowData)
+        //response error
       }
     }
 
     let onFailure = (error) => {
-      this.removeFriendHelper(rowData)
+      //fatal error
     }
 
     removeFriend(rowData.relationshipID, onSuccess, onFailure)

@@ -82,18 +82,22 @@ class Login extends Component {
 
   createUserHelper(name, username, password) {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.getAccessTokenHelper(username, password) 
-        }
-        else {
-          this.setError(STRINGS.USERNAME_IS_TAKEN)
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.getAccessTokenHelper(username, password) 
+      }
+      else {
+        this.setError(STRINGS.INVALID_SIGNUP)
+        this.setState({
+          loading: false,
+        })
       }
     }
 
     let onFailure = (error) => {
       this.setError(STRINGS.NO_INTERNET)
+      this.setState({
+        loading: false,
+      })
     }
 
     createUser(name, username, password, onSuccess, onFailure)
@@ -101,19 +105,23 @@ class Login extends Component {
 
   getAccessTokenHelper(username, password) {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.state.accessToken = responseJson.accessToken
-          this.getUserInfoHelper(username)
-        }
-        else {
-          this.setError(STRINGS.INVALID_LOGIN)
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.state.accessToken = responseJson.accessToken
+        this.getUserInfoHelper(username)
+      }
+      else {
+        this.setError(STRINGS.INVALID_LOGIN)
+        this.setState({
+          loading: false,
+        })
       }
     }
 
     let onFailure = (error) => {
       this.setError(STRINGS.NO_INTERNET)
+      this.setState({
+        loading: false,
+      })
     }
 
     getAccessToken(username, password, onSuccess, onFailure)
@@ -121,22 +129,29 @@ class Login extends Component {
 
   getUserInfoHelper = (username) => {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.props.navigation.navigate('landing', {
-            userID: responseJson.data[0]._id,
-            username: this.state.usernameText,
-            name: responseJson.data[0].name,
-          });
-        }
-        else {
-          this.setError(STRINGS.FAILED_TO_GET_ACCOUNT_DETAILS)
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.setState({
+          loading: false,
+        })
+        this.props.navigation.navigate('landing', {
+          userID: responseJson.data[0]._id,
+          username: this.state.usernameText,
+          name: responseJson.data[0].name,
+        });
+      }
+      else {
+        this.setError(STRINGS.FAILED_TO_GET_ACCOUNT_DETAILS)
+        this.setState({
+          loading: false,
+        })
       }
     }
 
     let onFailure = (error) => {
       this.setError(STRINGS.NO_INTERNET)
+      this.setState({
+        loading: false,
+      })
     }
 
     getUserInfo(username, onSuccess, onFailure)

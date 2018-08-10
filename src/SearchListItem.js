@@ -92,32 +92,30 @@ export default class SearchListItem extends Component {
   getProfileHelper = (targetID) =>{
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          let profile = ''
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        let profile = ''
 
-          let x = responseJson.data;
-          let y = x[0]
+        let x = responseJson.data;
+        let y = x[0]
 
-          if (y !== undefined) {
-            let z = y.profile
+        if (y !== undefined) {
+          let z = y.profile
 
-            z.forEach(function(obj) { 
-              profile += obj.key + ": " + obj.value + "\n"
-            });
-          }
-          else {
-            profle = STRINGS.NO_PROFILE
-          }
-
-          this.setState({
-            profileText: profile,
-            loadingProfile: false,
-          })
+          z.forEach(function(obj) { 
+            profile += obj.key + ": " + obj.value + "\n"
+          });
         }
         else {
-          Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
+          profle = STRINGS.NO_PROFILE
         }
+
+        this.setState({
+          profileText: profile,
+          loadingProfile: false,
+        })
+      }
+      else {
+        Alert.alert(STRINGS.GET_PROFILE_FAIL, '' + JSON.stringify(responseJson))
       }
     }
 
@@ -132,18 +130,16 @@ export default class SearchListItem extends Component {
     this.setState({currentlyLoading:true})
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.setState({
-            usersRelationship: STRINGS.FRIENDS_MESSAGE,
-            usersRelationshipID: responseJson._id,
-            currentlyLoading:false
-          })
-        }
-        else {
-          this.setState({currentlyLoading:false})
-          Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.setState({
+          usersRelationship: STRINGS.FRIENDS_MESSAGE,
+          usersRelationshipID: responseJson._id,
+          currentlyLoading:false
+        })
+      }
+      else {
+        this.setState({currentlyLoading:false})
+        Alert.alert(STRINGS.ACCEPT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
       }
     }
 
@@ -159,18 +155,16 @@ export default class SearchListItem extends Component {
     this.setState({currentlyLoading:true})
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.setState({
-            usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
-            usersRelationshipID: undefined,
-            currentlyLoading: false
-          })
-        }
-        else {
-          this.setState({currentlyLoading:false})
-          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.setState({
+          usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
+          usersRelationshipID: undefined,
+          currentlyLoading: false
+        })
+      }
+      else {
+        this.setState({currentlyLoading:false})
+        Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
       }
     }
 
@@ -186,18 +180,16 @@ export default class SearchListItem extends Component {
     this.setState({currentlyLoading:true})
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.setState({
-            usersRelationship: STRINGS.REQUESTER_MESSAGE,
-            usersRelationshipID: responseJson._id,
-            currentlyLoading: false
-          })
-        }
-        else {
-          this.setState({currentlyLoading:false})
-          Alert.alert(STRINGS.SEND_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.setState({
+          usersRelationship: STRINGS.REQUESTER_MESSAGE,
+          usersRelationshipID: responseJson._id,
+          currentlyLoading: false
+        })
+      }
+      else {
+        this.setState({currentlyLoading:false})
+        Alert.alert(STRINGS.SEND_REQUEST_FAIL, '' + JSON.stringify(responseJson))
       }
     }
 
@@ -213,18 +205,16 @@ export default class SearchListItem extends Component {
     this.setState({currentlyLoading:true})
 
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined) {
-        if (responseJson.code === undefined || responseJson.code == 200) {
-          this.setState({
-            usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
-            usersRelationshipID: undefined,
-            currentlyLoading: false
-          })
-        }
-        else {
-          this.setState({currentlyLoading:false})
-          Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
-        }
+      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+        this.setState({
+          usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
+          usersRelationshipID: undefined,
+          currentlyLoading: false
+        })
+      }
+      else {
+        this.setState({currentlyLoading:false})
+        Alert.alert(STRINGS.REJECT_REQUEST_FAIL, '' + JSON.stringify(responseJson))
       }
     }
 

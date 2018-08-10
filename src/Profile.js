@@ -88,8 +88,7 @@ export default class Profile extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      this.getProfileHelper()
     }
 
     getProfile(this.state.userID, onSuccess, onFailure)
@@ -136,10 +135,7 @@ export default class Profile extends Component {
       }
 
       let onFailure = (error) => {
-        Alert.alert(STRINGS.NO_INTERNET)
-        this.setState({
-          currentlySaving: false,
-        })
+        this.saveProfileHelper()
       }
 
       createProfile(profile, onSuccess, onFailure)
@@ -161,10 +157,7 @@ export default class Profile extends Component {
       }
 
       let onFailure = (error) => {
-        Alert.alert(STRINGS.NO_INTERNET)
-        this.setState({
-          currentlySaving: false,
-        })
+        this.saveProfileHelper()
       }
 
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)

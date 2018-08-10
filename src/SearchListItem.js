@@ -120,7 +120,7 @@ export default class SearchListItem extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      this.getProfileHelper(targetID)
     }
 
     getProfile(targetID, onSuccess, onFailure)
@@ -144,8 +144,7 @@ export default class SearchListItem extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      this.acceptRequestHelper(requestID)
     }
 
     acceptRequest(requestID, onSuccess, onFailure)
@@ -169,8 +168,7 @@ export default class SearchListItem extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      this.rejectRequestHelper(requstID)
     }
 
     rejectRequest(requestID, onSuccess, onFailure)
@@ -194,8 +192,7 @@ export default class SearchListItem extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      this.sendRequest(requesteeID)
     }
 
     requestUser(requesteeID, onSuccess, onFailure)
@@ -219,8 +216,7 @@ export default class SearchListItem extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
-      this.setState({currentlyLoading:false})
+      this.removeFriendHelper()
     }
 
     removeFriend(this.state.usersRelationshipID, onSuccess, onFailure)

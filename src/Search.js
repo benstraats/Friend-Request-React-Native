@@ -112,7 +112,7 @@ export default class Search extends Component {
     }
 
     let onFailure = (error) => {
-      Alert.alert(STRINGS.NO_INTERNET)
+      this.apiSearch()
     }
 
     search(this.state.savedSearchText, this.state.searchLimit, this.state.searchSkip, onSuccess, onFailure)

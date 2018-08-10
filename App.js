@@ -82,11 +82,21 @@ class Login extends Component {
 
   createUserHelper(name, username, password) {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+
+      if (responseJson === undefined) {
+        //no response
+        this.setError(STRINGS.NO_INTERNET)
+        this.setState({
+          loading: false,
+        })
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+        //valid response
         this.getAccessTokenHelper(username, password) 
       }
       else {
-        this.setError(STRINGS.INVALID_SIGNUP)
+        //failure from server
+        this.setError(responseJson.message)
         this.setState({
           loading: false,
         })
@@ -94,6 +104,7 @@ class Login extends Component {
     }
 
     let onFailure = (error) => {
+      //fatal error
       this.setError(STRINGS.NO_INTERNET)
       this.setState({
         loading: false,
@@ -105,12 +116,18 @@ class Login extends Component {
 
   getAccessTokenHelper(username, password) {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+      if (responseJson === undefined) {
+        this.setError(STRINGS.NO_INTERNET)
+        this.setState({
+          loading: false,
+        })
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         this.state.accessToken = responseJson.accessToken
         this.getUserInfoHelper(username)
       }
       else {
-        this.setError(STRINGS.INVALID_LOGIN)
+        this.setError(responseJson.message)
         this.setState({
           loading: false,
         })
@@ -129,7 +146,13 @@ class Login extends Component {
 
   getUserInfoHelper = (username) => {
     let onSuccess = (responseJson) => {
-      if (responseJson !== undefined && (responseJson.code === undefined || responseJson.code == 200)) {
+      if (responseJson === undefined) {
+        this.setError(STRINGS.NO_INTERNET)
+        this.setState({
+          loading: false,
+        })
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
         this.setState({
           loading: false,
         })
@@ -140,7 +163,7 @@ class Login extends Component {
         });
       }
       else {
-        this.setError(STRINGS.FAILED_TO_GET_ACCOUNT_DETAILS)
+        this.setError(responseJson.message)
         this.setState({
           loading: false,
         })

@@ -34,6 +34,7 @@ export default class SearchListItem extends Component {
       usersRelationshipID: this.props.rowData[4],
       currentlyLoading: false,
       loadingProfile: false,
+      loadingDelete: false,
       expandedRow: false,
       profileText: '',
     };
@@ -213,7 +214,10 @@ export default class SearchListItem extends Component {
   }
 
   removeFriendHelper = () =>{
-    this.setState({currentlyLoading:true})
+    this.setState({
+      currentlyLoading:true,
+      loadingDelete:true,
+    })
 
     let onSuccess = (responseJson) => {
       if (responseJson === undefined) {
@@ -223,12 +227,16 @@ export default class SearchListItem extends Component {
         this.setState({
           usersRelationship: STRINGS.NOT_FRIENDS_MESSAGE,
           usersRelationshipID: undefined,
-          currentlyLoading: false
+          currentlyLoading: false,
+          loadingDelete:false,
         })
       }
       else {
         //response error
-        this.setState({currentlyLoading:false})
+        this.setState({
+          currentlyLoading:false,
+          loadingDelete:false,
+        })
       }
     }
 
@@ -276,11 +284,12 @@ export default class SearchListItem extends Component {
                 <Text>
                   {this.state.profileText}
                 </Text>
-                <Button
+                {!this.state.loadingDelete && <Button
                   onPress={() => this.deleteFriendAlert()}
                   title={STRINGS.DELETE_FRIEND}
                   color={COLORS.PRIMARY_COLOR}
                   />
+                }
               </View>
             }
         </TouchableOpacity>

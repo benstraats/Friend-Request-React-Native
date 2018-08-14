@@ -154,6 +154,7 @@ class Landing extends Component {
           friendInfo.expanded = false
           friendInfo.profileInfo = ''
           friendInfo.loadingProfile = false
+          friendInfo.deletingUser = false
 
           friends.push(friendInfo)
         });
@@ -223,6 +224,7 @@ class Landing extends Component {
             requestInfo.expanded = false
             requestInfo.profileInfo = ''
             requestInfo.loadingProfile = false
+            requestInfo.deletingUser = false
   
             requests.push(requestInfo)
           });
@@ -395,6 +397,17 @@ class Landing extends Component {
   }
 
   removeFriendHelper = (rowData) =>{
+    let index = this.state.friendSectionData.indexOf(rowData);
+    let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+    clonedArray[index].deletingUser = true
+    clonedArray[index].loadingProfile = true
+
+    rowData = clonedArray[index]
+
+    this.setState({
+      friendSectionData: clonedArray
+    })
+
     let onSuccess = (responseJson) => {
 
       if (responseJson === undefined) {
@@ -411,6 +424,15 @@ class Landing extends Component {
       }
       else {
         //response error
+
+        let index = this.state.friendSectionData.indexOf(rowData);
+        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
+        clonedArray[index].deletingUser = false
+        clonedArray[index].loadingProfile = false
+
+        this.setState({
+          friendSectionData: clonedArray
+        })
       }
     }
 
@@ -479,11 +501,12 @@ class Landing extends Component {
                       {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
                       <Text>{item.profileInfo}</Text>
                       }
-                      <Button
+                      {!item.deletingUser && <Button
                         onPress={() => this.deleteFriendAlert(item)}
                         title={STRINGS.DELETE_FRIEND}
                         color={COLORS.PRIMARY_COLOR}
                         />
+                      }
                     </View>
                   }
                 </View>

@@ -30,6 +30,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  profileText: {
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
 })
 
 export default class SearchListItem extends Component {
@@ -116,11 +120,11 @@ export default class SearchListItem extends Component {
           let z = y.profile
 
           z.forEach(function(obj) { 
-            profile += obj.key + ": " + obj.value + "\n"
+            profile += "\n" + obj.key + ": " + obj.value
           });
         }
         else {
-          profle = STRINGS.NO_PROFILE
+          profle = "\n" + STRINGS.NO_PROFILE
         }
 
         this.setState({
@@ -290,7 +294,7 @@ export default class SearchListItem extends Component {
                 {this.state.loadingProfile && 
                   <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />
                 }
-                <Text>
+                <Text style={styles.profileText} >
                   {this.state.profileText}
                 </Text>
                 {!this.state.loadingDelete && <Button

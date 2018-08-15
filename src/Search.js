@@ -13,9 +13,11 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    padding: 5
   },
   searchTextBox: {
     flex: 99,
+    paddingLeft: 5,
   },
   serachButton: {
     flex: 1,

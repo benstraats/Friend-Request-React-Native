@@ -16,13 +16,19 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 24,
     fontWeight: 'bold',
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   textBold: {
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   textFaded: {
-    fontSize: 12
+    fontSize: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
 })
 

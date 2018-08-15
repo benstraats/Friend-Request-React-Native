@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   rowContainer: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   rowTextBoxes: {
     flex: 50,
@@ -22,6 +23,14 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  nonEditTextKey: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+  },
+  nonEditTextValue: {
+    fontSize: 14,
   }
 })
 
@@ -257,7 +266,7 @@ export default class Profile extends Component {
             />
           </View> : 
           <View>
-            {this.state.currentlySearching ? 
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
               <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
               <Button
                 style={styles.rowDeleteButtons}
@@ -271,8 +280,11 @@ export default class Profile extends Component {
               enableEmptySections={true}
               renderRow={(rowData) => 
                 <View style={styles.rowContainer}>
-                  <Text>
-                    {rowData[0] + ': ' + rowData[1]}
+                  <Text style = {styles.nonEditTextKey}>
+                    {rowData[0] + ': '}
+                  </Text>
+                  <Text style = {styles.nonEditTextValue}>
+                    {rowData[1]}
                   </Text>
                 </View>
               }

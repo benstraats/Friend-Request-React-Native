@@ -73,7 +73,7 @@ export const STRINGS = {
     REQUEST_SECTION_HEADER: "Requests",
 
     DELETE_FRIEND: "Delete Friend",
-    NO_PROFILE: "User has no profile",
+    NO_PROFILE: "Profile is empty",
 
     EDIT_PROFILE: "Edit Profile",
     SAVED_PROFILE: "Saved Profile",

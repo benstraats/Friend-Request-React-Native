@@ -30,6 +30,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  profileText: {
+    paddingLeft: 20,
+    paddingRight: 20,
+  }
 })
 
 class Landing extends Component {
@@ -312,7 +316,7 @@ class Landing extends Component {
           });
         }
         else {
-          profile = STRINGS.NO_PROFILE
+          profile = '\n' + STRINGS.NO_PROFILE
         }
         let index = this.state.friendSectionData.indexOf(rowData);
         let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
@@ -505,7 +509,7 @@ class Landing extends Component {
                   {item.expanded &&
                   <View>
                       {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
-                      <Text>{item.profileInfo}</Text>
+                      <Text style={styles.profileText}>{item.profileInfo}</Text>
                       }
                       {!item.deletingUser && <Button
                         onPress={() => this.deleteFriendAlert(item)}

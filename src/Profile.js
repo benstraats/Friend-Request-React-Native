@@ -215,23 +215,6 @@ export default class Profile extends Component {
         <StatusBarOffset />
         {this.state.editMode ? 
           <View>
-            {this.state.currentlyLoading || this.state.currentlySaving ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <View style={styles.buttonRow}>
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.saveProfileHelper}
-                  title={STRINGS.SAVE}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.addRow}
-                  title={STRINGS.ADD_ROW}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-              </View>
-            }
             <ListView
               dataSource={this.state.dataSource}
               enableEmptySections={true}
@@ -264,18 +247,26 @@ export default class Profile extends Component {
                 </View>
               }
             />
-          </View> : 
-          <View>
             {this.state.currentlyLoading || this.state.currentlySaving ? 
               <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <Button
-                style={styles.rowDeleteButtons}
-                onPress={() => this.enterEditMode()}
-                title={STRINGS.EDIT_PROFILE}
-                color={COLORS.PRIMARY_COLOR}
+              <View style={styles.buttonRow}>
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.saveProfileHelper}
+                  title={STRINGS.SAVE}
+                  color={COLORS.PRIMARY_COLOR}
                 />
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.addRow}
+                  title={STRINGS.ADD_ROW}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+              </View>
             }
-              <ListView
+          </View> : 
+          <View>
+            <ListView
               dataSource={this.state.dataSource}
               enableEmptySections={true}
               renderRow={(rowData) => 
@@ -289,6 +280,15 @@ export default class Profile extends Component {
                 </View>
               }
               />
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <Button
+                style={styles.rowDeleteButtons}
+                onPress={() => this.enterEditMode()}
+                title={STRINGS.EDIT_PROFILE}
+                color={COLORS.PRIMARY_COLOR}
+                />
+            }
           </View>
         }
       </View>

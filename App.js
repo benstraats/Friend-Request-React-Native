@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import Landing from './src/Landing'
 import {createStackNavigator,} from 'react-navigation';
 import StatusBarOffset from './src/StatusBarOffset'
@@ -193,91 +193,93 @@ class Login extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <KeyboardAvoidingView style={styles.container} behavior="position" enabled>
-          <View>
-            <StatusBarOffset />
-            <Image 
-              source={require('./assets/logo.png')} 
-              style={{width: 200, height: 200}} 
-            />
-          </View>
-          <View style={styles.closeContainer}>
-            {this.state.showError && <Text
-              style={{textAlign: 'center',}}>
-              {this.state.errorText}
-            </Text>}
-            { this.state.status &&
-              <TextInput 
-                style={styles.textStyle} 
-                placeholder= {STRINGS.FULL_NAME}
-                autoCapitalize='words'
-                autoCorrect={false}
-                returnKeyType = { "next" }
-                onSubmitEditing={() => { this.nameTextInput.focus(); }}
-                blurOnSubmit={false}
-                underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                maxLength={100}
-                onChangeText={(text) => this.setState({fullNameText: text})}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <KeyboardAvoidingView style={styles.container} behavior="position" enabled>
+            <View>
+              <StatusBarOffset />
+              <Image 
+                source={require('./assets/logo.png')} 
+                style={{width: 200, height: 200}} 
               />
-            }
-            <TextInput
-              style={styles.textStyle}
-              ref={(input) => { this.nameTextInput = input; }}
-              placeholder={STRINGS.USERNAME}
-              autoCapitalize='none'
-              returnKeyType={"next"}
-              onSubmitEditing={() => { this.passwordTextInput.focus(); }}
-              blurOnSubmit={false}
-              underlineColorAndroid={COLORS.PRIMARY_COLOR}
-              maxLength={50}
-              onChangeText={(text) => this.setState({usernameText: text})}
-            />
-            <TextInput
-              style={styles.textStyle}
-              ref={(input) => { this.passwordTextInput = input; }}
-              placeholder={STRINGS.PASSWORD}
-              autoCapitalize='none'
-              returnKeyType={this.state.status ? "next" : "go"}
-              onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
-              blurOnSubmit={!this.state.status}
-              secureTextEntry={true}
-              underlineColorAndroid={COLORS.PRIMARY_COLOR}
-              maxLength={50}
-              onChangeText={(text) => this.setState({passwordText: text})}
-            />
-            { this.state.status &&
+            </View>
+            <View style={styles.closeContainer}>
+              {this.state.showError && <Text
+                style={{textAlign: 'center',}}>
+                {this.state.errorText}
+              </Text>}
+              { this.state.status &&
+                <TextInput 
+                  style={styles.textStyle} 
+                  placeholder= {STRINGS.FULL_NAME}
+                  autoCapitalize='words'
+                  autoCorrect={false}
+                  returnKeyType = { "next" }
+                  onSubmitEditing={() => { this.nameTextInput.focus(); }}
+                  blurOnSubmit={false}
+                  underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                  maxLength={100}
+                  onChangeText={(text) => this.setState({fullNameText: text})}
+                />
+              }
               <TextInput
                 style={styles.textStyle}
-                ref={(input) => { this.retypePasswordTextInput = input; }}
-                placeholder={STRINGS.RETYPE_PASSWORD}
+                ref={(input) => { this.nameTextInput = input; }}
+                placeholder={STRINGS.USERNAME}
                 autoCapitalize='none'
-                returnKeyType={"go"}
-                onSubmitEditing={this.signUpClick}
+                returnKeyType={"next"}
+                onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+                blurOnSubmit={false}
+                underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                maxLength={50}
+                onChangeText={(text) => this.setState({usernameText: text})}
+              />
+              <TextInput
+                style={styles.textStyle}
+                ref={(input) => { this.passwordTextInput = input; }}
+                placeholder={STRINGS.PASSWORD}
+                autoCapitalize='none'
+                returnKeyType={this.state.status ? "next" : "go"}
+                onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
+                blurOnSubmit={!this.state.status}
                 secureTextEntry={true}
                 underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 maxLength={50}
-                onChangeText={(text) => this.setState({retypePasswordText: text})}
-                />
-              }
-              {this.state.loading ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> : 
-              <Button
-                onPress={this.signUpClick}
-                title={this.state.status ? STRINGS.SIGN_UP : STRINGS.LOGIN}
+                onChangeText={(text) => this.setState({passwordText: text})}
+              />
+              { this.state.status &&
+                <TextInput
+                  style={styles.textStyle}
+                  ref={(input) => { this.retypePasswordTextInput = input; }}
+                  placeholder={STRINGS.RETYPE_PASSWORD}
+                  autoCapitalize='none'
+                  returnKeyType={"go"}
+                  onSubmitEditing={this.signUpClick}
+                  secureTextEntry={true}
+                  underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                  maxLength={50}
+                  onChangeText={(text) => this.setState({retypePasswordText: text})}
+                  />
+                }
+                {this.state.loading ? 
+                <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> : 
+                <Button
+                  onPress={this.signUpClick}
+                  title={this.state.status ? STRINGS.SIGN_UP : STRINGS.LOGIN}
+                  color={COLORS.PRIMARY_COLOR}
+                />}
+              </View>
+            </KeyboardAvoidingView>
+            <View>
+              {!this.state.loading && <Button
+                onPress={this.ShowHideTextComponentView}
+                title={this.state.status ? STRINGS.ALREADY_HAVE_ACCOUNT : STRINGS.DONT_HAVE_ACCOUNT}
                 color={COLORS.PRIMARY_COLOR}
               />}
+              <StatusBarOffset />
             </View>
-          </KeyboardAvoidingView>
-          <View>
-            {!this.state.loading && <Button
-              onPress={this.ShowHideTextComponentView}
-              title={this.state.status ? STRINGS.ALREADY_HAVE_ACCOUNT : STRINGS.DONT_HAVE_ACCOUNT}
-              color={COLORS.PRIMARY_COLOR}
-            />}
-            <StatusBarOffset />
-          </View>
-      </View>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }

@@ -14,6 +14,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  nonEditRow: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
   rowTextBoxes: {
     flex: 50,
   },
@@ -29,9 +35,12 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: 'bold',
     paddingLeft: 20,
+    paddingRight: 20,
   },
   nonEditTextValue: {
     fontSize: 14,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   editButton: {
     flexDirection: 'row', 
@@ -276,13 +285,21 @@ export default class Profile extends Component {
               dataSource={this.state.dataSource}
               enableEmptySections={true}
               renderRow={(rowData) => 
-                <View style={styles.rowContainer}>
-                  <Text style = {styles.nonEditTextKey}>
-                    {rowData[0] + ': '}
-                  </Text>
-                  <Text style = {styles.nonEditTextValue}>
-                    {rowData[1]}
-                  </Text>
+                <View>
+                  <View style={styles.nonEditRow}>
+                    <Text style = {styles.nonEditTextKey}>
+                      {rowData[0]}
+                    </Text>
+                    <Text style = {styles.nonEditTextValue}>
+                      {rowData[1]}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      borderBottomColor: COLORS.ROW_BORDER,
+                      borderBottomWidth: 1,
+                    }}
+                  />
                 </View>
               }
               />

@@ -1,7 +1,7 @@
 export const COLORS = {
     PRIMARY_COLOR: "#ffb028",
     BACKGROUND_COLOR: "white",
-    ROW_BORDER: "black"
+    ROW_BORDER: "#a8a8a8"
 }
 
 export const STRINGS = {

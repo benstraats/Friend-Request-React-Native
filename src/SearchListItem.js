@@ -16,10 +16,28 @@ const styles = StyleSheet.create({
   },
   textBold: {
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   textFaded: {
-    fontSize: 12
+    fontSize: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  relationshipText: {
+    fontSize: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  profileText: {
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  deleteButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
   },
 })
 
@@ -107,11 +125,11 @@ export default class SearchListItem extends Component {
           let z = y.profile
 
           z.forEach(function(obj) { 
-            profile += obj.key + ": " + obj.value + "\n"
+            profile += "\n" + obj.key + ": " + obj.value
           });
         }
         else {
-          profle = STRINGS.NO_PROFILE
+          profle = "\n" + STRINGS.NO_PROFILE
         }
 
         this.setState({
@@ -281,14 +299,17 @@ export default class SearchListItem extends Component {
                 {this.state.loadingProfile && 
                   <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />
                 }
-                <Text>
+                <Text style={styles.profileText} >
                   {this.state.profileText}
                 </Text>
-                {!this.state.loadingDelete && <Button
-                  onPress={() => this.deleteFriendAlert()}
-                  title={STRINGS.DELETE_FRIEND}
-                  color={COLORS.PRIMARY_COLOR}
-                  />
+                {!this.state.loadingDelete && 
+                  <View style={styles.deleteButton}>
+                    <Button
+                      onPress={() => this.deleteFriendAlert()}
+                      title={STRINGS.DELETE_FRIEND}
+                      color={COLORS.PRIMARY_COLOR}
+                    />
+                  </View>
                 }
               </View>
             }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Search from './Search'
 import Profile from './Profile'
@@ -16,14 +17,29 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 24,
     fontWeight: 'bold',
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   textBold: {
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   textFaded: {
-    fontSize: 12
+    fontSize: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
+  profileText: {
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  deleteButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
+  }
 })
 
 class Landing extends Component {
@@ -306,7 +322,7 @@ class Landing extends Component {
           });
         }
         else {
-          profile = STRINGS.NO_PROFILE
+          profile = '\n' + STRINGS.NO_PROFILE
         }
         let index = this.state.friendSectionData.indexOf(rowData);
         let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
@@ -497,15 +513,18 @@ class Landing extends Component {
                     {item.userEmail}
                   </Text>
                   {item.expanded &&
-                  <View>
+                    <View>
                       {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
-                      <Text>{item.profileInfo}</Text>
+                      <Text style={styles.profileText}>{item.profileInfo}</Text>
                       }
-                      {!item.deletingUser && <Button
-                        onPress={() => this.deleteFriendAlert(item)}
-                        title={STRINGS.DELETE_FRIEND}
-                        color={COLORS.PRIMARY_COLOR}
-                        />
+                      {!item.deletingUser &&
+                        <View style={styles.deleteButton}>
+                          <Button
+                            onPress={() => this.deleteFriendAlert(item)}
+                            title={STRINGS.DELETE_FRIEND}
+                            color={COLORS.PRIMARY_COLOR}
+                          />
+                        </View>
                       }
                     </View>
                   }
@@ -563,9 +582,45 @@ class Landing extends Component {
 
 export default createBottomTabNavigator(
   {
-    Home: { screen: Landing },
-    Search: { screen: Search },
-    Profile: { screen: Profile },
+    Home: { 
+      screen: Landing,
+      navigationOptions: {
+        tabBarLabel: 'Home',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'ios-home' : 'ios-home'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+    Search: { 
+      screen: Search,
+      navigationOptions: {
+        tabBarLabel: 'Search',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'md-search' : 'md-search'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+    Profile: { 
+      screen: Profile,
+      navigationOptions: {
+        tabBarLabel: 'Profile',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'ios-person' : 'ios-person'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
   },
   {
     tabBarOptions: 
@@ -575,7 +630,7 @@ export default createBottomTabNavigator(
       activeBackgroundColor: COLORS.PRIMARY_COLOR,
       inactiveBackgroundColor: COLORS.BACKGROUND_COLOR,
       labelStyle: {
-        fontSize: 30,
+        fontSize: 10,
         justifyContent: 'center',
         alignItems: 'center',
       },

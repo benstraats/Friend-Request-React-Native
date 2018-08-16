@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
   textStyle: {
     height: 40,
     width: 200,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
 })
 

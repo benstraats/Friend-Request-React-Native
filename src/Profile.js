@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   rowContainer: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   rowTextBoxes: {
     flex: 50,
@@ -22,7 +23,21 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  }
+    padding:5,
+  },
+  nonEditTextKey: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+  },
+  nonEditTextValue: {
+    fontSize: 14,
+  },
+  editButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
+  },
 })
 
 export default class Profile extends Component {
@@ -206,23 +221,6 @@ export default class Profile extends Component {
         <StatusBarOffset />
         {this.state.editMode ? 
           <View>
-            {this.state.currentlyLoading || this.state.currentlySaving ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <View style={styles.buttonRow}>
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.saveProfileHelper}
-                  title={STRINGS.SAVE}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.addRow}
-                  title={STRINGS.ADD_ROW}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-              </View>
-            }
             <ListView
               dataSource={this.state.dataSource}
               enableEmptySections={true}
@@ -255,28 +253,49 @@ export default class Profile extends Component {
                 </View>
               }
             />
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <View style={styles.buttonRow}>
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.saveProfileHelper}
+                  title={STRINGS.SAVE}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+                <Button
+                  style={styles.globalButtons}
+                  onPress={this.addRow}
+                  title={STRINGS.ADD_ROW}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+              </View>
+            }
           </View> : 
           <View>
-            {this.state.currentlySearching ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <Button
-                style={styles.rowDeleteButtons}
-                onPress={() => this.enterEditMode()}
-                title={STRINGS.EDIT_PROFILE}
-                color={COLORS.PRIMARY_COLOR}
-                />
-            }
-              <ListView
+            <ListView
               dataSource={this.state.dataSource}
               enableEmptySections={true}
               renderRow={(rowData) => 
                 <View style={styles.rowContainer}>
-                  <Text>
-                    {rowData[0] + ': ' + rowData[1]}
+                  <Text style = {styles.nonEditTextKey}>
+                    {rowData[0] + ': '}
+                  </Text>
+                  <Text style = {styles.nonEditTextValue}>
+                    {rowData[1]}
                   </Text>
                 </View>
               }
               />
+            {this.state.currentlyLoading || this.state.currentlySaving ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+              <View style={styles.editButton}>
+                <Button
+                  onPress={() => this.enterEditMode()}
+                  title={STRINGS.EDIT_PROFILE}
+                  color={COLORS.PRIMARY_COLOR}
+                />
+              </View>
+            }
           </View>
         }
       </View>

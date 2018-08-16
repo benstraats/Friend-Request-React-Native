@@ -34,7 +34,7 @@ export const STRINGS = {
     NOT_FRIENDS: "Not Friends",
 
     FRIENDS_MESSAGE: "Friends",
-    REQUESTEE_MESSAGE: "Accept Reuqest",
+    REQUESTEE_MESSAGE: "Accept Request",
     REQUESTER_MESSAGE: "Cancel Request",
     NOT_FRIENDS_MESSAGE: "Add User",
 
@@ -57,7 +57,7 @@ export const STRINGS = {
     REQUEST_CANCEL_ALERT_HEADER: "Cancel Request",
     REQUEST_CANCEL_ALERT_BODY: "Do you want to cancel the friend request to ",
     REQUEST_CANCEL_ALERT_DONT_CANCEL: "Don\'t Cancel",
-    REQUEST_CANCEL_ALERT_CANCEL_REQUEST: "Cancel Reuqest",
+    REQUEST_CANCEL_ALERT_CANCEL_REQUEST: "Cancel Request",
 
     DELETE_FRIEND_ALERT_HEADER: 'Remove Friend',
     DELETE_FRIEND_ALERT_BODY: 'Are you sure you want to remove ',
@@ -72,8 +72,8 @@ export const STRINGS = {
     FRIEND_SECTION_HEADER: "Friends",
     REQUEST_SECTION_HEADER: "Requests",
 
-    DELETE_FRIEND: "Delete Friend",
-    NO_PROFILE: "User has no profile",
+    DELETE_FRIEND: "Remove Friend",
+    NO_PROFILE: "Profile is empty",
 
     EDIT_PROFILE: "Edit Profile",
     SAVED_PROFILE: "Saved Profile",

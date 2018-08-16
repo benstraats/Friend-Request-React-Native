@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Search from './Search'
 import Profile from './Profile'
@@ -581,9 +582,45 @@ class Landing extends Component {
 
 export default createBottomTabNavigator(
   {
-    Home: { screen: Landing },
-    Search: { screen: Search },
-    Profile: { screen: Profile },
+    Home: { 
+      screen: Landing,
+      navigationOptions: {
+        tabBarLabel: 'Home',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'ios-home' : 'ios-home'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+    Search: { 
+      screen: Search,
+      navigationOptions: {
+        tabBarLabel: 'Search',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'md-search' : 'md-search'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+    Profile: { 
+      screen: Profile,
+      navigationOptions: {
+        tabBarLabel: 'Profile',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? 'ios-person' : 'ios-person'}
+            size={32}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
   },
   {
     tabBarOptions: 
@@ -593,7 +630,7 @@ export default createBottomTabNavigator(
       activeBackgroundColor: COLORS.PRIMARY_COLOR,
       inactiveBackgroundColor: COLORS.BACKGROUND_COLOR,
       labelStyle: {
-        fontSize: 30,
+        fontSize: 10,
         justifyContent: 'center',
         alignItems: 'center',
       },

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator } from 'react-native';
+import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -8,6 +8,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.BACKGROUND_COLOR,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   rowContainer: {
     flex: 1,
@@ -54,16 +56,14 @@ export default class Profile extends Component {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      searchText: '',
       userID: this.props.navigation.state.params.userID,
-      accessToken: this.props.navigation.state.params.accessToken,
       listDataSource: [],
       dataSource: ds.cloneWithRows([]),
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
       currentlySaving: false,
-      editMode: false,
+      rowMaxID: 0,
     };
     this.getProfileHelper();
   }
@@ -86,17 +86,22 @@ export default class Profile extends Component {
         }
 
         else {
-          let profile = [];
+          let profile = []
+          let i=0
 
           responseJson.data[0].profile.forEach(function(obj) { 
-            let row = []
-            row.push(obj.key)
-            row.push(obj.value)
+            let row = {}
+            row.id = i
+            row.key = obj.key
+            row.value = obj.value
+            row.inEdit = false
             profile.push(row)
+            i++
           })
 
           this.setState({
             listDataSource: profile,
+            rowMaxID: i,
           })
 
           this.setState({
@@ -134,8 +139,8 @@ export default class Profile extends Component {
     this.state.listDataSource.forEach(function(row) {
       let jsonRow = {}
       jsonRow.row = i
-      jsonRow.key = row[0]
-      jsonRow.value = row[1]
+      jsonRow.key = row.key
+      jsonRow.value = row.value
       profile.profile.push(jsonRow)
       i++
     })
@@ -151,7 +156,6 @@ export default class Profile extends Component {
           this.setState({
             profileID: responseJson._id,
             saveProfile: false,
-            editMode: true,
             currentlySaving: false,
           })
         }
@@ -177,7 +181,6 @@ export default class Profile extends Component {
         else if (responseJson.code === undefined || responseJson.code == 200) {
           Alert.alert(STRINGS.SAVED_PROFILE)
           this.setState({
-            editMode: false,
             currentlySaving: false,
           })
         }
@@ -218,9 +221,12 @@ export default class Profile extends Component {
     })
   }
 
-  enterEditMode = () => {
+  rowClicked = (rowData) => {
+    let index = this.state.listDataSource.indexOf(rowData);
+    this.state.listDataSource[index].inEdit = !this.state.listDataSource[index].inEdit
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState({
-      editMode: true,
+      dataSource: ds.cloneWithRows(this.state.listDataSource)
     })
   }
 
@@ -228,93 +234,70 @@ export default class Profile extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
-        {this.state.editMode ? 
-          <View>
-            <ListView
-              dataSource={this.state.dataSource}
-              enableEmptySections={true}
-              renderRow={(rowData) => 
-                <View style={styles.rowContainer}>
-                  <TextInput
-                    style={styles.rowTextBoxes}
-                    autoCapitalize='none'
-                    returnKeyType='go'
-                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                    onChangeText={(text) => rowData[0] = text}
-                    maxLength={200}
-                    defaultValue={rowData[0]}
-                  />
-                  <TextInput
-                    style={styles.rowTextBoxes}
-                    autoCapitalize='none'
-                    returnKeyType='go'
-                    underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                    onChangeText={(text) => rowData[1] = text}
-                    maxLength={200}
-                    defaultValue={rowData[1]}
-                  />
-                  <Button
-                    style={styles.rowDeleteButtons}
-                    onPress={() => this.deleteRow(rowData)}
-                    title={STRINGS.DELETE_ROW}
-                    color={COLORS.PRIMARY_COLOR}
-                  />
-                </View>
-              }
-            />
-            {this.state.currentlyLoading || this.state.currentlySaving ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <View style={styles.buttonRow}>
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.saveProfileHelper}
-                  title={STRINGS.SAVE}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-                <Button
-                  style={styles.globalButtons}
-                  onPress={this.addRow}
-                  title={STRINGS.ADD_ROW}
-                  color={COLORS.PRIMARY_COLOR}
-                />
-              </View>
-            }
-          </View> : 
-          <View>
-            <ListView
-              dataSource={this.state.dataSource}
-              enableEmptySections={true}
-              renderRow={(rowData) => 
-                <View>
+        <ListView
+          dataSource={this.state.dataSource}
+          enableEmptySections={true}
+          renderRow={(rowData) => 
+            <View>
+              <TouchableOpacity key={rowData} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, rowData)}>
+                {rowData.inEdit ? 
+                  <View style={styles.nonEditRow}>
+                    <TextInput
+                      autoCapitalize='none'
+                      returnKeyType='go'
+                      underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                      onChangeText={(text) => rowData.key = text}
+                      maxLength={200}
+                      defaultValue={rowData.key}
+                    />
+                    <TextInput
+                      autoCapitalize='none'
+                      returnKeyType='go'
+                      underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                      onChangeText={(text) => rowData.value = text}
+                      maxLength={200}
+                      defaultValue={rowData.value}
+                    />
+                    <Button
+                      style={styles.rowDeleteButtons}
+                      onPress={() => this.deleteRow(rowData)}
+                      title={STRINGS.DELETE_ROW}
+                      color={COLORS.PRIMARY_COLOR}
+                    />
+                  </View> :
                   <View style={styles.nonEditRow}>
                     <Text style = {styles.nonEditTextKey}>
-                      {rowData[0]}
+                      {rowData.key}
                     </Text>
                     <Text style = {styles.nonEditTextValue}>
-                      {rowData[1]}
+                      {rowData.value}
                     </Text>
                   </View>
-                  <View
-                    style={{
-                      borderBottomColor: COLORS.ROW_BORDER,
-                      borderBottomWidth: 1,
-                    }}
-                  />
-                </View>
-              }
-              />
-            {this.state.currentlyLoading || this.state.currentlySaving ? 
-              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <View style={styles.editButton}>
-                <Button
-                  onPress={() => this.enterEditMode()}
-                  title={STRINGS.EDIT_PROFILE}
-                  color={COLORS.PRIMARY_COLOR}
+                }
+                <View
+                  style={{
+                    borderBottomColor: COLORS.ROW_BORDER,
+                    borderBottomWidth: 1,
+                  }}
                 />
-              </View>
-            }
-          </View>
-        }
+              </TouchableOpacity>
+            </View>
+          }
+          />
+        <View style={styles.buttonRow}>
+          <Button
+              style={styles.globalButtons}
+              onPress={this.addRow}
+              title={STRINGS.ADD_ROW}
+              color={COLORS.PRIMARY_COLOR}
+            />
+          <Button
+            style={styles.globalButtons}
+            onPress={this.saveProfileHelper}
+            title={STRINGS.SAVE}
+            color={COLORS.PRIMARY_COLOR}
+          />
+        </View>
       </View>
     );
   }

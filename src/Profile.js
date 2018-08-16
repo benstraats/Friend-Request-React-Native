@@ -31,7 +31,12 @@ const styles = StyleSheet.create({
   },
   nonEditTextValue: {
     fontSize: 14,
-  }
+  },
+  editButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
+  },
 })
 
 export default class Profile extends Component {
@@ -282,12 +287,13 @@ export default class Profile extends Component {
               />
             {this.state.currentlyLoading || this.state.currentlySaving ? 
               <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-              <Button
-                style={styles.rowDeleteButtons}
-                onPress={() => this.enterEditMode()}
-                title={STRINGS.EDIT_PROFILE}
-                color={COLORS.PRIMARY_COLOR}
+              <View style={styles.editButton}>
+                <Button
+                  onPress={() => this.enterEditMode()}
+                  title={STRINGS.EDIT_PROFILE}
+                  color={COLORS.PRIMARY_COLOR}
                 />
+              </View>
             }
           </View>
         }

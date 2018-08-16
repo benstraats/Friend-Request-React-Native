@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    padding:5,
   },
   nonEditTextKey: {
     fontSize: 9,

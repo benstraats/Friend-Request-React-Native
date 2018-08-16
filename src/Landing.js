@@ -33,6 +33,11 @@ const styles = StyleSheet.create({
   profileText: {
     paddingLeft: 20,
     paddingRight: 20,
+  },
+  deleteButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
   }
 })
 
@@ -507,15 +512,18 @@ class Landing extends Component {
                     {item.userEmail}
                   </Text>
                   {item.expanded &&
-                  <View>
+                    <View>
                       {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
                       <Text style={styles.profileText}>{item.profileInfo}</Text>
                       }
-                      {!item.deletingUser && <Button
-                        onPress={() => this.deleteFriendAlert(item)}
-                        title={STRINGS.DELETE_FRIEND}
-                        color={COLORS.PRIMARY_COLOR}
-                        />
+                      {!item.deletingUser &&
+                        <View style={styles.deleteButton}>
+                          <Button
+                            onPress={() => this.deleteFriendAlert(item)}
+                            title={STRINGS.DELETE_FRIEND}
+                            color={COLORS.PRIMARY_COLOR}
+                          />
+                        </View>
                       }
                     </View>
                   }

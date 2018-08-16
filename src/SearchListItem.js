@@ -34,6 +34,11 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  deleteButton: {
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    padding: 3,
+  },
 })
 
 export default class SearchListItem extends Component {
@@ -297,11 +302,14 @@ export default class SearchListItem extends Component {
                 <Text style={styles.profileText} >
                   {this.state.profileText}
                 </Text>
-                {!this.state.loadingDelete && <Button
-                  onPress={() => this.deleteFriendAlert()}
-                  title={STRINGS.DELETE_FRIEND}
-                  color={COLORS.PRIMARY_COLOR}
-                  />
+                {!this.state.loadingDelete && 
+                  <View style={styles.deleteButton}>
+                    <Button
+                      onPress={() => this.deleteFriendAlert()}
+                      title={STRINGS.DELETE_FRIEND}
+                      color={COLORS.PRIMARY_COLOR}
+                    />
+                  </View>
                 }
               </View>
             }

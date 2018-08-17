@@ -202,13 +202,16 @@ export default class Profile extends Component {
 
   addRow = () => {
     if (this.state.listDataSource.length < 50) {
-      this.state.listDataSource.push(['',''])
+      let row = {}
+      row.id = this.state.rowMaxID
+      row.key = ''
+      row.value = ''
+      row.inEdit = true
+      this.state.listDataSource.push(row)
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource)
+        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+        rowMaxID: this.state.rowMaxID + 1,
       })
-    }
-    else {
-      Alert.alert(STRINGS.MAX_PROFILE_REACHED)
     }
   }
 

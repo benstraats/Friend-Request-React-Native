@@ -3,6 +3,7 @@ import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityInd
 import StatusBarOffset from './StatusBarOffset'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,17 +17,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  editRow: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+  },
+  editRowRow: {
+    flex: 100,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   nonEditRow: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
   },
   rowTextBoxes: {
-    flex: 50,
+    padding:10
   },
-  rowDeleteButtons: {
-    flex: 1,
+  rowDeleteButton: {
+    alignSelf: 'flex-end',
+    alignItems: 'flex-end',
+    padding: 5,
+    color: COLORS.PRIMARY_COLOR
   },
   buttonRow: {
     flexDirection: 'row',
@@ -153,7 +167,19 @@ export default class Profile extends Component {
         }
         else if (responseJson.code === undefined || responseJson.code == 200) {
           Alert.alert(STRINGS.SAVED_PROFILE)
+
+          //set all rows to non edit
+          //Not working for some reason
+          let i=0
+          while (i<this.state.listDataSource.length) {
+            this.state.listDataSource[i].inEdit = false
+            i++
+          }
+
+          const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+
           this.setState({
+            dataSource: ds.cloneWithRows(this.state.listDataSource),
             profileID: responseJson._id,
             saveProfile: false,
             currentlySaving: false,
@@ -244,28 +270,41 @@ export default class Profile extends Component {
             <View>
               <TouchableOpacity key={rowData} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, rowData)}>
                 {rowData.inEdit ? 
-                  <View style={styles.nonEditRow}>
-                    <TextInput
-                      autoCapitalize='none'
-                      returnKeyType='go'
-                      underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                      onChangeText={(text) => rowData.key = text}
-                      maxLength={200}
-                      defaultValue={rowData.key}
-                    />
-                    <TextInput
-                      autoCapitalize='none'
-                      returnKeyType='go'
-                      underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                      onChangeText={(text) => rowData.value = text}
-                      maxLength={200}
-                      defaultValue={rowData.value}
-                    />
-                    <Button
-                      style={styles.rowDeleteButtons}
+                  <View style={styles.editRow}>
+                    <View style={styles.editRowRow}>
+                      <Text style={styles.rowTextBoxes}>
+                        Platform: 
+                      </Text>
+                      <TextInput
+                        autoCapitalize='none'
+                        returnKeyType='go'
+                        underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => rowData.key = text}
+                        maxLength={200}
+                        defaultValue={rowData.key}
+                        flex={99}
+                      />
+                    </View>
+                    <View style={styles.editRowRow}>
+                      <Text style={styles.rowTextBoxes}>
+                        Username: 
+                      </Text>
+                      <TextInput
+                        autoCapitalize='none'
+                        returnKeyType='go'
+                        underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => rowData.value = text}
+                        maxLength={200}
+                        defaultValue={rowData.value}
+                        flex={99}
+                      />
+                    </View>
+                    <MaterialCommunityIcons
+                      name={'delete'}
+                      size={32}
+                      style={styles.rowDeleteButton}
+                      onIconClicked={() => this.deleteRow(rowData)}
                       onPress={() => this.deleteRow(rowData)}
-                      title={STRINGS.DELETE_ROW}
-                      color={COLORS.PRIMARY_COLOR}
                     />
                   </View> :
                   <View style={styles.nonEditRow}>

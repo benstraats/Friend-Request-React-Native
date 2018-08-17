@@ -12,11 +12,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
-  rowContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   editRow: {
     flex: 1,
     flexDirection: 'column',
@@ -57,11 +52,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingLeft: 20,
     paddingRight: 20,
-  },
-  editButton: {
-    flexDirection: 'row', 
-    alignSelf: 'flex-end',
-    padding: 3,
   },
 })
 
@@ -144,10 +134,6 @@ export default class Profile extends Component {
     let profile = {}
     profile.profile = []
 
-    this.setState({
-      currentlySaving: true,
-    })
-
     let i=0;
 
     this.state.listDataSource.forEach(function(row) {
@@ -157,71 +143,43 @@ export default class Profile extends Component {
       jsonRow.value = row.value
       profile.profile.push(jsonRow)
       i++
+      row.inEdit = false
     })
 
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.setState({
+      dataSource: ds.cloneWithRows(this.state.listDataSource),
+      currentlySaving: true,
+    })
+
+    let onSuccess = (responseJson) => {
+      if (responseJson === undefined) {
+        this.saveProfileHelper()
+      }
+      else if (responseJson.code === undefined || responseJson.code == 200) {
+
+        this.setState({
+          profileID: responseJson._id,
+          saveProfile: false,
+          currentlySaving: false,
+        })
+      }
+      else {
+        //response error
+        this.setState({
+          currentlySaving: false,
+        })
+      }
+    }
+
+    let onFailure = (error) => {
+      //fatal error
+    }
+
     if (this.state.profileID == '' || this.state.profileID === undefined) {
-
-      let onSuccess = (responseJson) => {
-        if (responseJson === undefined) {
-          this.saveProfileHelper()
-        }
-        else if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert(STRINGS.SAVED_PROFILE)
-
-          //set all rows to non edit
-          //Not working for some reason
-          let i=0
-          while (i<this.state.listDataSource.length) {
-            this.state.listDataSource[i].inEdit = false
-            i++
-          }
-
-          const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-
-          this.setState({
-            dataSource: ds.cloneWithRows(this.state.listDataSource),
-            profileID: responseJson._id,
-            saveProfile: false,
-            currentlySaving: false,
-          })
-        }
-        else {
-          //response error
-          this.setState({
-            currentlySaving: false,
-          })
-        }
-      }
-
-      let onFailure = (error) => {
-        //fatal error
-      }
-
       createProfile(profile, onSuccess, onFailure)
     }
     else {
-      let onSuccess = (responseJson) => {
-        if (responseJson === undefined) {
-          this.saveProfileHelper()
-        }
-        else if (responseJson.code === undefined || responseJson.code == 200) {
-          Alert.alert(STRINGS.SAVED_PROFILE)
-          this.setState({
-            currentlySaving: false,
-          })
-        }
-        else {
-          //response error
-          this.setState({
-            currentlySaving: false,
-          })
-        }
-      }
-
-      let onFailure = (error) => {
-        //fatal error
-      }
-
       updateProfile(this.state.profileID, profile, onSuccess, onFailure)
     }
   }
@@ -273,7 +231,7 @@ export default class Profile extends Component {
                   <View style={styles.editRow}>
                     <View style={styles.editRowRow}>
                       <Text style={styles.rowTextBoxes}>
-                        Platform: 
+                        {STRINGS.PLATFORM}
                       </Text>
                       <TextInput
                         autoCapitalize='none'
@@ -287,7 +245,7 @@ export default class Profile extends Component {
                     </View>
                     <View style={styles.editRowRow}>
                       <Text style={styles.rowTextBoxes}>
-                        Username: 
+                        {STRINGS.USERNAME}
                       </Text>
                       <TextInput
                         autoCapitalize='none'
@@ -326,20 +284,23 @@ export default class Profile extends Component {
             </View>
           }
           />
-        <View style={styles.buttonRow}>
-          <Button
+        {this.state.currentlyLoading || this.state.currentlySaving ?
+          <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
+          <View style={styles.buttonRow}>
+            <Button
+                style={styles.globalButtons}
+                onPress={this.addRow}
+                title={STRINGS.ADD_ROW}
+                color={COLORS.PRIMARY_COLOR}
+              />
+            <Button
               style={styles.globalButtons}
-              onPress={this.addRow}
-              title={STRINGS.ADD_ROW}
+              onPress={this.saveProfileHelper}
+              title={STRINGS.SAVE}
               color={COLORS.PRIMARY_COLOR}
             />
-          <Button
-            style={styles.globalButtons}
-            onPress={this.saveProfileHelper}
-            title={STRINGS.SAVE}
-            color={COLORS.PRIMARY_COLOR}
-          />
-        </View>
+          </View>
+        }
       </View>
     );
   }

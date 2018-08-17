@@ -83,4 +83,6 @@ export const STRINGS = {
     ADD_ROW: "Add Row",
     DELETE_ROW: "Delete Row",
     SEARCH: "Search",
+    PLATFORM: "Platform:",
+    USERNAME: "Username:",
 }

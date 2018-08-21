@@ -53,6 +53,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  errorText: {
+    paddingLeft:10,
+    color:COLORS.ERROR_RED
+  }
 })
 
 export default class Profile extends Component {
@@ -99,6 +103,9 @@ export default class Profile extends Component {
             row.key = obj.key
             row.value = obj.value
             row.inEdit = false
+            row.showError = false
+            row.keyError = false
+            row.valueError = false
             profile.push(row)
             i++
           })
@@ -137,13 +144,32 @@ export default class Profile extends Component {
     let i=0;
 
     this.state.listDataSource.forEach(function(row) {
-      let jsonRow = {}
-      jsonRow.row = i
-      jsonRow.key = row.key
-      jsonRow.value = row.value
-      profile.profile.push(jsonRow)
-      i++
-      row.inEdit = false
+      if (row.key !== '' && row.value !== '') {
+        let jsonRow = {}
+        jsonRow.row = i
+        jsonRow.key = row.key
+        jsonRow.value = row.value
+        profile.profile.push(jsonRow)
+        i++
+        row.inEdit = false
+        row.showError = false
+        row.keyError = false
+        row.valueError = false
+      }
+      else {
+        row.inEdit = true
+        row.showError = true
+        if (row.key === '' & row.value === '') {
+          row.keyError = true
+          row.valueError = true
+        } else if (row.key === '') {
+          row.keyError = true
+          row.valueError = false
+        } else {
+          row.keyError = false
+          row.valueError = true
+        }
+      }
     })
 
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
@@ -191,6 +217,9 @@ export default class Profile extends Component {
       row.key = ''
       row.value = ''
       row.inEdit = true
+      row.showError = false
+      row.keyError = false
+      row.valueError = false
       this.state.listDataSource.push(row)
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
@@ -219,6 +248,46 @@ export default class Profile extends Component {
     }
   }
 
+  saveVerification = () => {
+    let errorFound = false
+
+    this.state.listDataSource.forEach(function(row) {
+      if (row.key !== '' && row.value !== '') {
+        row.showError = false
+        row.keyError = false
+        row.valueError = false
+      }
+      else if (row.key === '' && row.value === '') {
+        row.showError = true
+        row.keyError = true
+        row.valueError = true
+        errorFound = true
+      }
+      else if (row.key === '') {
+        row.showError = true
+        row.keyError = true
+        row.valueError = false
+        errorFound = true
+      }
+      else {
+        row.showError = true
+        row.keyError = false
+        row.valueError = true
+        errorFound = true
+      }
+    })
+
+    if (errorFound) {
+      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+      this.setState({
+        dataSource: ds.cloneWithRows(this.state.listDataSource),
+      })
+    }
+    else {
+      this.saveProfileHelper()
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -231,6 +300,11 @@ export default class Profile extends Component {
               <TouchableOpacity key={rowData} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, rowData)}>
                 {rowData.inEdit ? 
                   <View style={styles.editRow}>
+                    {rowData.showError && 
+                      <Text style={styles.errorText}>
+                        {STRINGS.BLANK_ROWS}
+                      </Text>
+                    }
                     <View style={styles.editRowRow}>
                       <Text style={styles.rowTextBoxes}>
                         {STRINGS.PROFILE_PLATFORM}
@@ -238,7 +312,7 @@ export default class Profile extends Component {
                       <TextInput
                         autoCapitalize='none'
                         returnKeyType='go'
-                        underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                        underlineColorAndroid={rowData.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
                         onChangeText={(text) => rowData.key = text}
                         maxLength={200}
                         defaultValue={rowData.key}
@@ -253,7 +327,7 @@ export default class Profile extends Component {
                       <TextInput
                         autoCapitalize='none'
                         returnKeyType='go'
-                        underlineColorAndroid={COLORS.PRIMARY_COLOR}
+                        underlineColorAndroid={rowData.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
                         onChangeText={(text) => rowData.value = text}
                         maxLength={200}
                         defaultValue={rowData.value}
@@ -299,7 +373,7 @@ export default class Profile extends Component {
               />
             <Button
               style={styles.globalButtons}
-              onPress={this.saveProfileHelper}
+              onPress={this.saveVerification}
               title={STRINGS.SAVE}
               color={COLORS.PRIMARY_COLOR}
             />

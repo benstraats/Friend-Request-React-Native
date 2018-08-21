@@ -1,7 +1,8 @@
 export const COLORS = {
     PRIMARY_COLOR: "#ffb028",
     BACKGROUND_COLOR: "white",
-    ROW_BORDER: "#a8a8a8"
+    ROW_BORDER: "#a8a8a8",
+    ERROR_RED: "#d80000",
 }
 
 export const STRINGS = {
@@ -87,4 +88,5 @@ export const STRINGS = {
     PROFILE_USERNAME: "Username:",
     PLATFORM_PLACEHOLDER: "Instagram, Snapchat, Phone #...",
     USERNAME_PLACEHOLDER: "@BennyBoy55, (647)555-1313...",
+    BLANK_ROWS: "Empty rows are not allowed"
 }

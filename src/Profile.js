@@ -209,12 +209,14 @@ export default class Profile extends Component {
   }
 
   rowClicked = (rowData) => {
-    let index = this.state.listDataSource.indexOf(rowData);
-    this.state.listDataSource[index].inEdit = !this.state.listDataSource[index].inEdit
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.setState({
-      dataSource: ds.cloneWithRows(this.state.listDataSource)
-    })
+    if (!this.state.currentlyLoading && !this.state.currentlySaving) {
+      let index = this.state.listDataSource.indexOf(rowData);
+      this.state.listDataSource[index].inEdit = true
+      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      this.setState({
+        dataSource: ds.cloneWithRows(this.state.listDataSource)
+      })
+    }
   }
 
   render() {
@@ -231,7 +233,7 @@ export default class Profile extends Component {
                   <View style={styles.editRow}>
                     <View style={styles.editRowRow}>
                       <Text style={styles.rowTextBoxes}>
-                        {STRINGS.PLATFORM}
+                        {STRINGS.PROFILE_PLATFORM}
                       </Text>
                       <TextInput
                         autoCapitalize='none'
@@ -241,11 +243,12 @@ export default class Profile extends Component {
                         maxLength={200}
                         defaultValue={rowData.key}
                         flex={99}
+                        placeholder={STRINGS.PLATFORM_PLACEHOLDER}
                       />
                     </View>
                     <View style={styles.editRowRow}>
                       <Text style={styles.rowTextBoxes}>
-                        {STRINGS.USERNAME}
+                        {STRINGS.PROFILE_USERNAME}
                       </Text>
                       <TextInput
                         autoCapitalize='none'
@@ -255,6 +258,7 @@ export default class Profile extends Component {
                         maxLength={200}
                         defaultValue={rowData.value}
                         flex={99}
+                        placeholder={STRINGS.USERNAME_PLACEHOLDER}
                       />
                     </View>
                     <MaterialCommunityIcons

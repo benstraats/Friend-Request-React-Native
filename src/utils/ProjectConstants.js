@@ -83,6 +83,8 @@ export const STRINGS = {
     ADD_ROW: "Add Row",
     DELETE_ROW: "Delete Row",
     SEARCH: "Search",
-    PLATFORM: "Platform:",
-    USERNAME: "Username:",
+    PROFILE_PLATFORM: "Platform:",
+    PROFILE_USERNAME: "Username:",
+    PLATFORM_PLACEHOLDER: "Instagram, Snapchat, Phone #...",
+    USERNAME_PLACEHOLDER: "@BennyBoy55, (647)555-1313...",
 }

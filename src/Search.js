@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
 import SearchListItem from './SearchListItem'
 import StatusBarOffset from './StatusBarOffset'
+import TopBar from './TopBar'
 import {search} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 
@@ -138,6 +139,7 @@ export default class Search extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
+        <TopBar mainText={STRINGS.SEARCH} />
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.searchTextBox}

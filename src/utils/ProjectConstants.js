@@ -6,6 +6,10 @@ export const COLORS = {
 }
 
 export const STRINGS = {
+    HOME: "Home",
+    SEARCH: "Search",
+    PROFILE: "Profile",
+
     NO_INTERNET: "No Internet Connection",
 
     FULL_NAME: "Full Name",
@@ -83,7 +87,6 @@ export const STRINGS = {
     SAVE: "Save",
     ADD_ROW: "Add Row",
     DELETE_ROW: "Delete Row",
-    SEARCH: "Search",
     PROFILE_PLATFORM: "Platform:",
     PROFILE_USERNAME: "Username:",
     PLATFORM_PLACEHOLDER: "Instagram, Snapchat, Phone #...",

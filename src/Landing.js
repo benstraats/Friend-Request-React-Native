@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Search from './Search'
 import Profile from './Profile'
 import StatusBarOffset from './StatusBarOffset'
+import TopBar from './TopBar'
 import {getFriends, getRequests, getProfile, acceptRequest, rejectRequest, removeFriend} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 
@@ -499,6 +500,7 @@ class Landing extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
+        <TopBar mainText={STRINGS.HOME} />
         <SectionList
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
@@ -585,7 +587,7 @@ export default createBottomTabNavigator(
     Home: { 
       screen: Landing,
       navigationOptions: {
-        tabBarLabel: 'Home',
+        tabBarLabel: STRINGS.HOME,
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
             name={'ios-home'}
@@ -598,7 +600,7 @@ export default createBottomTabNavigator(
     Search: { 
       screen: Search,
       navigationOptions: {
-        tabBarLabel: 'Search',
+        tabBarLabel: STRINGS.SEARCH,
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
             name={'md-search'}
@@ -611,7 +613,7 @@ export default createBottomTabNavigator(
     Profile: { 
       screen: Profile,
       navigationOptions: {
-        tabBarLabel: 'Profile',
+        tabBarLabel: STRINGS.PROFILE,
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
             name={'ios-person'}

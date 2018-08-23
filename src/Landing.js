@@ -588,7 +588,7 @@ export default createBottomTabNavigator(
         tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
-            name={focused ? 'ios-home' : 'ios-home'}
+            name={'ios-home'}
             size={32}
             style={{ color: tintColor }}
           />
@@ -601,7 +601,7 @@ export default createBottomTabNavigator(
         tabBarLabel: 'Search',
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
-            name={focused ? 'md-search' : 'md-search'}
+            name={'md-search'}
             size={32}
             style={{ color: tintColor }}
           />
@@ -614,7 +614,7 @@ export default createBottomTabNavigator(
         tabBarLabel: 'Profile',
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
-            name={focused ? 'ios-person' : 'ios-person'}
+            name={'ios-person'}
             size={32}
             style={{ color: tintColor }}
           />

@@ -139,7 +139,7 @@ export default class Search extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
-        <TopBar mainText={STRINGS.SEARCH} />
+        <TopBar mainText={STRINGS.SEARCH} navigation={this.props.navigation} />
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.searchTextBox}

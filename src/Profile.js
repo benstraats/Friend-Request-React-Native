@@ -293,7 +293,7 @@ export default class Profile extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
-        <TopBar mainText={STRINGS.PROFILE} />
+        <TopBar mainText={STRINGS.PROFILE} navigation={this.props.navigation} />
         <ListView
           dataSource={this.state.dataSource}
           enableEmptySections={true}

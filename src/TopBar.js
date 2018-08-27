@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {COLORS, STRINGS} from './utils/ProjectConstants'
+import {STRINGS} from './utils/ProjectConstants'
 
 export default class StatusBarOffset extends Component{
 

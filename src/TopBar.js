@@ -11,10 +11,10 @@ export default class StatusBarOffset extends Component{
   }
 
   logOutPressed = () => {
-    Alert.alert('Log Out', 'Are you sure you want to log out?',
+    Alert.alert(STRINGS.LOGOUT_ALERT_HEADER, STRINGS.LOGOUT_ALERT_BODY,
       [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Log Out', onPress: () => this.logUserOut()},
+        {text: STRINGS.LOGOUT_ALERT_CANCEL, style: 'cancel'},
+        {text: STRINGS.LOGOUT_ALERT_CONFIRM, onPress: () => this.logUserOut()},
       ],);
   }
 

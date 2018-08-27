@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
+import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -292,6 +293,7 @@ export default class Profile extends Component {
     return (
       <View style={styles.container}>
         <StatusBarOffset />
+        <TopBar mainText={STRINGS.PROFILE} navigation={this.props.navigation} />
         <ListView
           dataSource={this.state.dataSource}
           enableEmptySections={true}

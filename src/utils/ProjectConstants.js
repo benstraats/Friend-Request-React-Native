@@ -6,6 +6,10 @@ export const COLORS = {
 }
 
 export const STRINGS = {
+    HOME: "Home",
+    SEARCH: "Search",
+    PROFILE: "Profile",
+
     NO_INTERNET: "No Internet Connection",
 
     FULL_NAME: "Full Name",
@@ -83,10 +87,14 @@ export const STRINGS = {
     SAVE: "Save",
     ADD_ROW: "Add Row",
     DELETE_ROW: "Delete Row",
-    SEARCH: "Search",
     PROFILE_PLATFORM: "Platform:",
     PROFILE_USERNAME: "Username:",
     PLATFORM_PLACEHOLDER: "Instagram, Snapchat, Phone #...",
     USERNAME_PLACEHOLDER: "@BennyBoy55, (647)555-1313...",
-    BLANK_ROWS: "Empty rows are not allowed"
+    BLANK_ROWS: "Empty rows are not allowed",
+
+    LOGOUT_ALERT_HEADER: "Log Out",
+    LOGOUT_ALERT_BODY: "Are you sure you want to log out?",
+    LOGOUT_ALERT_CONFIRM: "Log Out",
+    LOGOUT_ALERT_CANCEL: "Cancel",
 }

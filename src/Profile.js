@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import StatusBarOffset from './StatusBarOffset'
 import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'

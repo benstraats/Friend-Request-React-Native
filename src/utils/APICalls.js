@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.2.25:3030/'//"http://api.friendrequest.ca/";
+const baseURL = 'http://192.168.0.12:3030/'//"http://api.friendrequest.ca/";
 const usersURL = baseURL + "users";
 const authenticationURL = baseURL + "authentication";
 const friendsURL = baseURL + "friends";

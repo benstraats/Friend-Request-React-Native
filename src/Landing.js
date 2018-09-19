@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
+import { BackHandler, Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -78,10 +78,12 @@ class Landing extends Component {
 
   componentDidMount() {
     AppState.addEventListener('change', this._handleAppStateChange);
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this._handleAppStateChange);
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -90,6 +92,11 @@ class Landing extends Component {
       this.initialLoad();
     }
     this.setState({appState: nextAppState});
+  }
+
+  handleBackPress = () => {
+    BackHandler.exitApp()
+    return true;
   }
 
   initialLoad = () => {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, View, StyleSheet, Text} from 'react-native';
+import {Alert, View, StyleSheet, Text, BackHandler} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {STRINGS} from './utils/ProjectConstants'
 
@@ -20,8 +20,7 @@ export default class StatusBarOffset extends Component{
 
   logUserOut = () => {
     //TODO: wipe saved user info
-    this.props.navigation.goBack(null)
-    this.props.navigation.goBack(null)
+    BackHandler.exitApp();
   }
 
   render(){

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Alert, View, StyleSheet, Text} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as Keychain from 'react-native-keychain';
+
 import {STRINGS} from './utils/ProjectConstants'
 
 export default class StatusBarOffset extends Component{
@@ -18,8 +20,12 @@ export default class StatusBarOffset extends Component{
       ],);
   }
 
+  async reset() {
+    await Keychain.resetGenericPassword()
+  }
+
   logUserOut = () => {
-    //TODO: wipe saved user info
+    this.reset()
     this.props.navigation.goBack(null)
     this.props.navigation.goBack(null)
   }

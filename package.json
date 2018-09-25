@@ -1,20 +1,28 @@
 {
-  "name": "rn-friend-request",
-  "main": "node_modules/expo/AppEntry.js",
+  "name": "testProj",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "eject": "expo eject"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
   },
   "dependencies": {
-    "expo": "^30.0.1",
-    "react": "16.3.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "react": "16.5.0",
+    "react-native": "0.57.1",
     "react-native-keychain": "^3.0.0",
-    "react-native-router-flux": "^4.0.0-beta.28",
     "react-native-vector-icons": "^5.0.0",
-    "react-navigation": "^2.0.0"
+    "react-navigation": "^2.0.0",
+    "react-native-router-flux": "^4.0.0-beta.28"
+  },
+  "devDependencies": {
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.46.0",
+    "react-test-renderer": "16.5.0"
+  },
+  "jest": {
+    "preset": "react-native"
   }
 }

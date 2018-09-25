@@ -11,6 +11,7 @@ export const STRINGS = {
     PROFILE: "Profile",
 
     NO_INTERNET: "No Internet Connection",
+    UNKNOWN_ERROR: "Unknown Error",
 
     FULL_NAME: "Full Name",
     USERNAME: "Username",

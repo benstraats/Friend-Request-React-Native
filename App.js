@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
-import Landing from './src/Landing'
+import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text, Alert } from 'react-native';
 import {createStackNavigator,} from 'react-navigation';
+import * as Keychain from 'react-native-keychain';
+
+import Landing from './src/Landing'
 import StatusBarOffset from './src/StatusBarOffset'
 import {createUser, getAccessToken, getUserInfo} from './src/utils/APICalls'
 import {COLORS, STRINGS} from './src/utils/ProjectConstants'
@@ -40,6 +42,39 @@ class Login extends Component {
       showError: false,
       loading: false,
     };
+
+    this.load()
+  }
+
+  async load() {
+    try {
+      const credentials = await Keychain.getGenericPassword();
+
+      if (credentials) {
+        this.setState({
+          usernameText: credentials.username,
+          passwordText: credentials.password,
+          loading: true,
+          status: false,
+        })
+        this.getAccessTokenHelper(credentials.username, credentials.password)
+        //Alert.alert('loaded!')
+      } else {
+        // no info
+        //Alert.alert('no info!')
+      }
+    } catch(error) {
+      //Alert.alert('failed!', '' + error)
+      //some bad shit
+    }
+  }
+
+  async save(username, password) {
+    await Keychain.setGenericPassword(username, password)
+  }
+
+  async reset() {
+    await Keychain.resetGenericPassword()
   }
 
   setError = (error) => {
@@ -107,7 +142,7 @@ class Login extends Component {
 
     let onFailure = (error) => {
       //fatal error
-      this.setError(STRINGS.NO_INTERNET)
+      this.setError(STRINGS.UNKNOWN_ERROR)
       this.setState({
         loading: false,
       })
@@ -125,10 +160,12 @@ class Login extends Component {
         })
       }
       else if (responseJson.code === undefined || responseJson.code == 200) {
+        this.save(username, password)
         this.state.accessToken = responseJson.accessToken
         this.getUserInfoHelper(username)
       }
       else {
+        this.reset()
         this.setError(responseJson.message)
         this.setState({
           loading: false,
@@ -137,7 +174,8 @@ class Login extends Component {
     }
 
     let onFailure = (error) => {
-      this.setError(STRINGS.NO_INTERNET)
+      this.reset()
+      this.setError(STRINGS.UNKNOWN_ERROR)
       this.setState({
         loading: false,
       })
@@ -165,6 +203,7 @@ class Login extends Component {
         });
       }
       else {
+        this.reset()
         this.setError(responseJson.message)
         this.setState({
           loading: false,
@@ -173,7 +212,8 @@ class Login extends Component {
     }
 
     let onFailure = (error) => {
-      this.setError(STRINGS.NO_INTERNET)
+      this.reset()
+      this.setError(STRINGS.UNKNOWN_ERROR)
       this.setState({
         loading: false,
       })

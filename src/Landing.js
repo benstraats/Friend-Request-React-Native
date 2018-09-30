@@ -39,6 +39,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignSelf: 'flex-end',
     padding: 3,
+  },
+  emptyHomeText: {
+    fontSize: 14,
+    textAlign: 'center',
   }
 })
 
@@ -506,6 +510,10 @@ class Landing extends Component {
     return (
       <View style={styles.container}>
         <TopBar mainText={STRINGS.HOME} />
+        {!this.state.friendCurrentlyLoading && this.state.friendFullyDoneLoading && !this.state.requestCurrentlyLoading && this.state.requestFullyDoneLoading && this.state.requestSectionData.length === 0 && this.state.friendSectionData.length === 0 ?
+        <Text style={styles.emptyHomeText}>
+          {STRINGS.EMPTY_HOME}
+        </Text> :
         <SectionList
           enableEmptySections={true}
           renderItem={({item, index, section}) => 
@@ -581,7 +589,7 @@ class Landing extends Component {
               tintColor={COLORS.PRIMARY_COLOR}
             />
           }
-        />
+        />}
       </View>
     );
   }

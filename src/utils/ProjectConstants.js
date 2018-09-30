@@ -98,4 +98,7 @@ export const STRINGS = {
     LOGOUT_ALERT_BODY: "Are you sure you want to log out?",
     LOGOUT_ALERT_CONFIRM: "Log Out",
     LOGOUT_ALERT_CANCEL: "Cancel",
+
+    EMPTY_HOME: "Go to the search tab to start requesting friends!",
+    EMPTY_PROFILE: "Click ADD ROW to start adding info to your profile. Once you're done, click SAVE!",
 }

@@ -58,14 +58,9 @@ class Login extends Component {
           status: false,
         })
         this.getAccessTokenHelper(credentials.username, credentials.password)
-        //Alert.alert('loaded!')
       } else {
-        // no info
-        //Alert.alert('no info!')
       }
     } catch(error) {
-      //Alert.alert('failed!', '' + error)
-      //some bad shit
     }
   }
 

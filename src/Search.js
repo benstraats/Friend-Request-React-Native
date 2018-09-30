@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import SearchListItem from './SearchListItem'
-import StatusBarOffset from './StatusBarOffset'
 import TopBar from './TopBar'
 import {search} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -14,14 +15,15 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 5
+    paddingTop: 5
   },
   searchTextBox: {
     flex: 99,
     paddingLeft: 5,
   },
-  serachButton: {
-    flex: 1,
+  rowDeleteButton: {
+    paddingRight: 5,
+    color: COLORS.PRIMARY_COLOR
   },
 })
 
@@ -59,6 +61,7 @@ export default class Search extends Component {
   }
 
   apiSearch = () =>{
+    var self = this;
 
     let onSuccess = (responseJson) => {
       if (responseJson === undefined) {
@@ -74,33 +77,36 @@ export default class Search extends Component {
       }
 
       responseJson.users.data.forEach(function(obj) { 
-        let row = [];
-        row.push(obj._id)
-        row.push(obj.name)
-        row.push(obj.email)
 
-        responseJson.friends.data.forEach(function(friend) {
-          if (friend.user1 == obj._id || friend.user2 == obj._id) {
-            row.push(STRINGS.FRIENDS_MESSAGE)
-            row.push(friend._id)
+        if (obj._id !== self.state.userID) {
+          let row = [];
+          row.push(obj._id)
+          row.push(obj.name)
+          row.push(obj.email)
+
+          responseJson.friends.data.forEach(function(friend) {
+            if (friend.user1 == obj._id || friend.user2 == obj._id) {
+              row.push(STRINGS.FRIENDS_MESSAGE)
+              row.push(friend._id)
+            }
+          })
+
+          responseJson.requests.data.forEach(function(request) {
+            if (request.requester == obj._id) {
+              row.push(STRINGS.REQUESTEE_MESSAGE)
+              row.push(request._id)
+            } else if(request.requestee == obj._id) {
+              row.push(STRINGS.REQUESTER_MESSAGE)
+              row.push(request._id)
+            }
+          })
+
+          if (row.length == 3) {
+            row.push(STRINGS.NOT_FRIENDS_MESSAGE)
           }
-        })
 
-        responseJson.requests.data.forEach(function(request) {
-          if (request.requester == obj._id) {
-            row.push(STRINGS.REQUESTEE_MESSAGE)
-            row.push(request._id)
-          } else if(request.requestee == obj._id) {
-            row.push(STRINGS.REQUESTER_MESSAGE)
-            row.push(request._id)
-          }
-        })
-
-        if (row.length == 3) {
-          row.push(STRINGS.NOT_FRIENDS_MESSAGE)
+          friends.push(row)
         }
-
-        friends.push(row)
       });
 
       this.setState({
@@ -138,7 +144,6 @@ export default class Search extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBarOffset />
         <TopBar mainText={STRINGS.SEARCH} navigation={this.props.navigation} />
         <View style={styles.rowContainer}>
           <TextInput
@@ -153,11 +158,12 @@ export default class Search extends Component {
           />
           {this.state.currentlySearching ? 
           <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-          <Button
-            style={styles.searchButton}
+          <Ionicons
+            name={'md-search'}
+            size={32}
+            style={styles.rowDeleteButton}
+            onIconClicked={() => this.startSearch()}
             onPress={() => this.startSearch()}
-            title={STRINGS.SEARCH}
-            color={COLORS.PRIMARY_COLOR}
           />}
         </View>
         <View style={styles.container}>

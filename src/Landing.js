@@ -5,7 +5,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Search from './Search'
 import Profile from './Profile'
-import StatusBarOffset from './StatusBarOffset'
 import TopBar from './TopBar'
 import {getFriends, getRequests, getProfile, acceptRequest, rejectRequest, removeFriend} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -506,7 +505,6 @@ class Landing extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBarOffset />
         <TopBar mainText={STRINGS.HOME} />
         <SectionList
           enableEmptySections={true}

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import SearchListItem from './SearchListItem'
 import TopBar from './TopBar'
 import {search} from './utils/APICalls'
@@ -13,14 +15,15 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 5
+    paddingTop: 5
   },
   searchTextBox: {
     flex: 99,
     paddingLeft: 5,
   },
-  serachButton: {
-    flex: 1,
+  rowDeleteButton: {
+    paddingRight: 5,
+    color: COLORS.PRIMARY_COLOR
   },
 })
 
@@ -151,11 +154,12 @@ export default class Search extends Component {
           />
           {this.state.currentlySearching ? 
           <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
-          <Button
-            style={styles.searchButton}
+          <Ionicons
+            name={'md-search'}
+            size={32}
+            style={styles.rowDeleteButton}
+            onIconClicked={() => this.startSearch()}
             onPress={() => this.startSearch()}
-            title={STRINGS.SEARCH}
-            color={COLORS.PRIMARY_COLOR}
           />}
         </View>
         <View style={styles.container}>

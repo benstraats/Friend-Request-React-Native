@@ -3,7 +3,7 @@ import {Alert, View, StyleSheet, Text} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Keychain from 'react-native-keychain';
 
-import {STRINGS} from './utils/ProjectConstants'
+import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 export default class StatusBarOffset extends Component{
 
@@ -86,12 +86,15 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 24,
     alignItems: 'center',
+    color: COLORS.TEXT_COLOR
   },
   backIconStyle: {
     paddingLeft:10,
+    color: COLORS.TEXT_COLOR
   },
   logoutIconStyle: {
     paddingRight: 10,
+    color: COLORS.TEXT_COLOR
   },
   offsetStyle: {
     paddingRight:20
@@ -99,5 +102,6 @@ const styles = StyleSheet.create({
   soloText: {
     flexDirection: 'row',
     justifyContent: 'center',
+    color: COLORS.TEXT_COLOR
   }
 })

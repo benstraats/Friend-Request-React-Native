@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowTextBoxes: {
-    padding:10
+    padding:10,
+    color: COLORS.TEXT_COLOR,
   },
   rowDeleteButton: {
     alignSelf: 'flex-end',
@@ -47,11 +48,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   nonEditTextValue: {
     fontSize: 14,
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   errorText: {
     paddingLeft:10,
@@ -62,6 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
+    color: COLORS.TEXT_COLOR
   }
 })
 

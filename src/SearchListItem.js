@@ -19,20 +19,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   textFaded: {
     fontSize: 12,
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   relationshipText: {
     fontSize: 12,
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   profileText: {
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   deleteButton: {
     flexDirection: 'row', 

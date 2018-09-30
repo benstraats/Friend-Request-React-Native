@@ -56,6 +56,12 @@ const styles = StyleSheet.create({
   errorText: {
     paddingLeft:10,
     color:COLORS.ERROR_RED
+  },
+  emptyProfileText: {
+    fontSize: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
   }
 })
 
@@ -292,6 +298,10 @@ export default class Profile extends Component {
     return (
       <View style={styles.container}>
         <TopBar mainText={STRINGS.PROFILE} navigation={this.props.navigation} />
+        {!this.state.currentlyLoading && !this.state.currentlySaving && this.state.listDataSource.length === 0 ?
+        <Text style={styles.emptyProfileText}>
+          {STRINGS.EMPTY_PROFILE}
+        </Text> :
         <ListView
           dataSource={this.state.dataSource}
           enableEmptySections={true}
@@ -361,7 +371,7 @@ export default class Profile extends Component {
               </TouchableOpacity>
             </View>
           }
-          />
+        /> }
         {this.state.currentlyLoading || this.state.currentlySaving ?
           <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> :
           <View style={styles.buttonRow}>

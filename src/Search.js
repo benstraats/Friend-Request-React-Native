@@ -61,6 +61,7 @@ export default class Search extends Component {
   }
 
   apiSearch = () =>{
+    var self = this;
 
     let onSuccess = (responseJson) => {
       if (responseJson === undefined) {
@@ -76,33 +77,36 @@ export default class Search extends Component {
       }
 
       responseJson.users.data.forEach(function(obj) { 
-        let row = [];
-        row.push(obj._id)
-        row.push(obj.name)
-        row.push(obj.email)
 
-        responseJson.friends.data.forEach(function(friend) {
-          if (friend.user1 == obj._id || friend.user2 == obj._id) {
-            row.push(STRINGS.FRIENDS_MESSAGE)
-            row.push(friend._id)
+        if (obj._id !== self.state.userID) {
+          let row = [];
+          row.push(obj._id)
+          row.push(obj.name)
+          row.push(obj.email)
+
+          responseJson.friends.data.forEach(function(friend) {
+            if (friend.user1 == obj._id || friend.user2 == obj._id) {
+              row.push(STRINGS.FRIENDS_MESSAGE)
+              row.push(friend._id)
+            }
+          })
+
+          responseJson.requests.data.forEach(function(request) {
+            if (request.requester == obj._id) {
+              row.push(STRINGS.REQUESTEE_MESSAGE)
+              row.push(request._id)
+            } else if(request.requestee == obj._id) {
+              row.push(STRINGS.REQUESTER_MESSAGE)
+              row.push(request._id)
+            }
+          })
+
+          if (row.length == 3) {
+            row.push(STRINGS.NOT_FRIENDS_MESSAGE)
           }
-        })
 
-        responseJson.requests.data.forEach(function(request) {
-          if (request.requester == obj._id) {
-            row.push(STRINGS.REQUESTEE_MESSAGE)
-            row.push(request._id)
-          } else if(request.requestee == obj._id) {
-            row.push(STRINGS.REQUESTER_MESSAGE)
-            row.push(request._id)
-          }
-        })
-
-        if (row.length == 3) {
-          row.push(STRINGS.NOT_FRIENDS_MESSAGE)
+          friends.push(row)
         }
-
-        friends.push(row)
       });
 
       this.setState({

@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  errorText: {
+    color: COLORS.TEXT_COLOR,
+    textAlign: 'center',
+  }
 })
 
 class Login extends Component {
@@ -240,7 +244,7 @@ class Login extends Component {
             </View>
             <View style={styles.closeContainer}>
               {this.state.showError && <Text
-                style={{textAlign: 'center',}}>
+                style={styles.errorText}>
                 {this.state.errorText}
               </Text>}
               { this.state.status &&

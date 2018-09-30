@@ -3,6 +3,7 @@ export const COLORS = {
     BACKGROUND_COLOR: "white",
     ROW_BORDER: "#a8a8a8",
     ERROR_RED: "#d80000",
+    TEXT_COLOR: 'black',
 }
 
 export const STRINGS = {

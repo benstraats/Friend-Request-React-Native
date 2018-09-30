@@ -19,21 +19,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 5,
     paddingRight: 5,
+    color: COLORS.TEXT_COLOR
   },
   textBold: {
     fontSize: 18,
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   textFaded: {
     fontSize: 12,
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   profileText: {
     paddingLeft: 20,
     paddingRight: 20,
+    color: COLORS.TEXT_COLOR
   },
   deleteButton: {
     flexDirection: 'row', 
@@ -43,6 +47,7 @@ const styles = StyleSheet.create({
   emptyHomeText: {
     fontSize: 14,
     textAlign: 'center',
+    color: COLORS.TEXT_COLOR
   }
 })
 

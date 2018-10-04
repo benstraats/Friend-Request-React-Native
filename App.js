@@ -45,6 +45,7 @@ class Login extends Component {
       errorText: '',
       showError: false,
       loading: false,
+      keyBoardOpen: false,
     };
 
     this.load()
@@ -230,93 +231,119 @@ class Login extends Component {
     }
   }
 
+  componentDidMount () {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this));
+
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow () {
+    this.setState({
+      keyBoardOpen: true,
+    })
+  }
+
+  _keyboardDidHide () {
+    this.setState({
+      keyBoardOpen: false,
+    })
+  }
+
   render() {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.container}>
-          <KeyboardAvoidingView style={styles.container} behavior="position" enabled>
+          {!this.state.keyBoardOpen && 
             <View>
-              <StatusBarOffset />
               <Image 
                 source={require('./assets/logo.png')} 
                 style={{width: 200, height: 200}} 
               />
             </View>
-            <View style={styles.closeContainer}>
-              {this.state.showError && <Text
-                style={styles.errorText}>
-                {this.state.errorText}
-              </Text>}
-              { this.state.status &&
-                <TextInput 
-                  style={styles.textStyle} 
-                  placeholder= {STRINGS.FULL_NAME}
-                  autoCapitalize='words'
-                  autoCorrect={false}
-                  returnKeyType = { "next" }
-                  onSubmitEditing={() => { this.nameTextInput.focus(); }}
-                  blurOnSubmit={false}
-                  underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                  maxLength={100}
-                  onChangeText={(text) => this.setState({fullNameText: text})}
-                />
-              }
-              <TextInput
-                style={styles.textStyle}
-                ref={(input) => { this.nameTextInput = input; }}
-                placeholder={STRINGS.USERNAME}
-                autoCapitalize='none'
-                returnKeyType={"next"}
-                onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+          }
+          <KeyboardAvoidingView style={styles.closeContainer}>
+            {this.state.showError && <Text
+              style={styles.errorText}>
+              {this.state.errorText}
+            </Text>}
+            { this.state.status &&
+              <TextInput 
+                style={styles.textStyle} 
+                placeholder= {STRINGS.FULL_NAME}
+                autoCapitalize='words'
+                autoCorrect={false}
+                returnKeyType = { "next" }
+                onSubmitEditing={() => { this.nameTextInput.focus(); }}
                 blurOnSubmit={false}
                 underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                maxLength={50}
-                onChangeText={(text) => this.setState({usernameText: text})}
+                maxLength={100}
+                onChangeText={(text) => this.setState({fullNameText: text})}
               />
+            }
+            <TextInput
+              style={styles.textStyle}
+              ref={(input) => { this.nameTextInput = input; }}
+              placeholder={STRINGS.USERNAME}
+              autoCapitalize='none'
+              returnKeyType={"next"}
+              onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+              blurOnSubmit={false}
+              underlineColorAndroid={COLORS.PRIMARY_COLOR}
+              maxLength={50}
+              onChangeText={(text) => this.setState({usernameText: text})}
+            />
+            <TextInput
+              style={styles.textStyle}
+              ref={(input) => { this.passwordTextInput = input; }}
+              placeholder={STRINGS.PASSWORD}
+              autoCapitalize='none'
+              returnKeyType={this.state.status ? "next" : "go"}
+              onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
+              blurOnSubmit={!this.state.status}
+              secureTextEntry={true}
+              underlineColorAndroid={COLORS.PRIMARY_COLOR}
+              maxLength={50}
+              onChangeText={(text) => this.setState({passwordText: text})}
+            />
+            { this.state.status &&
               <TextInput
                 style={styles.textStyle}
-                ref={(input) => { this.passwordTextInput = input; }}
-                placeholder={STRINGS.PASSWORD}
+                ref={(input) => { this.retypePasswordTextInput = input; }}
+                placeholder={STRINGS.RETYPE_PASSWORD}
                 autoCapitalize='none'
-                returnKeyType={this.state.status ? "next" : "go"}
-                onSubmitEditing={this.state.status ? () => { this.retypePasswordTextInput.focus(); } : this.signUpClick}
-                blurOnSubmit={!this.state.status}
+                returnKeyType={"go"}
+                onSubmitEditing={this.signUpClick}
                 secureTextEntry={true}
                 underlineColorAndroid={COLORS.PRIMARY_COLOR}
                 maxLength={50}
-                onChangeText={(text) => this.setState({passwordText: text})}
-              />
-              { this.state.status &&
-                <TextInput
-                  style={styles.textStyle}
-                  ref={(input) => { this.retypePasswordTextInput = input; }}
-                  placeholder={STRINGS.RETYPE_PASSWORD}
-                  autoCapitalize='none'
-                  returnKeyType={"go"}
-                  onSubmitEditing={this.signUpClick}
-                  secureTextEntry={true}
-                  underlineColorAndroid={COLORS.PRIMARY_COLOR}
-                  maxLength={50}
-                  onChangeText={(text) => this.setState({retypePasswordText: text})}
-                  />
-                }
-                {this.state.loading ? 
-                <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> : 
-                <Button
-                  onPress={this.signUpClick}
-                  title={this.state.status ? STRINGS.SIGN_UP : STRINGS.LOGIN}
-                  color={COLORS.PRIMARY_COLOR}
-                />}
-              </View>
-            </KeyboardAvoidingView>
-            <View>
-              {!this.state.loading && <Button
-                onPress={this.ShowHideTextComponentView}
-                title={this.state.status ? STRINGS.ALREADY_HAVE_ACCOUNT : STRINGS.DONT_HAVE_ACCOUNT}
+                onChangeText={(text) => this.setState({retypePasswordText: text})}
+                />
+              }
+              {this.state.loading ? 
+              <ActivityIndicator size="large" color={COLORS.PRIMARY_COLOR} /> : 
+              <Button
+                onPress={this.signUpClick}
+                title={this.state.status ? STRINGS.SIGN_UP : STRINGS.LOGIN}
                 color={COLORS.PRIMARY_COLOR}
               />}
-              <StatusBarOffset />
-            </View>
+            </KeyboardAvoidingView>
+            {!this.state.keyBoardOpen && 
+              <View>
+                {!this.state.loading && 
+                  <Button
+                    onPress={this.ShowHideTextComponentView}
+                    title={this.state.status ? STRINGS.ALREADY_HAVE_ACCOUNT : STRINGS.DONT_HAVE_ACCOUNT}
+                    color={COLORS.PRIMARY_COLOR}
+                  />
+                }
+                <StatusBarOffset />
+              </View>
+            }
         </View>
       </TouchableWithoutFeedback>
     );

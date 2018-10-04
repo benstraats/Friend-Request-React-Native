@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text, Alert } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import {createStackNavigator,} from 'react-navigation';
 import * as Keychain from 'react-native-keychain';
 

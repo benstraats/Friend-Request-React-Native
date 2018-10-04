@@ -325,13 +325,15 @@ export default class Profile extends Component {
                       </Text>
                       <TextInput
                         autoCapitalize='none'
-                        returnKeyType='go'
                         underlineColorAndroid={rowData.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
                         onChangeText={(text) => rowData.key = text}
                         maxLength={200}
                         defaultValue={rowData.key}
                         flex={99}
                         placeholder={STRINGS.PLATFORM_PLACEHOLDER}
+                        onSubmitEditing={() => { this.platformTextInput.focus(); }}
+                        blurOnSubmit={false}
+                        returnKeyType = { "next" }
                       />
                     </View>
                     <View style={styles.editRowRow}>
@@ -339,14 +341,15 @@ export default class Profile extends Component {
                         {STRINGS.PROFILE_USERNAME}
                       </Text>
                       <TextInput
+                        ref={(input) => { this.platformTextInput = input; }}
                         autoCapitalize='none'
-                        returnKeyType='go'
                         underlineColorAndroid={rowData.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
                         onChangeText={(text) => rowData.value = text}
                         maxLength={200}
                         defaultValue={rowData.value}
                         flex={99}
                         placeholder={STRINGS.USERNAME_PLACEHOLDER}
+                        returnKeyType={"go"}
                       />
                     </View>
                     <MaterialCommunityIcons

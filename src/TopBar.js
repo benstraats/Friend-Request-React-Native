@@ -32,6 +32,9 @@ export default class StatusBarOffset extends Component{
 
   render(){
     return(
+      <View>
+        <View style={styles.blankBuffer}>
+        </View>
         <View style={styles.statusBarBackground}>
           {this.props.mainText !== STRINGS.HOME ? 
             <View style={styles.textViewStyle}>
@@ -60,6 +63,8 @@ export default class StatusBarOffset extends Component{
               <Text style={styles.textStyle}>{this.props.mainText}</Text>
             </View>
           }
+          <View style={styles.blankBuffer}>
+        </View>
           <View
             style={{
               borderBottomColor: 'black',
@@ -67,13 +72,14 @@ export default class StatusBarOffset extends Component{
             }}
             />
         </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   statusBarBackground: {
-    backgroundColor: "white",
+    backgroundColor: COLORS.BACKGROUND_COLOR,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'stretch',
@@ -103,5 +109,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     color: COLORS.TEXT_COLOR
+  },
+  blankBuffer: {
+    height: 5,
+    backgroundColor: COLORS.BACKGROUND_COLOR,
   }
 })

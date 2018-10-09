@@ -1,4 +1,4 @@
-package com.testproj;
+package com.friendrequest;
 
 import android.app.Application;
 

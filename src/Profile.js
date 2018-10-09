@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'

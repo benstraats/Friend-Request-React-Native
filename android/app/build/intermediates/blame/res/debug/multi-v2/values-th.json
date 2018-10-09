@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\ben_s\\Documents\\rnCMDLine\\testProj\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-th\\values-th.xml",
+            "outputFile": "C:\\Users\\ben_s\\Documents\\rnCMDLine\\FriendRequest\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-th\\values-th.xml",
             "map": [
                 {
                     "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\7179083a52065bc84c8f76d13b3e22f0\\res\\values-th\\values-th.xml",

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Button, StyleSheet, View, FlatList, TextInput, Text, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
 import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -72,18 +72,41 @@ const styles = StyleSheet.create({
 export default class Profile extends Component {
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    //const ds = new FlatList.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       userID: this.props.navigation.state.params.userID,
       listDataSource: [],
-      dataSource: ds.cloneWithRows([]),
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
       currentlySaving: false,
       rowMaxID: 0,
+      keyBoardOpen: false,
     };
     this.getProfileHelper();
+  }
+
+  componentDidMount () {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this));
+
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow () {
+    this.setState({
+      keyBoardOpen: true,
+    })
+  }
+
+  _keyboardDidHide () {
+    this.setState({
+      keyBoardOpen: false,
+    })
   }
 
   getProfileHelper = () =>{
@@ -97,7 +120,6 @@ export default class Profile extends Component {
           this.setState({
             profileID: undefined,
             listDataSource: [],
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
             saveProfile: true,
             currentlyLoading:false,
           })
@@ -123,11 +145,7 @@ export default class Profile extends Component {
           this.setState({
             listDataSource: profile,
             rowMaxID: i,
-          })
-
-          this.setState({
             profileID: responseJson.data[0]._id,
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
             saveProfile: false,
             currentlyLoading: false,
           })
@@ -182,9 +200,8 @@ export default class Profile extends Component {
       }
     })
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.setState({
-      dataSource: ds.cloneWithRows(this.state.listDataSource),
+      listDataSource: this.state.listDataSource,
       currentlySaving: true,
     })
 
@@ -232,18 +249,18 @@ export default class Profile extends Component {
       row.valueError = false
       this.state.listDataSource.push(row)
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+        listDataSource: this.state.listDataSource,
         rowMaxID: this.state.rowMaxID + 1,
       })
     }
+
   }
 
   deleteRow = (rowData) => {
     let i=this.state.listDataSource.indexOf(rowData)
     this.state.listDataSource.splice(i,1)
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState({
-      dataSource: ds.cloneWithRows(this.state.listDataSource)
+      listDataSource: this.state.listDataSource,
     })
   }
 
@@ -251,9 +268,9 @@ export default class Profile extends Component {
     if (!this.state.currentlyLoading && !this.state.currentlySaving) {
       let index = this.state.listDataSource.indexOf(rowData);
       this.state.listDataSource[index].inEdit = true
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      //const ds = new FlatList.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.setState({
-        dataSource: ds.cloneWithRows(this.state.listDataSource)
+        listDataSource: this.state.listDataSource,
       })
     }
   }
@@ -288,9 +305,8 @@ export default class Profile extends Component {
     })
 
     if (errorFound) {
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
       this.setState({
-        dataSource: ds.cloneWithRows(this.state.listDataSource),
+        listDataSource: this.state.listDataSource,
       })
     }
     else {
@@ -306,15 +322,15 @@ export default class Profile extends Component {
         <Text style={styles.emptyProfileText}>
           {STRINGS.EMPTY_PROFILE}
         </Text> :
-        <ListView
-          dataSource={this.state.dataSource}
+        <FlatList
+          data={this.state.listDataSource}
           enableEmptySections={true}
-          renderRow={(rowData) => 
+          renderItem={({item, separators}) => 
             <View>
-              <TouchableOpacity key={rowData} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, rowData)}>
-                {rowData.inEdit ? 
+              <TouchableOpacity key={item} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, item)}>
+                {item.inEdit ? 
                   <View style={styles.editRow}>
-                    {rowData.showError && 
+                    {item.showError && 
                       <Text style={styles.errorText}>
                         {STRINGS.BLANK_ROWS}
                       </Text>
@@ -325,10 +341,10 @@ export default class Profile extends Component {
                       </Text>
                       <TextInput
                         autoCapitalize='none'
-                        underlineColorAndroid={rowData.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
-                        onChangeText={(text) => rowData.key = text}
+                        underlineColorAndroid={item.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => item.key = text}
                         maxLength={200}
-                        defaultValue={rowData.key}
+                        defaultValue={item.key}
                         flex={99}
                         placeholder={STRINGS.PLATFORM_PLACEHOLDER}
                         onSubmitEditing={() => { this.platformTextInput.focus(); }}
@@ -343,10 +359,10 @@ export default class Profile extends Component {
                       <TextInput
                         ref={(input) => { this.platformTextInput = input; }}
                         autoCapitalize='none'
-                        underlineColorAndroid={rowData.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
-                        onChangeText={(text) => rowData.value = text}
+                        underlineColorAndroid={item.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => item.value = text}
                         maxLength={200}
-                        defaultValue={rowData.value}
+                        defaultValue={item.value}
                         flex={99}
                         placeholder={STRINGS.USERNAME_PLACEHOLDER}
                         returnKeyType={"go"}
@@ -356,16 +372,16 @@ export default class Profile extends Component {
                       name={'delete'}
                       size={32}
                       style={styles.rowDeleteButton}
-                      onIconClicked={() => this.deleteRow(rowData)}
-                      onPress={() => this.deleteRow(rowData)}
+                      onIconClicked={() => this.deleteRow(item)}
+                      onPress={() => this.deleteRow(item)}
                     />
                   </View> :
                   <View style={styles.nonEditRow}>
                     <Text style = {styles.nonEditTextKey}>
-                      {rowData.key}
+                      {item.key}
                     </Text>
                     <Text style = {styles.nonEditTextValue}>
-                      {rowData.value}
+                      {item.value}
                     </Text>
                   </View>
                 }

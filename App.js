@@ -111,8 +111,10 @@ class Login extends Component {
         this.setError(STRINGS.PASSWORDS_DONT_MATCH)
         return
       }
+      Keyboard.dismiss();
       this.createUserHelper(this.state.fullNameText, this.state.usernameText, this.state.passwordText);
     } else {
+      Keyboard.dismiss();
       this.getAccessTokenHelper(this.state.usernameText, this.state.passwordText);
     }
   }
@@ -258,6 +260,7 @@ class Login extends Component {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.container}>
+          <StatusBarOffset />
           {!this.state.keyBoardOpen && 
             <View>
               <Image 
@@ -341,7 +344,7 @@ class Login extends Component {
                     color={COLORS.PRIMARY_COLOR}
                   />
                 }
-                <StatusBarOffset />
+                <StatusBarOffset overrideHeight={15} />
               </View>
             }
         </View>

@@ -101,5 +101,6 @@ export const STRINGS = {
     LOGOUT_ALERT_CANCEL: "Cancel",
 
     EMPTY_HOME: "Go to the search tab to start requesting friends!",
+    EMPTY_SEARCH: "Search returned no results! Please try again or try another search term.",
     EMPTY_PROFILE: "Click ADD ROW to start adding info to your profile. Once you're done, click SAVE!",
 }

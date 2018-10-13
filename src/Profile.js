@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, View, FlatList, TextInput, Text, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
+import { Button, StyleSheet, View, FlatList, TextInput, Text, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
 export default class Profile extends Component {
   constructor(props) {
     super(props);
-    //const ds = new FlatList.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       userID: this.props.navigation.state.params.userID,
       listDataSource: [],
@@ -81,32 +80,10 @@ export default class Profile extends Component {
       currentlyLoading: true,
       currentlySaving: false,
       rowMaxID: 0,
-      keyBoardOpen: false,
+      refreshList: true,
+      platformIOS: Platform.OS === 'ios',
     };
     this.getProfileHelper();
-  }
-
-  componentDidMount () {
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this));
-
-  }
-
-  componentWillUnmount () {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-  }
-
-  _keyboardDidShow () {
-    this.setState({
-      keyBoardOpen: true,
-    })
-  }
-
-  _keyboardDidHide () {
-    this.setState({
-      keyBoardOpen: false,
-    })
   }
 
   getProfileHelper = () =>{
@@ -120,6 +97,7 @@ export default class Profile extends Component {
           this.setState({
             profileID: undefined,
             listDataSource: [],
+            refreshList: !this.state.refreshList,
             saveProfile: true,
             currentlyLoading:false,
           })
@@ -144,6 +122,7 @@ export default class Profile extends Component {
 
           this.setState({
             listDataSource: profile,
+            refreshList: !this.state.refreshList,
             rowMaxID: i,
             profileID: responseJson.data[0]._id,
             saveProfile: false,
@@ -201,7 +180,7 @@ export default class Profile extends Component {
     })
 
     this.setState({
-      listDataSource: this.state.listDataSource,
+      refreshList: !this.state.refreshList,
       currentlySaving: true,
     })
 
@@ -249,7 +228,7 @@ export default class Profile extends Component {
       row.valueError = false
       this.state.listDataSource.push(row)
       this.setState({
-        listDataSource: this.state.listDataSource,
+        refreshList: !this.state.refreshList,
         rowMaxID: this.state.rowMaxID + 1,
       })
     }
@@ -260,7 +239,7 @@ export default class Profile extends Component {
     let i=this.state.listDataSource.indexOf(rowData)
     this.state.listDataSource.splice(i,1)
     this.setState({
-      listDataSource: this.state.listDataSource,
+      refreshList: !this.state.refreshList,
     })
   }
 
@@ -268,9 +247,8 @@ export default class Profile extends Component {
     if (!this.state.currentlyLoading && !this.state.currentlySaving) {
       let index = this.state.listDataSource.indexOf(rowData);
       this.state.listDataSource[index].inEdit = true
-      //const ds = new FlatList.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.setState({
-        listDataSource: this.state.listDataSource,
+        refreshList: !this.state.refreshList,
       })
     }
   }
@@ -306,7 +284,7 @@ export default class Profile extends Component {
 
     if (errorFound) {
       this.setState({
-        listDataSource: this.state.listDataSource,
+        refreshList: !this.state.refreshList,
       })
     }
     else {
@@ -314,9 +292,11 @@ export default class Profile extends Component {
     }
   }
 
+  _keyExtractor = (item, index) => '' + item.id;
+
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled={this.state.platformIOS}>
         <TopBar mainText={STRINGS.PROFILE} navigation={this.props.navigation} />
         {!this.state.currentlyLoading && !this.state.currentlySaving && this.state.listDataSource.length === 0 ?
         <Text style={styles.emptyProfileText}>
@@ -325,6 +305,8 @@ export default class Profile extends Component {
         <FlatList
           data={this.state.listDataSource}
           enableEmptySections={true}
+          extraData={this.state.refreshList}
+          keyExtractor={this._keyExtractor}
           renderItem={({item, separators}) => 
             <View>
               <TouchableOpacity key={item} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, item)}>
@@ -347,9 +329,7 @@ export default class Profile extends Component {
                         defaultValue={item.key}
                         flex={99}
                         placeholder={STRINGS.PLATFORM_PLACEHOLDER}
-                        onSubmitEditing={() => { this.platformTextInput.focus(); }}
-                        blurOnSubmit={false}
-                        returnKeyType = { "next" }
+                        returnKeyType = {"go"}
                       />
                     </View>
                     <View style={styles.editRowRow}>
@@ -412,7 +392,7 @@ export default class Profile extends Component {
             />
           </View>
         }
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

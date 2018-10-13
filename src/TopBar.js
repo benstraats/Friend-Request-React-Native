@@ -4,8 +4,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Keychain from 'react-native-keychain';
 
 import {COLORS, STRINGS} from './utils/ProjectConstants'
+import StatusBarOffset from './StatusBarOffset'
 
-export default class StatusBarOffset extends Component{
+export default class TopBar extends Component{
 
   backPressed = () => {
     //unsure if this works
@@ -33,8 +34,7 @@ export default class StatusBarOffset extends Component{
   render(){
     return(
       <View>
-        <View style={styles.blankBuffer}>
-        </View>
+        <StatusBarOffset />
         <View style={styles.statusBarBackground}>
           {this.props.mainText !== STRINGS.HOME ? 
             <View style={styles.textViewStyle}>
@@ -110,8 +110,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     color: COLORS.TEXT_COLOR
   },
-  blankBuffer: {
-    height: 5,
-    backgroundColor: COLORS.BACKGROUND_COLOR,
-  }
 })

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TextInput, ListView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TextInput, ListView, ActivityIndicator, Text, Keyboard } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import SearchListItem from './SearchListItem'
@@ -42,16 +42,20 @@ export default class Search extends Component {
       fullyDoneSearch: true,
       currentlySearching: false,
       savedSearchText: '',
+      doneASearch: false,
     };
   }
 
   startSearch = () => {
+    Keyboard.dismiss();
+
     this.setState({
       listDataSource: [],
       searchSkip: 0,
       savedSearchText: this.state.searchText,
       fullyDoneSearch: false,
       currentlySearching: true,
+      doneASearch: true,
     }, () => {
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
@@ -167,6 +171,8 @@ export default class Search extends Component {
           />}
         </View>
         <View style={styles.container}>
+        {(this.state.doneASearch && this.state.fullyDoneSearch && !this.state.currentlySearching && this.state.listDataSource.length === 0) ?
+          <Text>{STRINGS.EMPTY_SEARCH}</Text> : 
           <ListView
             enableEmptySections={true}
             dataSource={this.state.dataSource}
@@ -174,7 +180,7 @@ export default class Search extends Component {
               (rowData) => <SearchListItem rowData={rowData} accessToken={this.state.accessToken}/>
             }
             onEndReached={() => this.fullyScrolled()}
-          />
+          />}
         </View>
       </View>
     );

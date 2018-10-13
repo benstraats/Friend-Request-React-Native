@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, View, ListView, TextInput, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, View, FlatList, TextInput, Text, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import TopBar from './TopBar'
 import {getProfile, createProfile, updateProfile} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
@@ -72,16 +72,16 @@ const styles = StyleSheet.create({
 export default class Profile extends Component {
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       userID: this.props.navigation.state.params.userID,
       listDataSource: [],
-      dataSource: ds.cloneWithRows([]),
       profileID: '',
       savingProfile: true,
       currentlyLoading: true,
       currentlySaving: false,
       rowMaxID: 0,
+      refreshList: true,
+      platformIOS: Platform.OS === 'ios',
     };
     this.getProfileHelper();
   }
@@ -97,7 +97,7 @@ export default class Profile extends Component {
           this.setState({
             profileID: undefined,
             listDataSource: [],
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+            refreshList: !this.state.refreshList,
             saveProfile: true,
             currentlyLoading:false,
           })
@@ -122,12 +122,9 @@ export default class Profile extends Component {
 
           this.setState({
             listDataSource: profile,
+            refreshList: !this.state.refreshList,
             rowMaxID: i,
-          })
-
-          this.setState({
             profileID: responseJson.data[0]._id,
-            dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
             saveProfile: false,
             currentlyLoading: false,
           })
@@ -182,9 +179,8 @@ export default class Profile extends Component {
       }
     })
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.setState({
-      dataSource: ds.cloneWithRows(this.state.listDataSource),
+      refreshList: !this.state.refreshList,
       currentlySaving: true,
     })
 
@@ -232,18 +228,18 @@ export default class Profile extends Component {
       row.valueError = false
       this.state.listDataSource.push(row)
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.listDataSource),
+        refreshList: !this.state.refreshList,
         rowMaxID: this.state.rowMaxID + 1,
       })
     }
+
   }
 
   deleteRow = (rowData) => {
     let i=this.state.listDataSource.indexOf(rowData)
     this.state.listDataSource.splice(i,1)
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState({
-      dataSource: ds.cloneWithRows(this.state.listDataSource)
+      refreshList: !this.state.refreshList,
     })
   }
 
@@ -251,9 +247,8 @@ export default class Profile extends Component {
     if (!this.state.currentlyLoading && !this.state.currentlySaving) {
       let index = this.state.listDataSource.indexOf(rowData);
       this.state.listDataSource[index].inEdit = true
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.setState({
-        dataSource: ds.cloneWithRows(this.state.listDataSource)
+        refreshList: !this.state.refreshList,
       })
     }
   }
@@ -288,9 +283,8 @@ export default class Profile extends Component {
     })
 
     if (errorFound) {
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
       this.setState({
-        dataSource: ds.cloneWithRows(this.state.listDataSource),
+        refreshList: !this.state.refreshList,
       })
     }
     else {
@@ -298,23 +292,27 @@ export default class Profile extends Component {
     }
   }
 
+  _keyExtractor = (item, index) => '' + item.id;
+
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled={this.state.platformIOS}>
         <TopBar mainText={STRINGS.PROFILE} navigation={this.props.navigation} />
         {!this.state.currentlyLoading && !this.state.currentlySaving && this.state.listDataSource.length === 0 ?
         <Text style={styles.emptyProfileText}>
           {STRINGS.EMPTY_PROFILE}
         </Text> :
-        <ListView
-          dataSource={this.state.dataSource}
+        <FlatList
+          data={this.state.listDataSource}
           enableEmptySections={true}
-          renderRow={(rowData) => 
+          extraData={this.state.refreshList}
+          keyExtractor={this._keyExtractor}
+          renderItem={({item, separators}) => 
             <View>
-              <TouchableOpacity key={rowData} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, rowData)}>
-                {rowData.inEdit ? 
+              <TouchableOpacity key={item} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.rowClicked.bind(this, item)}>
+                {item.inEdit ? 
                   <View style={styles.editRow}>
-                    {rowData.showError && 
+                    {item.showError && 
                       <Text style={styles.errorText}>
                         {STRINGS.BLANK_ROWS}
                       </Text>
@@ -325,13 +323,13 @@ export default class Profile extends Component {
                       </Text>
                       <TextInput
                         autoCapitalize='none'
-                        returnKeyType='go'
-                        underlineColorAndroid={rowData.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
-                        onChangeText={(text) => rowData.key = text}
+                        underlineColorAndroid={item.keyError ? COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => item.key = text}
                         maxLength={200}
-                        defaultValue={rowData.key}
+                        defaultValue={item.key}
                         flex={99}
                         placeholder={STRINGS.PLATFORM_PLACEHOLDER}
+                        returnKeyType = {"go"}
                       />
                     </View>
                     <View style={styles.editRowRow}>
@@ -339,30 +337,31 @@ export default class Profile extends Component {
                         {STRINGS.PROFILE_USERNAME}
                       </Text>
                       <TextInput
+                        ref={(input) => { this.platformTextInput = input; }}
                         autoCapitalize='none'
-                        returnKeyType='go'
-                        underlineColorAndroid={rowData.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
-                        onChangeText={(text) => rowData.value = text}
+                        underlineColorAndroid={item.valueError ?  COLORS.ERROR_RED : COLORS.PRIMARY_COLOR}
+                        onChangeText={(text) => item.value = text}
                         maxLength={200}
-                        defaultValue={rowData.value}
+                        defaultValue={item.value}
                         flex={99}
                         placeholder={STRINGS.USERNAME_PLACEHOLDER}
+                        returnKeyType={"go"}
                       />
                     </View>
                     <MaterialCommunityIcons
                       name={'delete'}
                       size={32}
                       style={styles.rowDeleteButton}
-                      onIconClicked={() => this.deleteRow(rowData)}
-                      onPress={() => this.deleteRow(rowData)}
+                      onIconClicked={() => this.deleteRow(item)}
+                      onPress={() => this.deleteRow(item)}
                     />
                   </View> :
                   <View style={styles.nonEditRow}>
                     <Text style = {styles.nonEditTextKey}>
-                      {rowData.key}
+                      {item.key}
                     </Text>
                     <Text style = {styles.nonEditTextValue}>
-                      {rowData.value}
+                      {item.value}
                     </Text>
                   </View>
                 }
@@ -393,7 +392,7 @@ export default class Profile extends Component {
             />
           </View>
         }
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

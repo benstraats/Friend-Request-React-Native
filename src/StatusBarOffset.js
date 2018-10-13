@@ -1,18 +1,15 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Platform} from 'react-native';
+import {View, Platform} from 'react-native';
+import {COLORS} from './utils/ProjectConstants'
 
 export default class StatusBarOffset extends Component{
   render(){
     return(
-      <View style={styles.statusBarBackground}>
+      <View style={{
+        height: this.props.overrideHeight !== undefined ? this.props.overrideHeight : Platform.OS === 'ios' ? 28 : 4,
+        backgroundColor: COLORS.BACKGROUND_COLOR,
+        }}>
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  statusBarBackground: {
-    height: Platform.OS === 'ios' ? 20 : 24,
-    backgroundColor: "white",
-  }
-})

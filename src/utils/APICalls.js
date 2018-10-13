@@ -1,4 +1,4 @@
-const baseURL = "http://api.friendrequest.ca/";
+const baseURL = "https://api.friendrequest.ca/";
 const usersURL = baseURL + "users";
 const authenticationURL = baseURL + "authentication";
 const friendsURL = baseURL + "friends";

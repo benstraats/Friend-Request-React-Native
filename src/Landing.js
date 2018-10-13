@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BackHandler, Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button } from 'react-native';
+import { BackHandler, Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button, TouchableWithoutFeedback } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -516,9 +516,11 @@ class Landing extends Component {
       <View style={styles.container}>
         <TopBar mainText={STRINGS.HOME} />
         {!this.state.friendCurrentlyLoading && this.state.friendFullyDoneLoading && !this.state.requestCurrentlyLoading && this.state.requestFullyDoneLoading && this.state.requestSectionData.length === 0 && this.state.friendSectionData.length === 0 ?
-        <Text style={styles.emptyHomeText}>
-          {STRINGS.EMPTY_HOME}
-        </Text> :
+        <TouchableWithoutFeedback onPress={() => this._onRefresh()} accessible={false}>
+          <Text style={styles.emptyHomeText}>
+            {STRINGS.EMPTY_HOME}
+          </Text>
+        </TouchableWithoutFeedback> :
         <SectionList
           enableEmptySections={true}
           renderItem={({item, index, section}) => 

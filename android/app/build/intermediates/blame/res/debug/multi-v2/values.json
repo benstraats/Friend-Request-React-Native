@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\ben_s\\Documents\\rnCMDLine\\FriendRequest\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\support-core-ui-27.1.1.aar\\4244aba4e2039f4588b4fe30cda94213\\res\\values\\values.xml",
@@ -23,24 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\ben_s\\Documents\\rnCMDLine\\FriendRequest\\android\\app\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "1",
-                        "startColumns": "4",
-                        "startOffsets": "16",
-                        "endColumns": "51",
-                        "endOffsets": "63"
-                    },
-                    "to": {
-                        "startLines": "555",
-                        "startColumns": "4",
-                        "startOffsets": "46399",
-                        "endColumns": "51",
-                        "endOffsets": "46446"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\react-native-0.57.1.aar\\b4a16c509e919048bfde22f3f597acf1\\res\\values\\values.xml",
+                    "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\react-native-0.57.1.aar\\304eff20c069148a1af3f642e282ac05\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,41,44,47,50,53,57,61,64,67,70,73,74,75,82,89,92,95,98,104",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -56,6 +39,23 @@
                         "endLines": "29,500,501,511,518,519,554,556,557,558,559,560,561,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,578,579,580,581,582,583,594,1658,1661,1664,1667,1671,1675,1862,1865,1868,1871,1945,1975,1982,1989,1992,1995,1998,2004,2120",
                         "endColumns": "62,47,47,42,53,47,82,93,102,112,161,113,106,111,102,120,125,190,107,112,112,107,111,128,110,92,131,124,97,98,113,87,72,70,80,10,12,12,12,12,10,10,12,12,12,12,25,34,10,10,10,10,12,12,10",
                         "endOffsets": "2121,43049,43097,43545,43831,43879,46394,46540,46643,46756,46918,47032,47139,47251,47354,47475,47601,47792,47900,48013,48126,48234,48346,48475,48586,48679,48811,48936,49034,49133,49247,49335,49408,49479,49560,50374,118445,118636,118831,119014,119216,119422,132608,132797,132996,133183,140109,142300,142718,143096,143273,143452,143635,144000,152967"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "4",
+                        "startOffsets": "17",
+                        "endColumns": "51",
+                        "endOffsets": "64"
+                    },
+                    "to": {
+                        "startLines": "555",
+                        "startColumns": "4",
+                        "startOffsets": "46399",
+                        "endColumns": "51",
+                        "endOffsets": "46446"
                     }
                 },
                 {
@@ -78,25 +78,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\ben_s\\Documents\\rnCMDLine\\FriendRequest\\android\\app\\src\\main\\res\\values\\styles.xml",
-                    "from": {
-                        "startLines": "3",
-                        "startColumns": "4",
-                        "startOffsets": "54",
-                        "endLines": "5",
-                        "endColumns": "12",
-                        "endOffsets": "177"
-                    },
-                    "to": {
-                        "startLines": "595",
-                        "startColumns": "4",
-                        "startOffsets": "50379",
-                        "endLines": "597",
-                        "endColumns": "12",
-                        "endOffsets": "50502"
-                    }
-                },
-                {
                     "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\7179083a52065bc84c8f76d13b3e22f0\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,54,55,59,60,61",
@@ -113,6 +94,25 @@
                         "endLines": "51,52,461,462,463,464,465,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,498,499,507,508,513,514,515,516,524,585,1928,1932,1933,1937,1938,2106,2107",
                         "endColumns": "68,62,69,67,71,69,60,60,60,61,63,61,60,67,99,59,65,72,68,56,51,61,71,75,34,34,49,33,34,34,69,70,116,12,109,12,128,71,66",
                         "endOffsets": "3477,3540,40367,40435,40507,40577,40638,41483,41544,41606,41670,41732,41793,41861,41961,42021,42087,42160,42229,42286,42338,42400,42925,43001,43371,43406,43641,43675,43710,43745,44192,49684,139014,139215,139325,139526,139655,152314,152381"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "57",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "182"
+                    },
+                    "to": {
+                        "startLines": "595",
+                        "startColumns": "4",
+                        "startOffsets": "50379",
+                        "endLines": "597",
+                        "endColumns": "12",
+                        "endOffsets": "50502"
                     }
                 }
             ]

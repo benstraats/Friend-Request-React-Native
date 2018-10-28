@@ -25,6 +25,11 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     color: COLORS.PRIMARY_COLOR
   },
+  noResultText: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: COLORS.TEXT_COLOR
+  }
 })
 
 export default class Search extends Component {
@@ -172,7 +177,7 @@ export default class Search extends Component {
         </View>
         <View style={styles.container}>
         {(this.state.doneASearch && this.state.fullyDoneSearch && !this.state.currentlySearching && this.state.listDataSource.length === 0) ?
-          <Text>{STRINGS.EMPTY_SEARCH}</Text> : 
+          <Text style={styles.noResultText}>{STRINGS.EMPTY_SEARCH}</Text> : 
           <ListView
             enableEmptySections={true}
             dataSource={this.state.dataSource}

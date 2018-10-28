@@ -44,14 +44,14 @@ const styles = StyleSheet.create({
     padding:5,
   },
   nonEditTextKey: {
-    fontSize: 9,
+    fontSize: 14,
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingRight: 20,
     color: COLORS.TEXT_COLOR
   },
   nonEditTextValue: {
-    fontSize: 14,
+    fontSize: 18,
     paddingLeft: 20,
     paddingRight: 20,
     color: COLORS.TEXT_COLOR

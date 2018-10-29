@@ -3,7 +3,7 @@ export const COLORS = {
     BACKGROUND_COLOR: "white",
     ROW_BORDER: "#a8a8a8",
     ERROR_RED: "#d80000",
-    TEXT_COLOR: 'black',
+    TEXT_COLOR: "black",
 }
 
 export const STRINGS = {
@@ -100,7 +100,8 @@ export const STRINGS = {
     LOGOUT_ALERT_CONFIRM: "Log Out",
     LOGOUT_ALERT_CANCEL: "Cancel",
 
-    EMPTY_HOME: "Go to the search tab to start requesting friends!\n\nTap this text to refresh your list of friends.",
-    EMPTY_SEARCH: "Search returned no results! Please try again or try another search term.",
-    EMPTY_PROFILE: "Click ADD ROW to start adding info to your profile. Once you're done, click SAVE!",
+    //Lots of newlines since we want the whole screen to allow a refresh
+    EMPTY_HOME: "\nGo to the search tab to add friends!\n\nTap here to refresh\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    EMPTY_SEARCH: "\nNo results",
+    EMPTY_PROFILE: "Click ADD ROW to start editing\nThen click SAVE",
 }

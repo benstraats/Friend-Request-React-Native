@@ -282,8 +282,10 @@ class Landing extends Component {
 
   killRequest = (item) => {
     this.state.requestSectionData.splice(this.state.requestSectionData.indexOf(item), 1);
+
     this.setState({
-      requestSkip: this.state.requestSkip - 1
+      requestSkip: this.state.requestSkip - 1,
+      requestTotal: this.state.requestTotal - 1,
     })
   }
 
@@ -301,7 +303,8 @@ class Landing extends Component {
       this.state.friendSectionData.push(item)
     }
     this.setState({
-      requestSkip: this.state.requestSkip - 1
+      requestSkip: this.state.requestSkip - 1,
+      requestTotal: this.state.requestTotal - 1,
     })
   }
 

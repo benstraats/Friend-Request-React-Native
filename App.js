@@ -265,7 +265,7 @@ class Login extends Component {
             <View>
               <Image 
                 source={require('./assets/logo.png')} 
-                style={{width: 200, height: 200}} 
+                style={{width: 200, height: 200, paddingTop: 40}} 
               />
             </View>
           }

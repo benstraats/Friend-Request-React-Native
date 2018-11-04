@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { BackHandler, Alert, StyleSheet, View, Text, SectionList, TouchableOpacity, ActivityIndicator, RefreshControl, AppState, Button, TouchableWithoutFeedback } from 'react-native';
+import { BackHandler, StyleSheet, View, Text, SectionList, RefreshControl, AppState, TouchableWithoutFeedback, Alert } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Search from './Search'
 import Profile from './Profile'
 import TopBar from './TopBar'
-import {getFriends, getRequests, getProfile, acceptRequest, rejectRequest, removeFriend} from './utils/APICalls'
+import LandingRequestListItem from './LandingRequestListItem'
+import LandingFriendListItem from './LandingFriendListItem'
+import LandingHeaderListItem from './LandingHeaderListItem'
+import {getFriends, getRequests} from './utils/APICalls'
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 
 const styles = StyleSheet.create({
@@ -14,41 +17,11 @@ const styles = StyleSheet.create({
    flex: 1,
    backgroundColor: COLORS.BACKGROUND_COLOR,
   },
-  sectionHeader: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    paddingLeft: 5,
-    paddingRight: 5,
-    color: COLORS.TEXT_COLOR
-  },
-  textBold: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: COLORS.TEXT_COLOR
-  },
-  textFaded: {
-    fontSize: 12,
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: COLORS.TEXT_COLOR
-  },
-  profileText: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: COLORS.TEXT_COLOR
-  },
-  deleteButton: {
-    flexDirection: 'row', 
-    alignSelf: 'flex-end',
-    padding: 3,
-  },
   emptyHomeText: {
     fontSize: 14,
     textAlign: 'center',
     color: COLORS.TEXT_COLOR
-  }
+  },
 })
 
 class Landing extends Component {
@@ -56,13 +29,8 @@ class Landing extends Component {
     super(props);
     this.state = {
       userID: this.props.navigation.state.params.userID,
-      fullNameText: this.props.navigation.state.params.name, 
-      usernameText: this.props.navigation.state.params.username, 
-      accessToken: this.props.navigation.state.params.accessToken,
 
       requestSectionExpanded: false,
-
-      refreshing: false,
 
       friendSkip: 0,
       friendLimit: 50,
@@ -80,6 +48,7 @@ class Landing extends Component {
 
       appState: AppState.currentState
     };
+
     this.getFriendsHelper()
     this.getRequestsHelper()
   }
@@ -116,10 +85,13 @@ class Landing extends Component {
       requestSkip: 0,
       requestCurrentlyLoading: true,
       requestFullyDoneLoading: false,
-    })
 
+      requestSectionData: [],
+      friendSectionData: [],
+    }, () => {
     this.getFriendsHelper()
     this.getRequestsHelper()
+    })
   }
 
   scrolledToBottom = () => {
@@ -185,25 +157,16 @@ class Landing extends Component {
           friendInfo.relationshipID = obj._id
           friendInfo.expanded = false
           friendInfo.profileInfo = ''
-          friendInfo.loadingProfile = false
+          friendInfo.showLoading = false
           friendInfo.deletingUser = false
 
           friends.push(friendInfo)
         });
 
-        if (this.state.friendSkip === 0) {
-          this.setState({
-            friendSectionData: friends
-          })
-        } else {
-          this.setState({
-            friendSectionData: this.state.friendSectionData.concat(friends)
-          })
-        }
+        this.state.friendSectionData = this.state.friendSectionData.concat(friends)
 
         this.setState({
           friendCurrentlyLoading: false,
-          refreshing: false,
         })
       }
       else {
@@ -255,25 +218,16 @@ class Landing extends Component {
             requestInfo.relationshipID = obj._id
             requestInfo.expanded = false
             requestInfo.profileInfo = ''
-            requestInfo.loadingProfile = false
+            requestInfo.showLoading = false
             requestInfo.deletingUser = false
   
             requests.push(requestInfo)
           });
   
-          if (this.state.requestSkip === 0) {
-            this.setState({
-              requestSectionData: requests
-            })
-          } else {
-            this.setState({
-              requestSectionData: this.state.requestSectionData.concat(requests)
-            })
-          }
+          this.state.requestSectionData = this.state.requestSectionData.concat(requests)
   
           this.setState({
             requestCurrentlyLoading: false,
-            refreshing: false,
           })
       }
       else {
@@ -291,216 +245,20 @@ class Landing extends Component {
     getRequests(this.state.requestLimit, this.state.requestSkip, onSuccess, onFailure)
   }
 
-  onPressFn = (rowData) =>{
-    if (rowData.relationship === STRINGS.FRIENDS) {
-      let index = this.state.friendSectionData.indexOf(rowData);
-      let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-      clonedArray[index].expanded = !clonedArray[index].expanded
-
-      if (clonedArray[index].expanded) {
-        clonedArray[index].loadingProfile = true
-      } else {
-        clonedArray[index].loadingProfile = false
-      }
-
-      this.setState({
-        friendSectionData: clonedArray
-      })
-
-      this.getProfileHelper(clonedArray[index]);
-    }
-    else {
-     Alert.alert(STRINGS.REQUEST_RESPONSE_ALERT_HEADER, STRINGS.REQUEST_RESPONSE_ALERT_BODY + rowData.userEmail + '?',
-      [
-        {text: STRINGS.REQUEST_RESPONSE_ALERT_CANCEL, style: 'cancel'},
-        {text: STRINGS.REQUEST_RESPONSE_ALERT_REJECT, onPress: () => this.rejectRequestHelper(rowData)},
-        {text: STRINGS.REQUEST_RESPONSE_ALERT_ACCEPT, onPress: () => this.acceptRequestHelper(rowData)},
-      ],); 
-    }
-  }
-
-  getProfileHelper = (rowData) => {
-    let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.getProfileHelper(rowData)
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let profile = ''
-
-        let x = responseJson.data;
-        let y = x[0]
-
-        if (y !== undefined) {
-          let z = y.profile
-
-          z.forEach(function(obj) { 
-            profile +=  "\n" + obj.key + ": " + obj.value
-          });
-        }
-        else {
-          profile = '\n' + STRINGS.NO_PROFILE
-        }
-        let index = this.state.friendSectionData.indexOf(rowData);
-        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-        clonedArray[index].profileInfo = profile
-        clonedArray[index].loadingProfile = false
-
-        this.setState({
-          friendSectionData: clonedArray
-        })
-      }
-      else {
-        //bad response
-      }
-    }
-
-    let onFailure = (error) => {
-      //fatal error
-    }
-
-    getProfile(rowData.userID, onSuccess, onFailure)
-  }
-
-  acceptRequestHelper = (rowData) =>{
-    let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.acceptRequestHelper(rowData)
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let index = this.state.requestSectionData.indexOf(rowData);
-        let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
-        clonedArray.splice(index, 1);
-
-        this.setState({
-          requestSectionData: clonedArray,
-          requestTotal: this.state.requestTotal-1,
-        })
-
-        if (this.state.friendFullyDoneLoading) {
-          rowData.relationship = STRINGS.FRIENDS
-          rowData.relationshipID = responseJson._id
-
-          let friendClonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-          friendClonedArray.push(rowData);
-
-          this.setState({
-            friendSectionData: friendClonedArray,
-          })
-        }
-      }
-      else {
-        //response Error
-      }
-    }
-
-    let onFailure = (error) => {
-      //fatal error
-    }
-
-    acceptRequest(rowData.relationshipID, onSuccess, onFailure)
-  }
-
-  rejectRequestHelper = (rowData) =>{
-    let onSuccess = (responseJson) => {
-
-      if (responseJson === undefined) {
-        this.rejectRequestHelper(rowData)
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let index = this.state.requestSectionData.indexOf(rowData);
-          let clonedArray = JSON.parse(JSON.stringify(this.state.requestSectionData))
-          clonedArray.splice(index, 1);
-
-          this.setState({
-            requestSectionData: clonedArray,
-            requestTotal: this.state.requestTotal-1,
-          })
-      }
-      else {
-        //response error
-      }
-    }
-
-    let onFailure = (error) => {
-      //fatal error
-    }
-
-    rejectRequest(rowData.relationshipID, onSuccess, onFailure)
-  }
-
-  removeFriendHelper = (rowData) =>{
-    let index = this.state.friendSectionData.indexOf(rowData);
-    let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-    clonedArray[index].deletingUser = true
-    clonedArray[index].loadingProfile = true
-
-    rowData = clonedArray[index]
-
-    this.setState({
-      friendSectionData: clonedArray
-    })
-
-    let onSuccess = (responseJson) => {
-
-      if (responseJson === undefined) {
-        this.removeFriendHelper(rowData)
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let index = this.state.friendSectionData.indexOf(rowData);
-        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-        clonedArray.splice(index, 1);
-
-        this.setState({
-          friendSectionData: clonedArray
-        })
-      }
-      else {
-        //response error
-
-        let index = this.state.friendSectionData.indexOf(rowData);
-        let clonedArray = JSON.parse(JSON.stringify(this.state.friendSectionData))
-        clonedArray[index].deletingUser = false
-        clonedArray[index].loadingProfile = false
-
-        this.setState({
-          friendSectionData: clonedArray
-        })
-      }
-    }
-
-    let onFailure = (error) => {
-      //fatal error
-    }
-
-    removeFriend(rowData.relationshipID, onSuccess, onFailure)
-  }
-
-  headerPress = (sectionTitle) => {
-    if (sectionTitle.indexOf(STRINGS.REQUEST_SECTION_HEADER) != -1) {
-      this.setState({
-        requestSectionExpanded: !this.state.requestSectionExpanded
-      })
-    }
-  }
-
   _onRefresh = () => {
-    this.setState({refreshing: true});
     this.initialLoad();
   }
 
-  deleteFriendAlert = (rowData) => {
-    Alert.alert(STRINGS.DELETE_FRIEND_ALERT_HEADER, STRINGS.DELETE_FRIEND_ALERT_BODY + rowData.userName + '?',
-      [
-        {text: STRINGS.DELETE_FRIEND_ALERT_CANCEL, style: 'cancel'},
-        {text: STRINGS.DELETE_FRIEND_ALERT_ACCEPT, onPress: () => this.removeFriendHelper(rowData)},
-      ],); 
+  toggleRequestVisibility = () => {
+    this.setState({requestSectionExpanded: !this.state.requestSectionExpanded})
   }
 
   viewableItemsChanged = (items) => {
     if (!this.state.requestCurrentlyLoading && !this.state.requestFullyDoneLoading && this.state.requestSectionExpanded) {
       let friendsSectionVisible = false;
       for (let i=0; i<items.viewableItems.length; i++) {
-        if ((items.viewableItems[i].item.title !== undefined && items.viewableItems[i].item.title.indexOf(STRINGS.FRIEND_SECTION_HEADER) != -1) || items.viewableItems[i].item.relationship === STRINGS.FRIENDS) {
+        if ((items.viewableItems[i].item.title !== undefined && items.viewableItems[i].item.title.indexOf(STRINGS.FRIEND_SECTION_HEADER) != -1) 
+              || items.viewableItems[i].item.relationship === STRINGS.FRIENDS) {
           friendsSectionVisible = true;
           break;
         }
@@ -509,6 +267,42 @@ class Landing extends Component {
         this.loadNextRequests();
       }
     }
+  }
+
+  _keyExtractor = (item, index) => '' + item.userID;
+
+  killFriend = (item) => {
+    let index = this.state.friendSectionData.indexOf(item)
+    this.state.friendSectionData.splice(index, 1)
+    
+    this.setState({
+      friendSkip: this.state.friendSkip - 1,
+    })
+  }
+
+  killRequest = (item) => {
+    this.state.requestSectionData.splice(this.state.requestSectionData.indexOf(item), 1);
+    this.setState({
+      requestSkip: this.state.requestSkip - 1
+    })
+  }
+
+  moveRequest = (item, newRelationshipID) => {
+    this.state.requestSectionData.splice(this.state.requestSectionData.indexOf(item), 1);
+
+    item.relationship = STRINGS.FRIENDS
+    item.relationshipID = newRelationshipID
+    item.expanded = false
+    item.profileInfo = ''
+    item.showLoading = false
+    item.deletingUser = false
+
+    if (this.state.friendFullyDoneLoading) {
+      this.state.friendSectionData.push(item)
+    }
+    this.setState({
+      requestSkip: this.state.requestSkip - 1
+    })
   }
 
   render() {
@@ -523,65 +317,27 @@ class Landing extends Component {
         </TouchableWithoutFeedback> :
         <SectionList
           enableEmptySections={true}
+          //removeClippedSubviews={true}//use at own risk but improves performance
           renderItem={({item, index, section}) => 
-            <TouchableOpacity key={index} style={{backgroundColor: COLORS.BACKGROUND_COLOR}} onPress={this.onPressFn.bind(this, item)}>
-              {((this.state.requestSectionExpanded || item.relationship !== STRINGS.REQUESTEE) && item.userID !== undefined && item !== undefined) && 
+            <View>
+            {item.relationship === STRINGS.FRIENDS ? 
+              <LandingFriendListItem item={item} killFriend={this.killFriend} /> : 
               <View>
-                <View>
-                  <Text style={styles.textBold}>
-                    {item.userName}
-                  </Text>
-                  <Text style={styles.textFaded}>
-                    {item.userEmail}
-                  </Text>
-                  {item.expanded &&
-                    <View>
-                      {item.loadingProfile ? <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} /> :
-                      <Text style={styles.profileText}>{item.profileInfo}</Text>
-                      }
-                      {!item.deletingUser &&
-                        <View style={styles.deleteButton}>
-                          <Button
-                            onPress={() => this.deleteFriendAlert(item)}
-                            title={STRINGS.DELETE_FRIEND}
-                            color={COLORS.PRIMARY_COLOR}
-                          />
-                        </View>
-                      }
-                    </View>
-                  }
-                </View>
-                <View
-                  style={{
-                    borderBottomColor: COLORS.ROW_BORDER,
-                    borderBottomWidth: 1,
-                  }}
-                />
-              </View>}
-            </TouchableOpacity>
+                {this.state.requestSectionExpanded && 
+                  <LandingRequestListItem item={item} killRequest={this.killRequest} moveRequest={this.moveRequest} /> 
+                }
+              </View>
+            }
+            </View>
           }
           renderSectionHeader={({section: {title}}) => (
-            <TouchableOpacity
-              style={{
-                borderBottomColor: COLORS.ROW_BORDER,
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-              }}
-              onPress={this.headerPress.bind(this, title)}
-            >
-              <Text style={styles.sectionHeader}>
-                {title}
-              </Text>
-              {((this.state.friendCurrentlyLoading && title.indexOf(STRINGS.FRIEND_SECTION_HEADER != -1)) || 
-                (this.state.requestCurrentlyLoading && title.indexOf(STRINGS.REQUEST_SECTION_HEADER != -1))) 
-                && <ActivityIndicator size="small" color={COLORS.PRIMARY_COLOR} />
-              }
-            </TouchableOpacity>
+            <View>
+              {!(title === STRINGS.REQUEST_SECTION_HEADER && this.state.requestFullyDoneLoading && this.state.requestTotal === 0) && 
+              <LandingHeaderListItem title={title} toggleRequestVisibility={this.toggleRequestVisibility} requestTotal={this.state.requestTotal} expanded={this.state.requestSectionExpanded} />}
+            </View>
           )}
-          sections={this.state.requestSectionData.length !== 0 ? [
-            {title: STRINGS.REQUEST_SECTION_HEADER + '(' + this.state.requestTotal + ')', data: this.state.requestSectionData},
-            {title: '\n' + STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
-          ] : [
+          sections={[
+            {title: STRINGS.REQUEST_SECTION_HEADER, data: this.state.requestSectionData},
             {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ]}
           keyExtractor={(item, index) => item + index}
@@ -590,7 +346,7 @@ class Landing extends Component {
           onViewableItemsChanged={(items) => this.viewableItemsChanged(items)}
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
+              refreshing={this.state.friendCurrentlyLoading || this.state.requestCurrentlyLoading}
               onRefresh={() => this._onRefresh()}
               colors={[COLORS.PRIMARY_COLOR]}
               tintColor={COLORS.PRIMARY_COLOR}

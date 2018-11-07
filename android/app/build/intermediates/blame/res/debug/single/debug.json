@@ -284,6 +284,10 @@
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\fd13dd749a18a75f0db71e1fa3b8c8c4\\res\\drawable-xhdpi-v4\\abc_scrubber_track_mtrl_alpha.9.png"
     },
     {
+        "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_round.png"
+    },
+    {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_primary_text_disable_only_material_dark.xml.flat",
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\fd13dd749a18a75f0db71e1fa3b8c8c4\\res\\color\\abc_primary_text_disable_only_material_dark.xml"
     },
@@ -576,6 +580,10 @@
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\fd13dd749a18a75f0db71e1fa3b8c8c4\\res\\drawable-hdpi-v4\\abc_list_pressed_holo_light.9.png"
     },
     {
+        "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png"
+    },
+    {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_ic_star_black_36dp.png.flat",
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\fd13dd749a18a75f0db71e1fa3b8c8c4\\res\\drawable-xxhdpi-v4\\abc_ic_star_black_36dp.png"
     },
@@ -798,6 +806,10 @@
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_notification_bg_normal_pressed.9.png.flat",
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\7179083a52065bc84c8f76d13b3e22f0\\res\\drawable-hdpi-v4\\notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
     },
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldrtl-hdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
@@ -1058,6 +1070,10 @@
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21_notification_action.xml.flat",
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\7179083a52065bc84c8f76d13b3e22f0\\res\\layout-v21\\notification_action.xml"
+    },
+    {
+        "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_round.png"
     },
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_tooltip.xml.flat",
@@ -1450,6 +1466,10 @@
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
         "source": "C:\\Users\\ben_s\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\fd13dd749a18a75f0db71e1fa3b8c8c4\\res\\drawable-xxhdpi-v4\\abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_round.png"
     },
     {
         "merged": "C:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\res\\merged\\debug\\layout_fps_view.xml.flat",

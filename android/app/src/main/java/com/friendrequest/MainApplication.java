@@ -1,4 +1,4 @@
-package com.friendrequest;
+package com.straats;
 
 import android.app.Application;
 

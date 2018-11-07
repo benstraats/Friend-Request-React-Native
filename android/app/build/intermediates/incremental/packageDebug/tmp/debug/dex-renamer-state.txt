@@ -1,4 +1,0 @@
-#Sun Nov 04 00:26:22 EDT 2018
-base.0=C\:\\Users\\ben_s\\Documents\\Friend-Request-React-Native\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
-renamed.0=classes.dex
-path.0=classes.dex

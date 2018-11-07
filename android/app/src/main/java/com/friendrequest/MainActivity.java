@@ -1,4 +1,4 @@
-package com.friendrequest;
+package com.straats;
 
 import com.facebook.react.ReactActivity;
 

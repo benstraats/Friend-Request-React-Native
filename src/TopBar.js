@@ -5,6 +5,7 @@ import * as Keychain from 'react-native-keychain';
 
 import {COLORS, STRINGS} from './utils/ProjectConstants'
 import StatusBarOffset from './StatusBarOffset'
+import {deleteNotificationToken} from './utils/APICalls'
 
 export default class TopBar extends Component{
 
@@ -29,6 +30,14 @@ export default class TopBar extends Component{
     this.reset()
     this.props.navigation.goBack(null)
     this.props.navigation.goBack(null)
+
+    let onSuccess = (responseJson) => {
+    }
+
+    let onFailure = (error) => {
+    }
+
+    deleteNotificationToken(onSuccess, onFailure)
   }
 
   render(){

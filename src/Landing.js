@@ -124,61 +124,51 @@ class Landing extends Component {
     let self = this;
 
     let onSuccess = (responseJson) => {
+      let friends = [];
 
-      if (responseJson === undefined) {
-        this.getFriendsHelper()
+      if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
+        this.setState({
+          friendFullyDoneLoading: true
+        })
       }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let friends = [];
 
-        if (responseJson.friends.total <= this.state.friendLimit + this.state.friendSkip) {
-          this.setState({
-            friendFullyDoneLoading: true
-          })
+      responseJson.friends.data.forEach(function(obj) { 
+        let friendID = obj.user1
+
+        if (friendID == self.state.userID) {
+          friendID = obj.user2
         }
 
-        responseJson.friends.data.forEach(function(obj) { 
-          let friendID = obj.user1
+        friendInfo = {}
+        friendInfo.userID = friendID
 
-          if (friendID == self.state.userID) {
-            friendID = obj.user2
+        responseJson.users.data.forEach(function(obj) {
+          if (obj._id == friendID) {
+            friendInfo.userName = obj.name
+            friendInfo.userEmail = obj.email
+            friendInfo.relationship = STRINGS.FRIENDS
           }
-
-          friendInfo = {}
-          friendInfo.userID = friendID
-
-          responseJson.users.data.forEach(function(obj) {
-            if (obj._id == friendID) {
-              friendInfo.userName = obj.name
-              friendInfo.userEmail = obj.email
-              friendInfo.relationship = STRINGS.FRIENDS
-            }
-          })
-          friendInfo.relationshipID = obj._id
-          friendInfo.expanded = false
-          friendInfo.profileInfo = ''
-          friendInfo.showLoading = false
-          friendInfo.deletingUser = false
-
-          friends.push(friendInfo)
-        });
-
-        this.state.friendSectionData = this.state.friendSectionData.concat(friends)
-
-        this.setState({
-          friendCurrentlyLoading: false,
         })
-      }
-      else {
-        //bad response code
-        this.setState({
-          friendCurrentlyLoading: false,
-        })
-      }
+        friendInfo.relationshipID = obj._id
+        friendInfo.expanded = false
+        friendInfo.profileInfo = ''
+        friendInfo.showLoading = false
+        friendInfo.deletingUser = false
+
+        friends.push(friendInfo)
+      });
+
+      this.state.friendSectionData = this.state.friendSectionData.concat(friends)
+
+      this.setState({
+        friendCurrentlyLoading: false,
+      })
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        friendCurrentlyLoading: false,
+      })
     }
 
     getFriends(this.state.friendLimit, this.state.friendSkip, onSuccess, onFailure)
@@ -186,60 +176,51 @@ class Landing extends Component {
 
   getRequestsHelper = () =>{
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.getRequestsHelper()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let requests = [];
-  
-          if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
-            this.setState({
-              requestFullyDoneLoading: true
-            })
-          }
-  
+      let requests = [];
+
+        if (responseJson.requests.total <= this.state.requestLimit + this.state.requestSkip) {
           this.setState({
-            requestTotal: responseJson.requests.total
+            requestFullyDoneLoading: true
           })
-  
-          responseJson.requests.data.forEach(function(obj) { 
-            let requesterID = obj.requester
-  
-            requestInfo = {}
-            requestInfo.userID = requesterID
-  
-            responseJson.users.data.forEach(function(userObj) {
-              if (userObj._id == requesterID) {
-                requestInfo.userName = userObj.name
-                requestInfo.userEmail = userObj.email
-                requestInfo.relationship = STRINGS.REQUESTEE
-              }
-            })
-            requestInfo.relationshipID = obj._id
-            requestInfo.expanded = false
-            requestInfo.profileInfo = ''
-            requestInfo.showLoading = false
-            requestInfo.deletingUser = false
-  
-            requests.push(requestInfo)
-          });
-  
-          this.state.requestSectionData = this.state.requestSectionData.concat(requests)
-  
-          this.setState({
-            requestCurrentlyLoading: false,
+        }
+
+        this.setState({
+          requestTotal: responseJson.requests.total
+        })
+
+        responseJson.requests.data.forEach(function(obj) { 
+          let requesterID = obj.requester
+
+          requestInfo = {}
+          requestInfo.userID = requesterID
+
+          responseJson.users.data.forEach(function(userObj) {
+            if (userObj._id == requesterID) {
+              requestInfo.userName = userObj.name
+              requestInfo.userEmail = userObj.email
+              requestInfo.relationship = STRINGS.REQUESTEE
+            }
           })
-      }
-      else {
-        //bad response
+          requestInfo.relationshipID = obj._id
+          requestInfo.expanded = false
+          requestInfo.profileInfo = ''
+          requestInfo.showLoading = false
+          requestInfo.deletingUser = false
+
+          requests.push(requestInfo)
+        });
+
+        this.state.requestSectionData = this.state.requestSectionData.concat(requests)
+
         this.setState({
           requestCurrentlyLoading: false,
         })
-      }
     }
 
     let onFailure = (error) => {
-      this.getRequestsHelper()
+      this.setState({
+        requestCurrentlyLoading: false,
+      })
     }
 
     getRequests(this.state.requestLimit, this.state.requestSkip, onSuccess, onFailure)
@@ -274,7 +255,7 @@ class Landing extends Component {
   killFriend = (item) => {
     let index = this.state.friendSectionData.indexOf(item)
     this.state.friendSectionData.splice(index, 1)
-    
+
     this.setState({
       friendSkip: this.state.friendSkip - 1,
     })

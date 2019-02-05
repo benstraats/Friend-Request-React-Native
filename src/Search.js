@@ -73,11 +73,7 @@ export default class Search extends Component {
     var self = this;
 
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.apiSearch()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        let friends = [];
+      let friends = [];
 
       if (responseJson.users.total <= this.state.searchSkip + this.state.searchLimit) {
         this.setState({
@@ -126,14 +122,12 @@ export default class Search extends Component {
           currentlySearching: false,
         })
       })
-      }
-      else {
-        //response error
-      }
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        currentlySearching: false,
+      })
     }
 
     search(this.state.savedSearchText, this.state.searchLimit, this.state.searchSkip, onSuccess, onFailure)

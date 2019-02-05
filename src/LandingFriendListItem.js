@@ -72,40 +72,33 @@ export default class LandingFriendListItem extends Component {
     })
 
     let onSuccess = (responseJson) => {
+      var profile = ''
 
-      if (responseJson === undefined) {
-        this.getProfileHelper()
-      }
+      let x = responseJson.data;
+      let y = x[0]
 
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        var profile = ''
+      if (y !== undefined) {
+        let z = y.profile
 
-        let x = responseJson.data;
-        let y = x[0]
-
-        if (y !== undefined) {
-          let z = y.profile
-
-          z.forEach(function(obj) { 
-            profile +=  "\n" + obj.key + ": " + obj.value
-          });
-        }
-        else {
-          profile = '\n' + STRINGS.NO_PROFILE
-        }
-
-        this.setState({
-            profileInfo: profile,
-            showLoading: false,
-        })
+        z.forEach(function(obj) { 
+          profile +=  "\n" + obj.key + ": " + obj.value
+        });
       }
       else {
-        //bad response
+        profile = '\n' + STRINGS.NO_PROFILE
       }
+
+      this.setState({
+          profileInfo: profile,
+          showLoading: false,
+      })
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        profileInfo: '',
+        showLoading: false,
+      })
     }
 
     getProfile(this.state.userID, onSuccess, onFailure)
@@ -115,28 +108,17 @@ export default class LandingFriendListItem extends Component {
     this.setState({
         deletingUser: true,
         showLoading: true,
-        deleted: true,
     })
 
     let onSuccess = (responseJson) => {
-
-      if (responseJson === undefined) {
-        this.removeFriendHelper()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
         this.props.killFriend(this.props.item)
-      }
-      else {
-        //response error
-        this.setState({
-            showLoading: false,
-            deletingUser: false
-        })
-      }
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        showLoading: false,
+        deletingUser: false
+      })
     }
 
     removeFriend(this.state.relationshipID, onSuccess, onFailure)

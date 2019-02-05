@@ -176,7 +176,6 @@ class Login extends Component {
   getAccessTokenHelper(username, password) {
     let onSuccess = (responseJson) => {
       this.save(username, password)
-      this.state.accessToken = responseJson.accessToken
 
       this.getUserInfoHelper(username)
     }

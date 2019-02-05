@@ -324,7 +324,7 @@ class Landing extends Component {
             {title: STRINGS.REQUEST_SECTION_HEADER, data: this.state.requestSectionData},
             {title: STRINGS.FRIEND_SECTION_HEADER, data: this.state.friendSectionData},
           ]}
-          keyExtractor={(item, index) => item + index}
+          keyExtractor={(item, index) => item.userID}
           onEndReached={() => this.scrolledToBottom()}
           onEndReachedThreshold={0.5}
           onViewableItemsChanged={(items) => this.viewableItemsChanged(items)}

@@ -54,34 +54,28 @@ export default class LandingRequestListItem extends Component {
 
     this.setState({
       showLoading: true,
-      deleted: true,
     })
 
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.acceptRequestHelper()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        
-        this.setState({
-            relationship: STRINGS.FRIENDS,
-            relationshipID: responseJson._id,
-            expanded: false,
-            profileInfo: '',
-            showLoading: false,
-            deletingUser: false,
-        })
+      this.setState({
+          relationship: STRINGS.FRIENDS,
+          relationshipID: responseJson._id,
+          expanded: false,
+          profileInfo: '',
+          showLoading: false,
+          deletingUser: false,
+      })
 
-        this.props.moveRequest(this.props.item, responseJson._id)
-        
-      }
-      else {
-        //response Error
-      }
+      this.props.moveRequest(this.props.item, responseJson._id)
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        expanded: false,
+        profileInfo: '',
+        showLoading: false,
+        deletingUser: false,
+      })
     }
 
     acceptRequest(this.state.relationshipID, onSuccess, onFailure)
@@ -91,24 +85,17 @@ export default class LandingRequestListItem extends Component {
 
     this.setState({
         showLoading: true,
-        deleted: true,
     })
 
     let onSuccess = (responseJson) => {
-
-      if (responseJson === undefined) {
-        this.rejectRequestHelper()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
         this.props.killRequest(this.props.item)
-      }
-      else {
-        //response error
-      }
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        showLoading: false,
+        deleted: false,
+      })
     }
 
     rejectRequest(this.state.relationshipID, onSuccess, onFailure)

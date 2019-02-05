@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+
+
 import com.android.build.OutputFile
 
 /**
@@ -148,6 +150,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-push-notification')
     compile project(':react-native-vector-icons')
     compile project(':react-native-keychain')
     implementation fileTree(dir: "libs", include: ["*.jar"])

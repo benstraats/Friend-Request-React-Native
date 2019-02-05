@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
 import {createStackNavigator,} from 'react-navigation';
 import * as Keychain from 'react-native-keychain';
+import PushNotification from 'react-native-push-notification';
 
 import Landing from './src/Landing'
 import StatusBarOffset from './src/StatusBarOffset'
-import {createUser, getAccessToken, getUserInfo} from './src/utils/APICalls'
+import {createUser, getAccessToken, getUserInfo, postNotificationToken} from './src/utils/APICalls'
 import {COLORS, STRINGS} from './src/utils/ProjectConstants'
 
 const styles = StyleSheet.create({
@@ -46,10 +47,29 @@ class Login extends Component {
       showError: false,
       loading: false,
       keyBoardOpen: false,
+      registerToken: undefined, 
+      gcmRegistered: false,
     };
 
     this.load()
   }
+
+  onRegister(token) {
+    let onSuccess = (responseJson) => {
+    }
+
+    let onFailure = (error) => {
+      //this is commented out because api throws error if token is already saved for user
+      //postNotificationToken(token.token)
+    }
+
+    postNotificationToken(token.token, onSuccess, onFailure)
+  }
+
+  onNotification(token) {
+    //Do we need to handle this in some way?
+  }
+
 
   async load() {
     try {
@@ -155,29 +175,14 @@ class Login extends Component {
 
   getAccessTokenHelper(username, password) {
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.setError(STRINGS.NO_INTERNET)
-        this.setState({
-          loading: false,
-        })
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        this.save(username, password)
-        this.state.accessToken = responseJson.accessToken
-        this.getUserInfoHelper(username)
-      }
-      else {
-        this.reset()
-        this.setError(responseJson.message)
-        this.setState({
-          loading: false,
-        })
-      }
+      this.save(username, password)
+
+      this.getUserInfoHelper(username)
     }
 
     let onFailure = (error) => {
       this.reset()
-      this.setError(STRINGS.UNKNOWN_ERROR)
+      this.setError(error.message)
       this.setState({
         loading: false,
       })
@@ -188,34 +193,40 @@ class Login extends Component {
 
   getUserInfoHelper = (username) => {
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.setError(STRINGS.NO_INTERNET)
-        this.setState({
-          loading: false,
-        })
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        this.setState({
-          loading: false,
-        })
-        this.props.navigation.navigate('landing', {
-          userID: responseJson.data[0]._id,
-          username: this.state.usernameText,
-          name: responseJson.data[0].name,
-        });
-      }
-      else {
-        this.reset()
-        this.setError(responseJson.message)
-        this.setState({
-          loading: false,
-        })
-      }
+      PushNotification.configure({
+        // (optional) Called when Token is generated (iOS and Android)
+        onRegister: this.onRegister.bind(this),
+        onNotification: this.onNotification,
+  
+        // ANDROID ONLY: GCM Sender ID (optional - not required for local notifications, but is need to receive remote push notifications)
+        senderID: 'REDACTED',
+  
+        // IOS ONLY (optional): default: all - Permissions to register.
+        permissions: {
+          alert: true,
+          badge: true,
+          sound: true
+        },
+  
+        // Should the initial notification be popped automatically
+        // default: true
+        popInitialNotification: true,
+        requestPermissions: true,
+      });
+  
+      this.setState({
+        loading: false,
+      })
+      this.props.navigation.navigate('landing', {
+        userID: responseJson.data[0]._id,
+        username: this.state.usernameText,
+        name: responseJson.data[0].name,
+      });
     }
 
     let onFailure = (error) => {
       this.reset()
-      this.setError(STRINGS.UNKNOWN_ERROR)
+      this.setError(error.message)
       this.setState({
         loading: false,
       })

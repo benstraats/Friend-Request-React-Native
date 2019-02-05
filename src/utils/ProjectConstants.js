@@ -13,6 +13,7 @@ export const STRINGS = {
 
     NO_INTERNET: "No Internet Connection",
     UNKNOWN_ERROR: "Unknown Error",
+    SLOW_CONNECTION: "Connection Issues, Trying Again...",
 
     FULL_NAME: "Full Name",
     USERNAME: "Username",

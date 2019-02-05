@@ -88,56 +88,48 @@ export default class Profile extends Component {
 
   getProfileHelper = () =>{
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.getProfileHelper()
+      //User hasnt created a profile yet
+      if (responseJson.data[0] === undefined) {
+        this.setState({
+          profileID: undefined,
+          listDataSource: [],
+          refreshList: !this.state.refreshList,
+          saveProfile: true,
+          currentlyLoading:false,
+        })
       }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-        //User hasnt created a profile yet
-        if (responseJson.data[0] === undefined) {
-          this.setState({
-            profileID: undefined,
-            listDataSource: [],
-            refreshList: !this.state.refreshList,
-            saveProfile: true,
-            currentlyLoading:false,
-          })
-        }
 
-        else {
-          let profile = []
-          let i=0
-
-          responseJson.data[0].profile.forEach(function(obj) { 
-            let row = {}
-            row.id = i
-            row.key = obj.key
-            row.value = obj.value
-            row.inEdit = false
-            row.showError = false
-            row.keyError = false
-            row.valueError = false
-            profile.push(row)
-            i++
-          })
-
-          this.setState({
-            listDataSource: profile,
-            refreshList: !this.state.refreshList,
-            rowMaxID: i,
-            profileID: responseJson.data[0]._id,
-            saveProfile: false,
-            currentlyLoading: false,
-          })
-        }
-      }
+      //Profile already exists
       else {
-        //response error
-        this.setState({currentlyLoading:false})
+        let profile = []
+        let i=0
+
+        responseJson.data[0].profile.forEach(function(obj) { 
+          let row = {}
+          row.id = i
+          row.key = obj.key
+          row.value = obj.value
+          row.inEdit = false
+          row.showError = false
+          row.keyError = false
+          row.valueError = false
+          profile.push(row)
+          i++
+        })
+
+        this.setState({
+          listDataSource: profile,
+          refreshList: !this.state.refreshList,
+          rowMaxID: i,
+          profileID: responseJson.data[0]._id,
+          saveProfile: false,
+          currentlyLoading: false,
+        })
       }
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({currentlyLoading:false})
     }
 
     getProfile(this.state.userID, onSuccess, onFailure)
@@ -185,27 +177,17 @@ export default class Profile extends Component {
     })
 
     let onSuccess = (responseJson) => {
-      if (responseJson === undefined) {
-        this.saveProfileHelper()
-      }
-      else if (responseJson.code === undefined || responseJson.code == 200) {
-
-        this.setState({
-          profileID: responseJson._id,
-          saveProfile: false,
-          currentlySaving: false,
-        })
-      }
-      else {
-        //response error
-        this.setState({
-          currentlySaving: false,
-        })
-      }
+      this.setState({
+        profileID: responseJson._id,
+        saveProfile: false,
+        currentlySaving: false,
+      })
     }
 
     let onFailure = (error) => {
-      //fatal error
+      this.setState({
+        currentlySaving: false,
+      })
     }
 
     if (this.state.profileID == '' || this.state.profileID === undefined) {

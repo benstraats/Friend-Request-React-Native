@@ -1,4 +1,4 @@
-const baseURL = "https://friendrequest.ca/";
+const baseURL = "https://62dbae42.ngrok.io/";
 const usersURL = baseURL + "users";
 const authenticationURL = baseURL + "authentication";
 const friendsURL = baseURL + "friends";
@@ -280,7 +280,7 @@ export function updateProfile(profileID, profile, onSuccess, onFailure, recurseC
   })
 }
 
-export function postNotificationToken(token, onSuccess, onFailure, recurseCount) {
+export function postNotificationToken(token, os, onSuccess, onFailure, recurseCount) {
   recurseCount = recurseCount || 1
   fcmToken = token
 
@@ -291,11 +291,11 @@ export function postNotificationToken(token, onSuccess, onFailure, recurseCount)
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + accessToken
     },
-    body: JSON.stringify({'token': token})
+    body: JSON.stringify({'token': token, 'os': os})
   }).then(function(response) {
     handleResponse(response, onSuccess, onFailure)
   }, function(error) {
-    setTimeout(() => postNotificationToken(token, onSuccess, onFailure, recurseCount+1), 1000 * recurseCount)
+    setTimeout(() => postNotificationToken(token, os, onSuccess, onFailure, recurseCount+1), 1000 * recurseCount)
   })
 }
 

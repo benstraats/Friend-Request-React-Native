@@ -1,4 +1,4 @@
-const baseURL = "https://62dbae42.ngrok.io/";
+const baseURL = "https://friendrequest.ca/";
 const usersURL = baseURL + "users";
 const authenticationURL = baseURL + "authentication";
 const friendsURL = baseURL + "friends";

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Button, StyleSheet, View, Image, TextInput, Text, Platform} from 'react-native';
 import {createStackNavigator,} from 'react-navigation';
 import * as Keychain from 'react-native-keychain';
 import PushNotification from 'react-native-push-notification';
@@ -63,7 +63,7 @@ class Login extends Component {
       //postNotificationToken(token.token)
     }
 
-    postNotificationToken(token.token, onSuccess, onFailure)
+    postNotificationToken(token.token, Platform.OS, onSuccess, onFailure)
   }
 
   onNotification(token) {
